@@ -1,6 +1,5 @@
 import requests
 from datetime import datetime, timedelta
-import urllib.parse
 
 def fetch(kw, lookback_days, domain):
     print(f"[{domain}] Querying EuropePMC for keyword: '{kw}'...")
@@ -9,32 +8,27 @@ def fetch(kw, lookback_days, domain):
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=lookback_days)
     
-    start_str = start_date.strftime("%Y-%m-%d")
-    end_str = end_date.strftime("%Y-%m-%d")
+    # Simple, high-yield EuropePMC keyword search format
+    raw_query = f'"{kw}" AND PUB_YEAR:{start_date.strftime("%Y")}'
     
-    # 2. Build the query string cleanly
-    raw_query = f'("{kw}") AND (FIRST_PUB_DATE:[{start_str} TO {end_str}])'
-    
-    # 3. Use standard params dictionary so requests handles the URL encoding automatically
-    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+    url = "https://www.ebi.ac.uk"
     params = {
         "query": raw_query,
         "format": "json",
-        "pageSize": "25",
+        "pageSize": "10",
         "resultType": "core"
     }
     
     try:
         # Pass params=params to ensure the URL encodes spaces and quotes correctly
-        response = requests.get(url, params=params, timeout=15)
-        
+        response = requests.get(url, params=params, timeout=15
+                                
         if response.status_code != 200:
             print(f"Warning: EuropePMC API returned status code {response.status_code}")
             return []
             
         # Debugging step: if the text doesn't look like JSON, print a preview
         if not response.text.strip().startswith("{"):
-            print(f"Server returned non-JSON text preview: {response.text[:200]}")
             return []
             
         data = response.json()

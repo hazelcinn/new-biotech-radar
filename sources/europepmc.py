@@ -21,7 +21,7 @@ def fetch(kw, lookback_days, domain):
     
     try:
         # Pass params=params to ensure the URL encodes spaces and quotes correctly
-        response = requests.get(url, params=params, timeout=15
+        response = requests.get(url, params=params, timeout=15)
                                 
         if response.status_code != 200:
             print(f"Warning: EuropePMC API returned status code {response.status_code}")

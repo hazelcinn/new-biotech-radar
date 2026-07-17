@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime, timedelta
+import urllib.parse
 
 def fetch(kw, lookback_days, domain):
     print(f"[{domain}] Querying EuropePMC for keyword: '{kw}'...")
@@ -8,24 +9,32 @@ def fetch(kw, lookback_days, domain):
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=lookback_days)
     
-    start_year = start_date.strftime("%Y")
+    start_str = start_date.strftime("%Y-%m-%d")
+    end_str = end_date.strftime("%Y-%m-%d")
     
-    # 2. Build a highly specific Lucene search query for EuropePMC
-    # Looks for terms in title, abstract, or keywords, filtered by date
-    query = f'("{kw}") AND (FIRST_PUB_DATE:[{start_date.strftime("%Y-%m-%d")} TO {end_date.strftime("%Y-%m-%d")}])'
+    # 2. Build the query string cleanly
+    raw_query = f'("{kw}") AND (FIRST_PUB_DATE:[{start_str} TO {end_str}])'
     
-    url = "https://ebi.ac.uk"
+    # 3. Use standard params dictionary so requests handles the URL encoding automatically
+    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
     params = {
-        "query": query,
+        "query": raw_query,
         "format": "json",
-        "pageSize": 25,  # Top 25 most relevant matches
-        "resultType": "core" # Ensures we get the abstracts back
+        "pageSize": "25",
+        "resultType": "core"
     }
     
     try:
+        # Pass params=params to ensure the URL encodes spaces and quotes correctly
         response = requests.get(url, params=params, timeout=15)
+        
         if response.status_code != 200:
             print(f"Warning: EuropePMC API returned status code {response.status_code}")
+            return []
+            
+        # Debugging step: if the text doesn't look like JSON, print a preview
+        if not response.text.strip().startswith("{"):
+            print(f"Server returned non-JSON text preview: {response.text[:200]}")
             return []
             
         data = response.json()
@@ -33,7 +42,6 @@ def fetch(kw, lookback_days, domain):
         
         results = []
         for paper in result_list:
-            # Safely grab links (prefer electronic journal link, fallback to EuropePMC)
             pmcid = paper.get("pmcid")
             doi = paper.get("doi")
             link = f"https://doi.org{doi}" if doi else f"https://europepmc.org{pmcid}" if pmcid else f"https://europepmc.org{paper.get('id')}"

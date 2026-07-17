@@ -42,7 +42,7 @@ def main():
         print("[main] No papers found. Generating a standard placeholder page to keep pipeline alive.")
         # Fallback page so deployment never breaks or stays blank
         os.makedirs(DOCS_DIR, exist_ok=True)
-        with open(os.path.join(docs_dir, "index.html"), "w") as f:
+        with open(os.path.join(DOCS_DIR, "index.html"), "w") as f:
             f.write("<html><body><h1>Biotech Radar Online: No new papers found in this window.</h1></body></html>")
         return 0
 

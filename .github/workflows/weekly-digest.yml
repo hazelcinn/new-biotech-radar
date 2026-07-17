@@ -1,0 +1,75 @@
+name: Weekly Pharma Tech Radar
+
+on:
+  workflow_dispatch: {}  # on-demand only — trigger manually from the Actions tab
+  # To switch to a recurring schedule later, add back a `schedule:` trigger, e.g.:
+  #   schedule:
+  #     - cron: "0 8 * * 1"   # every Monday at 08:00 UTC
+
+permissions:
+  contents: write   # needed to commit output/state/docs back to the repo
+  pages: write       # needed to publish to GitHub Pages
+  id-token: write    # needed by the Pages deployment action
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  run-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run weekly digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FWF_API_KEY: ${{ secrets.FWF_API_KEY }}
+        run: python main.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "biotech-radar-bot"
+          git config --local user.email "actions@github.com"
+          git add state.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update tracking state" && git push)
+          git push
+
+      - name: Upload digest as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ github.run_id }}
+          path: output/
+
+  deploy-pages:
+    needs: run-digest
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repo (post-commit, so docs/ is up to date)
+        uses: actions/checkout@v4
+        with:
+          ref: hazelcinn-patch-1
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload docs/ as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -11,7 +11,7 @@ def fetch(kw, lookback_days, domain):
     # Simple, high-yield EuropePMC keyword search format
     raw_query = f'"{kw}" AND PUB_YEAR:{start_date.strftime("%Y")}'
     
-    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=p53"
+    url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query={}[&parameters]"
     params = {
         "query": raw_query,
         "format": "json",

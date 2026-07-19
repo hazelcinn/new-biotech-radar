@@ -1,4 +1,5 @@
 DOMAINS = {
+  """
   #  "Drug Delivery Platforms": [
   #      "lipid nanoparticles", "secretome", "lipid droplets", "nanocarrier", "hydrogel", "targeted delivery"
   #  ],
@@ -11,6 +12,7 @@ DOMAINS = {
   #  "Lab Automation & Culture Systems": [
   #      "lab automation", "organ on a chip", "organ-on-a-chip", "high throughput screening", "bioreactor culture", "automated liquid handling"
   #  ]
+  """
     "Basic Search": [
         "delivery system", "diagnostic", "biosensor", "noninvasice", "assay", "automation", "setup", "platform", 'tool", "high throughput", "technique"
     ],

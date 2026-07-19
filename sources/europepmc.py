@@ -1,59 +1,53 @@
+cat > sources/europepmc.py << 'EOF'
+"""
+Europe PMC REST API — publications (and some grant metadata) worldwide.
+Docs: https://europepmc.org/RestfulWebService
+No API key required.
+"""
 import requests
-from datetime import datetime, timedelta
+from datetime import date, timedelta
+from schema import make_item
 
-def fetch(kw, lookback_days, domain):
-    print(f"[{domain}] Querying EuropePMC for keyword: '{kw}'...")
-    
-    # 1. Calculate the date constraint
-    end_date = datetime.utcnow()
-    start_date = end_date - timedelta(days=lookback_days)
-    
-    # Simple, high-yield EuropePMC keyword search format
-    raw_query = f'"{kw}" AND PUB_YEAR:{start_date.strftime("%Y")}'
-    
-    url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query=cluster"
+BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+
+
+def fetch(keyword: str, lookback_days: int, domain_hint: str = ""):
+    since = (date.today() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+    query = f'"{keyword}" AND FIRST_PDATE:[{since} TO {date.today().strftime("%Y-%m-%d")}]'
     params = {
-        "query": raw_query,
+        "query": query,
         "format": "json",
-        "pageSize": "10",
-        "resultType": "core"
+        "pageSize": 50,
+        "resultType": "core",
     }
-    
     try:
-        # Pass params=params to ensure the URL encodes spaces and quotes correctly
-        response = requests.get(url, params=params, timeout=15)
-                                
-        if response.status_code != 200:
-            print(f"Warning: EuropePMC API returned status code {response.status_code}")
-            return []
-            
-        # Debugging step: if the text doesn't look like JSON, print a preview
-        if not response.text.strip().startswith("{"):
-            return []
-            
-        data = response.json()
-        result_list = data.get("resultList", {}).get("result", [])
-        
-        results = []
-        for paper in result_list:
-            pmcid = paper.get("pmcid")
-            doi = paper.get("doi")
-            link = f"https://doi.org{doi}" if doi else f"https://europepmc.org{pmcid}" if pmcid else f"https://europepmc.org{paper.get('id')}"
-            
-            results.append({
-                "title": paper.get("title"),
-                "authors": paper.get("authorString", "Unknown Authors"),
-                "link": link,
-                "source": "EuropePMC",
-                "date": paper.get("firstPublicationDate", paper.get("pubYear")),
-                "abstract": paper.get("abstractText", "No abstract available."),
-                "domain": domain,
-                "keyword": kw
-            })
-            
-        print(f"Found {len(results)} highly matching papers on EuropePMC for '{kw}'")
-        return results
-
-    except Exception as e:
-        print(f"Error fetching from EuropePMC: {e}")
+        resp = requests.get(BASE, params=params, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException as e:
+        print(f"[europepmc] request failed for '{keyword}': {e}")
         return []
+
+    items = []
+    for r in data.get("resultList", {}).get("result", []):
+        pmid = r.get("pmid") or r.get("id")
+        url = f"https://europepmc.org/article/{r.get('source','MED')}/{pmid}" if pmid else ""
+        affiliations = ""
+        author_list = r.get("authorList", {}).get("author", [])
+        if author_list:
+            affiliations = author_list[0].get("affiliation", "") or ""
+        items.append(
+            make_item(
+                source="Europe PMC",
+                item_type="preprint" if r.get("pubType", "").lower() == "preprint" else "publication",
+                title=r.get("title", ""),
+                url=url,
+                date=r.get("firstPublicationDate", ""),
+                institution=affiliations,
+                raw_text=r.get("abstractText", ""),
+                domain_hint=domain_hint,
+            )
+        )
+    return items
+EOF
+python3 -m py_compile sources/europepmc.py && echo "SYNTAX OK"

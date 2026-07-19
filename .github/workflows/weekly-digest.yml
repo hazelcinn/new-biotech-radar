@@ -36,13 +36,13 @@ jobs:
           FWF_API_KEY: ${{ secrets.FWF_API_KEY }}
         run: python main.py
 
-      - name: Commit updated state, digest, and Pages content
+      - name: Commit and push changes
         run: |
-          git config user.name "pharma-tech-radar-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add state/ output/ docs/
-          git diff --staged --quiet || git commit -m "Weekly digest: $(date -u +'%Y-%m-%d')"
-          git push
+          git config --local user.name "biotech-radar-bot"
+          git config --local user.email "actions@github.com"
+          git add state.json docs/index.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update tracking state and dashboard" && git push)
+
 
       - name: Upload digest as workflow artifact
         uses: actions/upload-artifact@v4

@@ -40,9 +40,9 @@ jobs:
         run: |
           git config --local user.name "biotech-radar-bot"
           git config --local user.email "actions@github.com"
-          git add state.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update tracking state" && git push)
-          git push
+          git add state.json docs/index.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update tracking state and dashboard" && git push)
+
 
       - name: Upload digest as workflow artifact
         uses: actions/upload-artifact@v4

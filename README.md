@@ -6,19 +6,26 @@ companies worldwide, built on free public sources.
 ## What's in v1
 
 **Domains monitored** (edit `config.py` to change):
+Currently: 
+
+For Future:
 - Drug delivery platforms (mRNA, ASO, LNP, etc.)
 - Diagnostics & molecular/cellular detection methods
 - Organ/tissue preservation & perfusion devices
 - Lab automation & culture/analysis systems
 
 **Sources — working now, no setup needed:**
+Currently:
 - Europe PMC (publications, worldwide)
+
+For Future:
 - bioRxiv / medRxiv (preprints)
 - Semantic Scholar (cross-index, with author affiliations)
 - NIH RePORTER (US federal grants)
 - NSF Award Search (US federal grants)
 - UKRI Gateway to Research (UK grants)
 
+## For the Future
 **Sources — need a one-time setup step:**
 - FWF Austria Open API — request a free key at https://openapi.fwf.ac.at/fwfkey,
   set it as `FWF_API_KEY`. This is the source that catches things like

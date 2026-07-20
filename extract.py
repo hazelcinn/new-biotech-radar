@@ -1,160 +1,96 @@
-import os
-import json
-import ollama
+import urllib.parse
+import requests
 
-def extract_all(raw_items, output_dir, docs_dir):
-    print(f"[extract] Processing {len(raw_items)} harvested items for digest locally using Ollama...")
+def fetch(keyword: str, lookback_days: int, domain: str) -> list:
+    """Fetches standard research papers from Europe PMC."""
+    raw_items = []
+    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
     
-    MODEL_NAME = "llama3.2:3b"
-    analyzed_papers = []
-
-    for idx, item in enumerate(raw_items, 1):
-        print(f"[extract] Analyzing paper {idx}/{len(raw_items)}: {item.get('title')[:50]}...")
-        
-        # Pulling the keywords and funding/source data from the harvested item
-        keywords_list = item.get('keyword', 'N/A')
-        funding_source = item.get('source', 'Unknown Source')
-        
-        paper_info = f"""
-        Title: {item.get('title')}
-        Source/Funding: {funding_source}
-        Keywords: {keywords_list}
-        Abstract: {item.get('abstract')}
-        """
-        
-        prompt = f"""
-        You are an expert biotech market intelligence analyst. 
-        Read this paper data and write a punchy, 2-sentence executive summary explaining why this finding matters to pharma/biotech.
-        Output ONLY the 2-sentence summary. Do not add intro text, conversational filler, or formatting.
-        
-        Paper data:
-        {paper_info}
-        """
-        
-        try:
-            response = ollama.chat(
-                model=MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}],
-                options={"temperature": 0.2}
-            )
-            
-            summary = response['message']['content'].strip()
-            
-            # 1. Save keywords and funding source alongside the summary
-            analyzed_papers.append({
-                "title": item.get('title'),
-                "link": item.get('link'),
-                "source": funding_source,
-                "keywords": keywords_list,
-                "summary": summary
-            })
-            
-        except Exception as e:
-            print(f"[extract] Error analyzing paper #{idx}: {e}")
-            analyzed_papers.append({
-                "title": item.get('title'),
-                "link": item.get('link'),
-                "source": funding_source,
-                "keywords": keywords_list,
-                "summary": "Summary unavailable due to local processing error."
-            })
-
-    print("[extract] Building the HTML dashboard layout...")
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
+        "Accept": "application/json"
+    }
     
-    cards_html = ""
-    for paper in analyzed_papers:
-        # 2. Injecting the Funding Source and Keywords explicitly into the HTML template cards
-        cards_html += f"""
-        <div class="card">
-            <h2><a href="{paper['link']}" target="_blank">{paper['title']}</a></h2>
-            <div class="meta">
-                <span class="tag funding">💰 Funding/Source: {paper['source']}</span>
-                <span class="tag keyword">🔑 Keywords: {paper['keywords']}</span>
-            </div>
-            <p class="summary">{paper['summary']}</p>
-        </div>
-        """
-
-    html_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biotech Market Intelligence Dashboard</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-            margin: 0;
-            padding: 40px 20px;
-        }}
-        .container {{
-            max-width: 1000px;
-            margin: 0 auto;
-        }}
-        h1 {{
-            color: #38bdf8;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 15px;
-        }}
-        .card {{
-            background-color: #1e293b;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }}
-        .card h2 a {{
-            color: #f8fafc;
-            text-decoration: none;
-        }}
-        .card h2 a:hover {{
-            color: #38bdf8;
-            text-decoration: underline;
-        }}
-        .meta {{
-            margin: 12px 0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }}
-        .tag {{
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }}
-        .funding {{ background-color: #1e3a8a; color: #dbeafe; border: 1px solid #3b82f6; }}
-        .keyword {{ background-color: #064e3b; color: #d1fae5; border: 1px solid #10b981; }}
-        .summary {{
-            line-height: 1.6;
-            color: #cbd5e1;
-            margin-top: 15px;
-        }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Weekly Biotech Summary Dashboard</h1>
-        <div class="feed">
-            {cards_html}
-        </div>
-    </div>
-</body>
-</html>"""
+    params = {
+        "query": f'"{keyword}" HAS_ABSTRACT:y',
+        "format": "json",
+        "pageSize": 25,
+        "resultType": "core"
+    }
 
     try:
-        os.makedirs(docs_dir, exist_ok=True)
-        html_path = os.path.join(docs_dir, "index.html")
-        
-        with open(html_path, "w", encoding="utf-8") as f:
-            f.write(html_content)
-            
-        print(f"[extract] Successfully wrote fresh local dashboard with funding and keywords to {html_path}")
-        return True
-
+        response = requests.get(url, params=params, headers=headers, timeout=12)
+        if response.status_code == 200:
+            data = response.json()
+            results = data.get("resultList", {}).get("result", [])
+            for item in results:
+                raw_items.append({
+                    "title": item.get("title", "Untitled Research"),
+                    "abstract": item.get("abstractText", "No abstract available."),
+                    "source": item.get("journalTitle", "Europe PMC"),
+                    "keyword": keyword,
+                    "domain": domain,
+                    "link": f"https://europepmc.org/article/{item.get('source', 'MED')}/{item.get('id')}" if item.get("id") else "#"
+                })
     except Exception as e:
-        print(f"[extract] Error saving HTML file: {e}")
-        return False
+        print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")
+
+    return raw_items
+
+
+def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
+    """
+    Fetches actual grant records using the official Europe PMC GRIST REST API:
+    https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query=<KEYWORD>&format=json
+    """
+    raw_items = []
+    
+    # Strictly separated base URL path per GRIST specifications
+    base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
+        "Accept": "application/json"
+    }
+
+    # URL-encode the keyword securely for path insertion
+    encoded_query = urllib.parse.quote(keyword.strip())
+    url = f"{base_url}{encoded_query}&format=json"
+
+    try:
+        response = requests.get(url, headers=headers, timeout=12)
+        if response.status_code == 200:
+            data = response.json()
+            
+            # GRIST API returns records under RecordList -> Record (or fallback structures)
+            record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
+            records = (
+                record_list.get("Record", [])
+                or record_list.get("grant", [])
+                or data.get("Record", [])
+            )
+
+            if isinstance(records, dict):
+                records = [records]
+
+            for item in records:
+                # Map GRIST-specific capitalized data fields
+                grant_id = item.get("Id") or item.get("id") or "N/A"
+                title = item.get("Title") or item.get("title") or "Untitled Grant Project"
+                abstract = item.get("Abstract") or item.get("abstract") or "No abstract description provided."
+                funder = item.get("GrantedAuthority") or item.get("funder") or "Europe PMC / GRIST"
+
+                grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id != "N/A" else "https://europepmc.org/grantfinder"
+
+                raw_items.append({
+                    "title": title,
+                    "abstract": abstract,
+                    "source": f"{funder} (Grant ID: {grant_id})",
+                    "keyword": keyword,
+                    "domain": domain,
+                    "link": grant_link
+                })
+    except Exception as e:
+        print(f"[europepmc] Connection error during GRIST grant fetch for '{keyword}': {e}")
+
+    return raw_items

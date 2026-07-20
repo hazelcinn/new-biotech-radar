@@ -2,9 +2,8 @@ name: Weekly Pharma Tech Radar
 
 on:
   workflow_dispatch: {}  # on-demand only — trigger manually from the Actions tab
-  # To switch to a recurring schedule later, add back a `schedule:` trigger, e.g.:
-  #   schedule:
-  #     - cron: "0 8 * * 1"   # every Monday at 08:00 UTC
+  # schedule:
+  #   - cron: "0 8 * * 1"   # every Monday at 08:00 UTC
 
 permissions:
   contents: write   # needed to commit output/state/docs back to the repo
@@ -30,6 +29,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # --- Start Ollama locally inside the GitHub runner ---
+      - name: Install and Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 5
+          ollama pull llama3.2  # Change to your model name if different!
+      # -----------------------------------------------------
+
       - name: Run weekly digest
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -42,7 +50,6 @@ jobs:
           git config --local user.email "actions@github.com"
           git add state.json docs/index.html
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update tracking state and dashboard" && git push)
-
 
       - name: Upload digest as workflow artifact
         uses: actions/upload-artifact@v4

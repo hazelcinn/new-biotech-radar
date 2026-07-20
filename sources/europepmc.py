@@ -14,7 +14,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
     params = {
         "query": f'"{keyword}" HAS_ABSTRACT:y',
         "format": "json",
-        "pageSize": 10,  # Capped at top 10 per keyword
+        "pageSize": 1,  # Capped at top 10 per keyword
         "resultType": "core"
     }
 

@@ -7,11 +7,16 @@ from extract import extract_all
 BASIC_SEARCH_KEYWORDS = DOMAINS.get("Basic Search", [])
 
 
+def get_field(item, *keys, default=""):
+    """Helper to try multiple case variations for JSON fields."""
+    for key in keys:
+        val = item.get(key)
+        if val and isinstance(val, str) and val.strip():
+            return val.strip()
+    return default
+
+
 def fetch_grist_grants(keywords, max_per_keyword=5):
-    """
-    Queries Europe PMC GRIST API using direct query format.
-    Safely extracts Title, Abstract, Funder, and Grant ID.
-    """
     raw_items = []
     seen_ids = set()
 
@@ -37,28 +42,30 @@ def fetch_grist_grants(keywords, max_per_keyword=5):
 
             data = response.json()
 
-            # Navigate GRIST JSON hierarchy
+            # Navigate GRIST JSON payload variations
             record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
             records = (
                 record_list.get("Record", [])
                 or record_list.get("grant", [])
                 or data.get("Record", [])
+                or data.get("grantList", {}).get("grant", [])
             )
 
             if isinstance(records, dict):
                 records = [records]
 
             added_for_this_kw = 0
-            for item in records:
-                # Extract GRIST fields with deep fallbacks
-                grant_id = str(item.get("Id") or item.get("id") or "").strip()
-                title = str(item.get("Title") or item.get("title") or "Untitled Grant Project").strip()
-                abstract = str(item.get("Abstract") or item.get("abstract") or "No abstract description provided.").strip()
-                funder = str(item.get("GrantedAuthority") or item.get("funder") or "Europe PMC / GRIST").strip()
+            for index, item in enumerate(records):
+                # Flexible extraction for GRIST fields (trying common casing variations)
+                grant_id = get_field(item, "Id", "id", "code", "grantId", default="")
+                title = get_field(item, "Title", "title", "projectTitle", default="Untitled Grant Project")
+                abstract = get_field(item, "Abstract", "abstract", "description", default="No abstract description provided.")
+                funder = get_field(item, "GrantedAuthority", "funder", "agency", "fundingAgency", default="Europe PMC / GRIST")
 
-                # Deduplicate based on unique Grant ID or Title
-                unique_key = grant_id if grant_id else title
-                if not unique_key or unique_key in seen_ids:
+                # Build deduplication key; avoid empty string collisions
+                unique_key = grant_id if grant_id else (title if title != "Untitled Grant Project" else f"{kw}_{index}")
+                
+                if unique_key in seen_ids:
                     continue
                 seen_ids.add(unique_key)
 
@@ -90,12 +97,14 @@ def main():
         print("❌ No keywords found in DOMAINS['Basic Search']. Please check config.py.")
         return
 
+    # Step 1: Harvest grant records from GRIST API
     raw_items = fetch_grist_grants(BASIC_SEARCH_KEYWORDS, max_per_keyword=3)
 
     if not raw_items:
         print("⚠️ No grant records harvested. Check internet connection or keywords in config.py.")
         return
 
+    # Step 2: Pass to extract pipeline
     print("\n[pipeline] Handing harvested records to extract.py...")
     success = extract_all(raw_items, OUTPUT_DIR, DOCS_DIR)
 

@@ -7,7 +7,8 @@ companies worldwide, built on free public sources.
 
 **Domains monitored** (edit `config.py` to change):
 Currently: 
-
+- Basic Search Keywords
+        "delivery system", "diagnostic", "biosensor", "noninvasive", "assay", "automation", "setup", "platform", "tool", "technology", "high throughput", "technique"
 For Future:
 - Drug delivery platforms (mRNA, ASO, LNP, etc.)
 - Diagnostics & molecular/cellular detection methods

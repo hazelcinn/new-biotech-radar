@@ -9,16 +9,17 @@ def extract_all(raw_items, output_dir, docs_dir):
     analyzed_papers = []
 
     for idx, item in enumerate(raw_items, 1):
-        print(f"[extract] Analyzing paper {idx}/{len(raw_items)}: {item.get('title', 'Untitled')[:50]}...")
+        print(f"[extract] Analyzing paper {idx}/{len(raw_items)}: {item.get('title')[:50]}...")
         
+        # Pulling the keywords and funding/source data from the harvested item
         keywords_list = item.get('keyword', 'N/A')
         funding_source = item.get('source', 'Unknown Source')
         
         paper_info = f"""
-        Title: {item.get('title', 'N/A')}
+        Title: {item.get('title')}
         Source/Funding: {funding_source}
         Keywords: {keywords_list}
-        Abstract: {item.get('abstract', 'No abstract provided.')}
+        Abstract: {item.get('abstract')}
         """
         
         prompt = f"""
@@ -39,9 +40,10 @@ def extract_all(raw_items, output_dir, docs_dir):
             
             summary = response['message']['content'].strip()
             
+            # 1. Save keywords and funding source alongside the summary
             analyzed_papers.append({
-                "title": item.get('title', 'Untitled'),
-                "link": item.get('link', '#'),
+                "title": item.get('title'),
+                "link": item.get('link'),
                 "source": funding_source,
                 "keywords": keywords_list,
                 "summary": summary
@@ -50,8 +52,8 @@ def extract_all(raw_items, output_dir, docs_dir):
         except Exception as e:
             print(f"[extract] Error analyzing paper #{idx}: {e}")
             analyzed_papers.append({
-                "title": item.get('title', 'Untitled'),
-                "link": item.get('link', '#'),
+                "title": item.get('title'),
+                "link": item.get('link'),
                 "source": funding_source,
                 "keywords": keywords_list,
                 "summary": "Summary unavailable due to local processing error."
@@ -61,6 +63,7 @@ def extract_all(raw_items, output_dir, docs_dir):
     
     cards_html = ""
     for paper in analyzed_papers:
+        # 2. Injecting the Funding Source and Keywords explicitly into the HTML template cards
         cards_html += f"""
         <div class="card">
             <h2><a href="{paper['link']}" target="_blank">{paper['title']}</a></h2>
@@ -149,7 +152,7 @@ def extract_all(raw_items, output_dir, docs_dir):
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
             
-        print(f"[extract] Successfully wrote fresh local dashboard to {html_path}")
+        print(f"[extract] Successfully wrote fresh local dashboard with funding and keywords to {html_path}")
         return True
 
     except Exception as e:

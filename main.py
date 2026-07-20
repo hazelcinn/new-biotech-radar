@@ -41,22 +41,20 @@ def generate_summary(prompt: str) -> str:
 # EuropePMC Grant Retrieval & Processing Logic
 # =====================================================================
 
-
 def build_europepmc_query(keywords):
-    """Formats the basic search terms into a EuropePMC REST query string."""
+    """
+    Constructs a EuropePMC query that searches titles and abstracts
+    specifically targeting funded grant projects.
+    """
     if not keywords:
         raise ValueError("No keywords found in DOMAINS['Basic Search']")
 
-    # Target Title, Abstract, or Grant text specifically
-    # Using field tags ensures EuropePMC searches the relevant metadata
-    query_parts = []
-    for kw in keywords:
-        query_parts.append(f'TITLE:"{kw}" OR ABSTRACT:"{kw}"')
+    # Search title or abstract for the keywords
+    term_queries = [f'(TITLE:"{kw}" OR ABSTRACT:"{kw}")' for kw in keywords]
+    combined_terms = " OR ".join(term_queries)
     
-    combined_keywords = " OR ".join(query_parts)
-    
-    # HAS_GRANT:y filters for records associated with a grant
-    return f"({combined_keywords}) AND HAS_GRANT:y"    
+    # Query for grant-backed entries in EuropePMC
+    return f"({combined_terms}) AND (GRANT_ID:[* TO *] OR HAS_GRANT:y)"
 
 def fetch_grants_from_europepmc(limit=25):
     """Queries EuropePMC REST API for grants matching the basic search keywords."""
@@ -68,21 +66,30 @@ def fetch_grants_from_europepmc(limit=25):
         "format": "json",
         "pageSize": limit,
         "resultType": "core",
+        "sort": "P_PD_DATE desc"  # Fetch newest entries first
     }
 
-    print(
-        f"🔍 Querying EuropePMC with {len(BASIC_SEARCH_KEYWORDS)} Basic Search keywords..."
-    )
+    print(f"🔍 Querying EuropePMC with {len(BASIC_SEARCH_KEYWORDS)} Basic Search keywords...")
     try:
         response = requests.get(url, params=params)
         response.raise_for_status()
-        results = response.json().get("resultList", {}).get("result", [])
+        
+        data = response.json()
+        results = data.get("resultList", {}).get("result", [])
+        
+        # Fallback: If strict field search returned 0, try broader phrase matching
+        if not results:
+            print("⚠️ 0 strict matches found. Attempting broader keyword search...")
+            broader_query = " OR ".join([f'"{kw}"' for kw in BASIC_SEARCH_KEYWORDS])
+            params["query"] = f"({broader_query}) AND HAS_GRANT:y"
+            response = requests.get(url, params=params)
+            results = response.json().get("resultList", {}).get("result", [])
+
         print(f"✅ Found {len(results)} matching grant records.")
         return results
     except Exception as e:
         print(f"❌ EuropePMC API Request failed: {e}")
         return []
-
 
 def process_grants():
     """Main processing loop."""

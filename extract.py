@@ -2,19 +2,23 @@ import os
 import json
 import ollama
 
-def extract_all(raw_items, output_dir, docs_dir, unique_filename="index.html"):
+def extract_all(raw_items, output_dir, docs_dir):
     print(f"[extract] Processing {len(raw_items)} harvested items for digest locally using Ollama...")
     
     MODEL_NAME = "llama3.2:3b"
     analyzed_papers = []
 
     for idx, item in enumerate(raw_items, 1):
-        print(f"[extract] Analyzing paper {idx}/{len(raw_items)}: {item.get('title')[:50]}...")
+        print(f"[extract] Analyzing paper {idx}/{len(raw_items)}: {item.get('title', 'Untitled')[:50]}...")
+        
+        keywords_list = item.get('keyword', 'N/A')
+        funding_source = item.get('source', 'Unknown Source')
         
         paper_info = f"""
-        Title: {item.get('title')}
-        Source: {item.get('source')} | Keyword: {item.get('keyword')}
-        Abstract: {item.get('abstract')}
+        Title: {item.get('title', 'N/A')}
+        Source/Funding: {funding_source}
+        Keywords: {keywords_list}
+        Abstract: {item.get('abstract', 'No abstract provided.')}
         """
         
         prompt = f"""
@@ -36,20 +40,20 @@ def extract_all(raw_items, output_dir, docs_dir, unique_filename="index.html"):
             summary = response['message']['content'].strip()
             
             analyzed_papers.append({
-                "title": item.get('title'),
-                "link": item.get('link'),
-                "source": item.get('source'),
-                "keyword": item.get('keyword'),
+                "title": item.get('title', 'Untitled'),
+                "link": item.get('link', '#'),
+                "source": funding_source,
+                "keywords": keywords_list,
                 "summary": summary
             })
             
         except Exception as e:
             print(f"[extract] Error analyzing paper #{idx}: {e}")
             analyzed_papers.append({
-                "title": item.get('title'),
-                "link": item.get('link'),
-                "source": item.get('source'),
-                "keyword": item.get('keyword'),
+                "title": item.get('title', 'Untitled'),
+                "link": item.get('link', '#'),
+                "source": funding_source,
+                "keywords": keywords_list,
                 "summary": "Summary unavailable due to local processing error."
             })
 
@@ -61,8 +65,8 @@ def extract_all(raw_items, output_dir, docs_dir, unique_filename="index.html"):
         <div class="card">
             <h2><a href="{paper['link']}" target="_blank">{paper['title']}</a></h2>
             <div class="meta">
-                <span class="tag source">{paper['source']}</span>
-                <span class="tag keyword">{paper['keyword']}</span>
+                <span class="tag funding">💰 Funding/Source: {paper['source']}</span>
+                <span class="tag keyword">🔑 Keywords: {paper['keywords']}</span>
             </div>
             <p class="summary">{paper['summary']}</p>
         </div>
@@ -107,21 +111,24 @@ def extract_all(raw_items, output_dir, docs_dir, unique_filename="index.html"):
             text-decoration: underline;
         }}
         .meta {{
-            margin: 10px 0;
+            margin: 12px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }}
         .tag {{
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-right: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
         }}
-        .source {{ background-color: #0369a1; color: #e0f2fe; }}
-        .keyword {{ background-color: #065f46; color: #d1fae5; }}
+        .funding {{ background-color: #1e3a8a; color: #dbeafe; border: 1px solid #3b82f6; }}
+        .keyword {{ background-color: #064e3b; color: #d1fae5; border: 1px solid #10b981; }}
         .summary {{
             line-height: 1.6;
             color: #cbd5e1;
+            margin-top: 15px;
         }}
     </style>
 </head>
@@ -136,10 +143,8 @@ def extract_all(raw_items, output_dir, docs_dir, unique_filename="index.html"):
 </html>"""
 
     try:
-        # Saving files directly to your sequential location inside docs/digests
-        target_dir = os.path.join(docs_dir, "digests")
-        os.makedirs(target_dir, exist_ok=True)
-        html_path = os.path.join(target_dir, unique_filename)
+        os.makedirs(docs_dir, exist_ok=True)
+        html_path = os.path.join(docs_dir, "index.html")
         
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)

@@ -47,9 +47,16 @@ def build_europepmc_query(keywords):
     if not keywords:
         raise ValueError("No keywords found in DOMAINS['Basic Search']")
 
-    query_terms = " OR ".join([f'"{kw}"' for kw in keywords])
-    return f"({query_terms}) HAS_GRANT:y"
-
+    # Target Title, Abstract, or Grant text specifically
+    # Using field tags ensures EuropePMC searches the relevant metadata
+    query_parts = []
+    for kw in keywords:
+        query_parts.append(f'TITLE:"{kw}" OR ABSTRACT:"{kw}"')
+    
+    combined_keywords = " OR ".join(query_parts)
+    
+    # HAS_GRANT:y filters for records associated with a grant
+    return f"({combined_keywords}) AND HAS_GRANT:y"    
 
 def fetch_grants_from_europepmc(limit=25):
     """Queries EuropePMC REST API for grants matching the basic search keywords."""

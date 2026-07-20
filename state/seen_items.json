@@ -1,0 +1,3025 @@
+{
+  "last_run_date": "2026-07-19",
+  "seen": [
+    {
+      "url": "https://europepmc.org/article/MED/42442546",
+      "title": "A novel bivalent neoantigen vaccine based on mRNA-loaded lipid nanoparticles eradicates hepatocellular carcinoma in mice.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://reporter.nih.gov/project-details/5R01AR084491-03",
+      "title": "INPP5E Signaling and Treatment in Rheumatoid Arthritis",
+      "source": "NIH RePORTER"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2620734",
+      "title": "RUI: Enabling phylogenomic research on microbial eukaryotes with EukPhylo",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2629880",
+      "title": "Travel: Student Travel Support for 2027 IEEE Radio & Wireless Week",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2621871",
+      "title": "Collaborative Research: Nutrient Cycling in the Benguela Upwelling System during the Pliocene Epoch",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544327",
+      "title": "CAREER: Nature-Inspired, 3D-Architected Photonic Surfaces to Elucidate Structure and Disease in Fibrous Tissue",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541931",
+      "title": "CAREER: Vehicle adaptive shared control: Predicting human driver cognitive and intent states for personalized control decisions by automated vehicles",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541560",
+      "title": "CAREER: Topology-Driven Uncertainty Visualization for Scientific Ensembles",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628011",
+      "title": "Planning: Testing Strategies for Empowering Regional Community College Economics Faculty Communities",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618492",
+      "title": "Continued Observations at the Panularis Hydrographic Station",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611297",
+      "title": "Multi-Layer Optical Interconnects and Thermal Management for High-Density Chiplet-Based 3D Heterogeneous Integration",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2548405",
+      "title": "REU SITE: Interdisciplinary Bioengineering Research Experience for Undergraduates",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2554344",
+      "title": "Collaborative Research: Research Infrastructure: Biodiversity On Demand (BOND): A Web Platform for Discovering, Comparing, and Integrating Biodiversity Databases",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2607887",
+      "title": "OSTEO: Engineering a predictive digital twin of bone metastasis",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611229",
+      "title": "Elucidation of Polymer-Grafted Nanorod Transport Behaviors and Brush Structure",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2619053",
+      "title": "EDGE-FGT: Enabling CRISPR-Based Functional Genomics of Non-Model, Difficult-To-Manipulate Fungi",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618765",
+      "title": "Tools4Cells: TimeCLIP technology to enable time-resolved detection of protein-RNA interactions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2608754",
+      "title": "Elements: Building Large-Language Model-Based Data Infrastructure for Enzyme Biotechnology",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2603671",
+      "title": "Collaborative Research: CDS&E: Computational Spectrometry and Hyperspectral Imaging Integrated with Machine Learning for Advanced Materials Characterization",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2553158",
+      "title": "Collaborative Research: Multimodal Nanopore Biosensing and Nanosieving for Upstream Quality Control of AAV Gene Therapy Vectors",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2539629",
+      "title": "CAREER: Urban-Focused Spatial-Temporal Offline Reinforcement Learning",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2550649",
+      "title": "EAGER: RNA-Directed Programmable Protein Modification",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2534745",
+      "title": "Data-Driven Infrastructure Planning for Uncertain and Changing User Demand",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2620375",
+      "title": "RESEARCH-PGRP: BIO-AI: Genomic Drivers and Functional Implications of Plant Transcription Start Site Selection",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2603862",
+      "title": "Collaborative Research: Anomalous Assembly of Molecular Bottlebrushes via Tethering-Constrained Crystallization",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2609743",
+      "title": "Integrating Sequence, Structure, and Dynamics for Predicting and Designing Nucleic Acids",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601942",
+      "title": "An Integrated 2D and 3D Graph Machine Learning Platform for Peptide Discovery",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601317",
+      "title": "BIO-AI: TransforMD: A Multiscale Machine Learning Platform for Explainable Protein Engineering with Molecular Dynamics Simulations",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627919",
+      "title": "I-Corps:  Translation potential of an artificial intelligent (AI) platform to transform tumors imaged with magnetic resonance imaging (MRI) into three-dimensional (3D) models",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2620708",
+      "title": "Design and Optimization of Imprinted Superabsorbent Polymers for Selective Pathogen Binding and Release: Integrating Materials Science, Fluid Dynamics, and Explainable AI",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2537677",
+      "title": "SBIR Phase II: Fostering Growth in Trusting Relationships between Students and Educators with Natural Language Processing and Machine Learning Technologies",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555729",
+      "title": "Bioconjugation and Prodrug Activation via Retro-Ene Reactions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2546719",
+      "title": "SBIR Phase II: A Clinical Decision Making tool to improve diagnosis, management and research",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541281",
+      "title": "CAREER: Programmable Symmetry and Disorder in Mixed-Dimensional Materials for Probing the Emergence of Correlated Phases",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627161",
+      "title": "Center: Renewal: NSF-CREST Center for Nanotechnology Research and Education",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2604149",
+      "title": "RUI: Peptide Quasiracemates",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627835",
+      "title": "I-Corps: Translation Potential of a Paper Sensor Platform for the Rapid Detection of Cancer and Viral Biomarkers",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627544",
+      "title": "I-Corps: Translation Potential of Battery-Free, Cable-Free Embedded Sensing for Civil Infrastructure Monitoring",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627834",
+      "title": "I-Corps:  Translation Potential of an Artificial Intelligence (AI) Assistant for Course Management and Coordination in Higher Education",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627393",
+      "title": "I-Corps:  Translation potential of a computational platform that simulates how cortical neural circuits generate electroencephalogram (EEG) signals",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610736",
+      "title": "Collaborative Research: Self-assembled SERS ligands coupling direct and indirect anion detection in water",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627654",
+      "title": "I-Corps:  Translation potential of drone propellers with bio-inspired surface features designed to reduce drone noise",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2537986",
+      "title": "SBIR Phase II: Enhancing EVAR for AAA with Cygnum(TM) Aneurysm Sac Management Device",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628338",
+      "title": "I-Corps:  Translation potential of an Artificial Intelligence-driven electricity market optimization platform",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627948",
+      "title": "I-Corps:  Translation potential of an Artificial Intelligence (AI)-driven agricultural intelligence system for controlled-environment agriculture",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555899",
+      "title": "A high-resolution slide scanner for enhanced community access to digital petrography for teaching and research",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0AF0D5FD-5186-4119-8992-31A01D1B1CDA",
+      "title": "Validating airway mRNA delivery for neoantigen presentation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A15A0821-A64C-41E4-A0B4-5E7AC1D72FB9",
+      "title": "Process Development and Stability of the RALA Peptide for mRNA Vaccines",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=191AE51A-A39E-4E63-84C0-703F0C0930B8",
+      "title": "An engineering approach to the design of synthetic UTR control elements for mRNA therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=21463AF7-BD67-4B6C-8A04-242ACAB306C0",
+      "title": "A Peptide-mRNA Vaccine for Crimean-Congo Haemorrhagic Fever (CCHF)",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B42C203D-A811-47F9-BA46-5F886045EC23",
+      "title": "MICA: Investigating mRNA encoded growth factor to promote epithelial repair in pulmonary fibrosis.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2A8D3890-6734-4A58-9842-4AB4F2AEB8CC",
+      "title": "Development of a Therapeutic mRNA Vaccine for COVID-19 using pHion's Delivery Technology",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9BA32D80-3FBB-4AB0-94BB-149974B0B334",
+      "title": "The RNA desktop biofoundry: end to end platform for RNA R&amp;D, process development and manufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=40B28CC7-9D4F-4CC8-A1A2-B59E6F7CC7BC",
+      "title": "Liquid Brain: Revolutionising prediction of the in vivo pharmacokinetics and biodistribution of mRNA-lipid nanoparticles",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CEAC601A-A612-4FFD-ADE4-3E75CD0C4FB1",
+      "title": "Glycan-functionalized lipid nanoparticles for targeted mRNA delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9D91F6EF-64C6-47EA-9FCC-6A27FACD5AA4",
+      "title": "Developing Lipid Nanoparticles for the delivery of mRNA.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1673EF4B-6ED3-4A5E-B446-1E3A30F994FC",
+      "title": "Heat proofing Immunity: Pioneering a Thermally Resilient Ensilicated mRNA-LNP Vaccine Platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=139D7644-0991-45C7-9EE6-7545DA7EA94F",
+      "title": "Project LIPICARE - Combining nanotechnology, gene editing and CAR-T to create a 'one-shot' cure for cancer",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=19D24661-0027-4EF2-9184-55EFE132992E",
+      "title": "Development of a new therapeutic antibody discovery platform using peptide-mRNA Nanoparticles",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F323F20D-AB39-4380-8724-7E544090BA0C",
+      "title": "Where is that RNA we delivered? Searching for delivered RNA in the target cell.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=937C8FF6-F6AE-45DE-9BA1-C84F93B4D8F0",
+      "title": "Electrospun mucoadhesive matrices for polymersome-mediated mRNA vaccine delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=83973184-077E-4F59-BD50-7A7090EC994D",
+      "title": "Combining therapeutic vaccines and TCR-based therapeutics directed against novel antigens presented by cancer associated fibroblasts",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=067ED446-345A-48DC-B419-FA6E59C6FBA9",
+      "title": "Continuous manufacturing processes for mRNA-based therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=697681F4-CDF0-4B55-9B8A-D43F32DF2D03",
+      "title": "Investigation of the effect of mRNA sequence and the internal structure of lipid nanoparticles for efficient RNA delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7FF7F906-70D4-48A6-B96D-00AC8246F71B",
+      "title": "Development of an intradermal or inhaled DNA vaccine for COVID-19 and beyond",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1A8B8985-FFFC-44C6-980D-B65DA1FE9E98",
+      "title": "&quot;21-ICRAD&quot; Nucleic NanoVaccines for Fish",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://europepmc.org/article/PPR/PPR1277571",
+      "title": "AI-Informed neoantigen prioritization enables a multi-epitope mRNA/LNP vaccine with antigen-specific immunogenicity and antitumor activity",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/41115768",
+      "title": "Ribonucleic acid and gene therapies in cardiovascular disease: clinical applications, delivery challenges and emerging precision tools.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2622752",
+      "title": "Chemical Interface Damping at Metal-Semiconductor Junctions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2543802",
+      "title": "CAREER: Engineered Tendon Microenvironments to Study Extracellular Vesicle Mediated-Cell Communication in Matrix Remodeling",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2607148",
+      "title": "Nonlocal Interaction Models from Physics and Materials Science",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628120",
+      "title": "I-Corps:  Translation Potential of Technology to Improve Adaptive Insulin Delivery",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2619103",
+      "title": "Characterizing Interfacial Energy and Liquid-Condensed / Liquid-Expanded Domain Morphology in Two-Dimensional Systems",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2603685",
+      "title": "Macromolecular Design at Nanoparticulate Interfaces Using Functional Polymers and Emissive Nanocrystals",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627575",
+      "title": "NSF FF: Planning: An AI-Augmented Research Case Simulation Platform for High School Research Experiences",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2547135",
+      "title": "REU Site: A Multidisciplinary Research Experience in Engineered Bioactive Interfaces and Devices",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2535864",
+      "title": "GOALI: Crushing Heat and Mass Transfer Processes for Selective Oxidation of Biomass",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2548816",
+      "title": "Collaborative Research: Understanding and Precision Control of Nanoscale Interactions in Surface Patterned Nanoparticles",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555959",
+      "title": "Generation and Reactivity of Reactive Sulfur Species",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627642",
+      "title": "NSF FF: Planning: Stakeholder*AI: A Collaborative Catalyst for Accelerating K-12 STEM Achievement through Teacher-Engineer Design Partnerships",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2625311",
+      "title": "Collaborative Research: Fostering Virtual Learning of Data Science Foundations with Mathematical Logic for Rural High School Students",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1FB953BE-E1FE-4ADF-A862-165CA61F1B42",
+      "title": "Lipid nanoparticle formulations for targeted local delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5DA8B7E6-5177-438A-BC70-F7B60884CCD9",
+      "title": "Prediction of nanoparticle stability using advanced physico-chemical techniques.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C4FB2970-0514-4F06-A361-5318AF6ACD20",
+      "title": "Impact of formulation composition on efficacy and properties of LNPs for delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A9862098-91C7-4C65-871B-6E5C03F498E8",
+      "title": "Design and development of new Lipid Nano Particle delivery systems for new RNA-based c therapeutics: A rationally designed chemistry and microfluidics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1F613C94-7C9B-4D0F-9090-A81C878423E3",
+      "title": "High-throughput quantification of drug loading into advanced delivery systems at the single particle scale",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FAD50292-11D3-4CE6-82CD-7663B8EBC900",
+      "title": "Optimising hybrid vesicle RNA formulations for enchanced stability and storage requirements",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1EC2E75F-310E-44C3-9616-7568133EC3AD",
+      "title": "Tuning and Targeting Semiconducting Polymer Nanoparticles to Enhance In Vivo Photoacoustic Imaging",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=148EE7D0-6654-4C03-8D45-4969D47011A8",
+      "title": "Multi-scale approach to designing novel colloidal drug delivery vehicles",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4575BA11-BDA6-4B92-BA50-3A41C3F09956",
+      "title": "Benchmarking of a novel multiparameter sensor for nanomedicines",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F539C2F8-F018-4C8B-BCB3-A52A4CFDB963",
+      "title": "Accelerating the manufacture and deployment of cost-effective mNRA vaccines",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C5C62449-CD90-4221-944F-4BF46D316FC7",
+      "title": "Effective Delivery of Nucleic Acid Therapeutics via Designed Nanocarriers (NATPRIME)",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4629B0E8-925B-47DD-A160-36539BD83FFF",
+      "title": "Developing Digital Twins for Microfluidic Nanoparticle Manufacture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E75F398D-02ED-4452-A5F7-E7493DCCE6AA",
+      "title": "Developing Targeted Solid Lipid Nanoparticle Therapeutics for Paediatric Brain Tumours",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7A831BE0-755F-4B0B-91DD-B5096951E52F",
+      "title": "The development of novel bioanalytical pipelines for the evaluation of Karyopherin silencing drug delivery systems",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C2D8DF1C-98E3-4CEB-B3D7-658A842D9387",
+      "title": "Nanoparticles for the Targeted Delivery of Therapeutic Agents to the Brain for the Treatment of Dementias.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=88107252-7B7C-4EA8-B30D-A401C9E27103",
+      "title": "A microfluidic toolkit for drug delivery particle discovery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1B78307C-6E3A-4D3F-960B-19234F362788",
+      "title": "Dual labelled phase change nanodroplets for ultrasound guided drug therapies",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5B8660DB-30F5-4B47-9ECE-199530925B55",
+      "title": "Development of a breakthrough anti-fibrotic gene therapy to improve surgical outcomes and reduce re-admission rates for patients with severe glaucoma.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2612076",
+      "title": "POSE: Phase I: Building an Open-Source Ecosystem for Spatial Multi-Scale and Multi-Omics Data Science",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627631",
+      "title": "I-Corps:  Translation potential of therapeutic hydrogel combining a Q-protein scaffold with exosomes to accelerate wound healing in chronic conditions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628400",
+      "title": "I-Corps:  Translation potential of an artificial intelligence and hybrid  platform for designing disease-specific biologics and molecular binders targeting amyloid surfaces",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627930",
+      "title": "I-Corps:  Translation potential of a platform for the isolation,  visualization, and long-term storage of extracellular vesicles (EVs)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2629772",
+      "title": "Collaborative Research: III: Small: Towards Well-Rounded Graph Retrieval for Retrieval-Augmented Generation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2625104",
+      "title": "Expanding Learnvia Mathematics to Improve Gateway STEM Outcomes in Broad-Access Institutions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2623224",
+      "title": "CyberAI Innovation: Experiential Learning for Multimodal Artificial Intelligence Security",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2535756",
+      "title": "Collaborative Research: TRTech-PGR: Targeted Proximity Labeling of Extracellular Vesicles with Fluorescence and Biotin",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7461E251-C77D-4BA0-9199-CDE6D8880D11",
+      "title": "Bacterial Cell Targeted RNA Therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0D3BF51A-F687-4914-B891-29FA92B80D7B",
+      "title": "Understanding and optimising RNA therapeutic delivery, efficacy, and toxicity with chemical biology",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=BE864BBB-790F-4246-AA0B-6DC43FDE6C4C",
+      "title": "Preclinical Development of Peptide Oligonucleotides for Myotonic Dystrophy Type 1",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B739E113-FFE0-4206-AC63-AF379E8BF05B",
+      "title": "ANTISENSE OLIGONUCLEOTIDE THERAPY FOR COVID19",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=79373D53-87BF-4955-AA30-8210A58B4D85",
+      "title": "An extra dimension in nucleic acid sequence recognition",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3296A1D6-8ABC-4B00-B403-125FC3C2A3A4",
+      "title": "Lowering LDL cholesterol levels by antisense oligonucleotide induced alternative splicing of Apolipoprotein B",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=AC306D50-210A-466C-91D4-BD6A034CEA59",
+      "title": "Antisense Oligonucleotide Therapy for Neuromuscular Disease",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=49A94387-E77F-4986-9F05-9FD96FEEBBF4",
+      "title": "Targeting epigenetic proteins to treat Spinal Muscular Atrophy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=14F04EEB-BF48-4C42-8808-88F49EBF04B1",
+      "title": "Modelling neuronal dysfunction in early onset epilepsies; a patient-centric approach",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FDEE14CD-0284-47DE-94FA-C28C97CC25E0",
+      "title": "Intellegens: Developing a novel ML-driven tool to advance Oligonucleotide-therapeutic characterisation and manufacturing.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=213F68EA-2CBD-4BAC-859A-AD328B55666E",
+      "title": "Medicine Made to Measure",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C4200807-CB8E-4744-AFB2-0E5873090B3C",
+      "title": "Sustainable bioprocess for oligonucleotide manufacture using Nanostar Sieving (BioNanostar)",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2B66F7FB-49F6-4648-B5E0-DB465EF83124",
+      "title": "New chemistry for RNA targeting therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=99ED5B0F-5DAD-4A13-9F25-6F60235D7FF0",
+      "title": "OligoY - a new class of oligonucleotide-based therapeutic means",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=8C19B050-D64F-42D2-9EFA-9CEAAB2B4B6E",
+      "title": "Synthesis of next-generation oligonucleotide therapeutics: fine tuning 2' modification to enhance efficacy and cell uptake",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=68D73A8D-21E9-4C15-AA59-E0749AAD75CC",
+      "title": "Alternative approaches for oligonucleotide-based gene silencing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A534CABA-BF5F-4340-9CEB-42C2561FE42A",
+      "title": "ENZNAT: Template-Independent Enzymatic Synthesis of Nucleic Acid Therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7F6FF895-0BDD-4286-93A7-965DB91ABE0C",
+      "title": "Developing microfluidic devices for cellular modelling of inherited eye diseases",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=79178ED7-DB26-46FA-8D3C-7363F16966ED",
+      "title": "SynaptixBio: Development of antisense oligonucleotide therapeutics for the treatment of rare paediatric TUBB4A-related leukodystrophies",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=03E47885-6CDF-4988-948D-CA1C7143679F",
+      "title": "MICA: Single-domain antibody oligonucleotides conjugates for brain delivery of oligonucleotide therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CBB34BAD-5B24-4CA9-9560-8FD1E927A8AF",
+      "title": "ENHANCE: Scaling up development of novel Mergo&reg; formulations via optimised synthesis and high-throughput strategies",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=797F0EA0-35D0-4A92-9B2E-FB6A3117BCAF",
+      "title": "A genetically encoded reporter platform to dissect the O-glycoproteome",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=09C2FD02-4A18-49DB-9C64-06C40B4F9196",
+      "title": "INDUCE: Development of siRNA-Mergo&reg; therapeutics for lung indications.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=AD778E6E-7B19-4659-912B-5D27ECD1E003",
+      "title": "TARGET: RNA nanotechnology delivery platform for gene therapies, towards commercialization in cancer",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0323F99D-5E90-4C1B-86C8-BF12401FF8ED",
+      "title": "Sweet transfer in cholesterol homeostasis: molecular details of glycosylation of Low-DensityLipoprotein-Receptors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F53786B1-7F5A-4E8A-8FF3-9DE361F6E56A",
+      "title": "Resilience-TARGET: RNA nanotechnology delivery platform for RNA therapies",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=12E24C2B-EFE3-43DD-83B0-A9F653888C74",
+      "title": "SUMMIT: SiRNAs Utilising Mergo? delivery for post-Myocardial Infarction Treatment",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1AA63EEC-2BA4-4BCF-8478-6331C47CA870",
+      "title": "RAPOD: Rapid Assembly of Programmable Oligonucleotide Delivery systems for increased gene therapeutic load",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=70B59DBF-61B0-4AD1-990E-855DA7A19A16",
+      "title": "Cyclic peptide / polymer conjugates as drug delivery vectors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=577D939A-73E8-4C53-9E99-99B005322BD8",
+      "title": "Antibody-Drug Conjugates for Targeted Delivery of Antimicrobials",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D5AB4825-48C3-4C9B-AB7B-E3BFEA0B88D6",
+      "title": "Bioresponsive polymer-peptide conjugates for enhanced intracellular delivery of macromolecules.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9EDE540D-0293-477F-AB2E-0CD61EE211B1",
+      "title": "Generation of Antibody Drug Conjugate (ADC) technologies for site specific conjugation to toxins",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A1198AD2-80D2-4C91-938A-405F36E767DC",
+      "title": "The development of therapeutic peptide-nucleic acid conjugates selective for hypoxic cancer cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=87538D41-B739-4BD1-9362-19448EDA4105",
+      "title": "Self-assembling responsive protein-polymer conjugates as platform therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B7DEAA61-80DD-4270-B655-E3A4BD6AB552",
+      "title": "Tumour-Specific Delivery of MCL1 Inhibitors Using Novel Peroxynitrite Cleavable Antibody-Drug Conjugates",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=AA299237-E20E-4D97-B606-4DEE51105508",
+      "title": "Highly-Functional Poly(amino acids) for Controlled Therapeutic Delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=178201A3-42BF-4EDF-8B44-3D6B79B81D49",
+      "title": "TransNAT: Transforming delivery, safety and efficacy of nucleic acid therapeutics: from intracellular uptake to targeting brain and muscle.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B9EF957C-D638-45D1-99F6-96EBE5E557BD",
+      "title": "Luminescent Conjugated Polymers for Energy Materials",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555815",
+      "title": "Enabling Synthesis through Small Molecule Liberation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2550064",
+      "title": "Center: NSF Engineering Research Center for Quantum Networks",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2607650",
+      "title": "Segregation and Mixing in Continuous Fine Particle Phase Granular Flows",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2548648",
+      "title": "Collaborative Research: Tools for Tackling Preferred Specimen Orientation in Cryo-EM",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2532359",
+      "title": "NSF IMPACT Engine in Indiana",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2554143",
+      "title": "Collaborative Research: New Catalytic Design Strategies for the Regiocontrolled Functionalization of Complex Molecules via SEAr and Related Reactions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555832",
+      "title": "Sulfur-Mediated Strategies for Stereocontrolled Glycosylation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2609279",
+      "title": "Bio-Impermeable TPU Copolymers: ML-Guided Design for Predictive  Biocircular Materials Engineering",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555763",
+      "title": "Development of Diazirine-based Amination Reactions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2543402",
+      "title": "CAREER: Cysteine Side Chain Functionalization and Transformations with N-Alkyl Pyridinium Salts",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2554719",
+      "title": "GOALI: Regioselective Preparation of Azoles via S-to-NR Skeletal Editing",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4AC88869-B0F6-463C-BB19-B7CBBE9F509F",
+      "title": "Development of Heterodyne Coherent Anti-Stokes Raman Scattering Microscopy for Monitoring Nanoparticle Drug Delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CD516A4A-928C-4858-B8BD-C701C8222EFD",
+      "title": "Development of Theranostic Nanoparticles; MRI-responsive, thermosensitive drug carriers activated by MRg FUS for local tumour drug release",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0F548D2B-F385-45F1-9704-707FE10CF059",
+      "title": "Physical chemical properties beyond small molecules: Predictive chemistry for novel drug formulations",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3CC77780-B419-4763-811C-67C6136127FB",
+      "title": "Temperature-dependent Terahertz Time-Domain Spectroscopy as a Tool to Measure Drug-Polymer Interactions in Polymeric Nanoparticles",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1FFB4933-6930-4A8E-ABFB-0650E71B0542",
+      "title": "Non-Attrition HAART nanoparticle therapies for HIV/AIDS Drug Delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4C4C70D9-F4F6-42FD-80F6-098040D16D5B",
+      "title": "From Bug to Drug: A laboratory to pharma discovery loop for direct sourcing of antifungal peptide aptamers",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=33614ACD-32E3-47C6-8CA0-AF151C1DDF83",
+      "title": "DEVELOPING PRE-CLINICAL MODELS TO OPTIMISE NANOPARTICLE-BASED DRUG DELIVERY FOR THE TREATMENT OF DIABETIC RETINOPATHY",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=52706DF5-665C-4F22-87D5-6B77FDA79F81",
+      "title": "Tumor priming sequences combined with novel nanoparticle drug carriers for enhanced therapeutic efficacy in pancreatic cancer: a tripartite USA/Northern Ireland/Republic of Ireland consortium",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EECFC6DB-63F0-463C-8DD3-2A41665A0F2F",
+      "title": "Development of novel, next-generation platform technology for in-vivo generation of CAR T-cells for Autoimmune disorders",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E8F2C22C-419A-4FF0-91B7-0081CA0EF82D",
+      "title": "Liverpool John Moores University and Quay Pharmaceuticals Limited",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EA4E1917-D3F9-4648-BCA9-25E46D948060",
+      "title": "Queen's University Belfast and SiSaf Limited",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D109A451-D5E7-47EF-844E-2777F35D76E1",
+      "title": "Nanomedicine technology for drug delivery in Rheumatoid Arthritis using a synovium-specific targeting peptide",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=772F29BA-B17B-4937-8051-5E7E9515A74D",
+      "title": "Metal-organic frameworks as a modular platform for advanced drug delivery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C180A2A4-1DD4-42A9-B9D3-D856BC988FCE",
+      "title": "Unlocking the capability of optical microcavity analysis to measure nanoparticle refractive index",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C8A83000-426F-4724-B883-CB9DE9042986",
+      "title": "A new nano particulate vehicle for ultrasound enhanced delivery of Cisplatin",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=43A4C7AF-5C81-4CF5-AF39-1499CD75D72B",
+      "title": "A Full-Stack AI Platform for Predicting Efficacy, Toxicity, and Cost\u2013Effectiveness of Complex Drug Cocktails",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6C8FE0A3-9FB3-493D-BC08-862749D73621",
+      "title": "Nanoenabled Peptide Pills - Unlocking the Potential of Therapeutic Peptides",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2620646",
+      "title": "STAR: Eco-Evolutionary Drivers of Viral Spillover: Integrating Long-Term Data and Scientific Collections",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610298",
+      "title": "Collaborative Research: Generative Bootstrapping Methods for Massive Dependent Data",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2549583",
+      "title": "Collaborative Research: Do Shifts in Plant Carbon Allocation Facilitate Plant Nutrient Uptake & Primary Productivity in the Face of Oligotrophication in Northern Hardwood Forests?",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628497",
+      "title": "EAGER: Causal Auditing of LLM Recommender Systems for Trustworthy Decision Support",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2546641",
+      "title": "E-RISE: Center for Grassland Ecosystem Forecasting",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2546319",
+      "title": "E-RISE: Nebraska Center for 3D Innovation (NE3D)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2547492",
+      "title": "From culture to nature: Scaling up cyanobacterial virus ecology and biogeochemistry",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2554117",
+      "title": "Neostability and Continuous Logic",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618670",
+      "title": "Continued Observations of the Atlantic Meridional Overturning Circulation: the RAPID-MOCHA Array",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2612086",
+      "title": "POSE: Phase I: OpenConstruction: Scoping a Sustainable Open-Source Ecosystem for the Architecture, Engineering, and Construction Community",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2532458",
+      "title": "NSF\u202fRETI\u202fEngine in\u202fWest Virginia and western Pennsylvania",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2608509",
+      "title": "Collaborative Research: Frameworks: Geophysical AI-driven Integration & Assimilation (GAIA)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2532496",
+      "title": "NSF BRIDGES Engine in Alabama and Tennessee",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627572",
+      "title": "NSF FF: Planning: 3D Simulations and Project-based Learning to Strengthen STEM, Robotics, and AI Pathways for High School Learners",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2433450",
+      "title": "NSF AI Institute for Human-AI Cooperation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627862",
+      "title": "NSF FF: Planning:  Co-Designing a Community AI LitKit to Build College- and Workforce-ready Communities.",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627526",
+      "title": "NSF FF: Planning: Hands-on and on-screen AI literacy for middle-school learners",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627548",
+      "title": "NSF FF: Planning: Supporting Evidence-Based Education to Scale Tier 2 Math Intervention in K-8 Schools",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627698",
+      "title": "NSF FF: Planning: The Forge: A Collaborative Creative Environment for AI-Assisted Instructional Design",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627509",
+      "title": "NSF FF: Planning: Foundations of AI Literacy through Core Subject Orientation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627659",
+      "title": "NSF FF: Planning: AI-Enabled Virtual Reality Manufacturing Foundry to Spark High School Manufacturing Workforce Interest",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628803",
+      "title": "EAGER: Electromagnetic Detection of Brain Activity",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627419",
+      "title": "NSF FF: Planning: Empowering Children to Thrive in the Digital Era through Collaborative Learning Experiences",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627752",
+      "title": "NSF FF: Planning: Ethical AI Game Creation Toolbox for ADHD Youth",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627756",
+      "title": "NSF FF: Planning: Fostering AI Literacy in Elementary Education Through Game-Based Personal Finance Learning: A Community Co-Design Approach",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544350",
+      "title": "CAREER: Foundations of Safe and Explainable Embedded Artificial Intelligence-Controlled Smart Power Converters",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=52BEAE62-8D11-4861-8E50-8A2662C25960",
+      "title": "Population Genetics: Absolute and Relative Quantification of DNA Using Molecular Counting",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=20689A9F-1593-4791-B997-FCE210C256F7",
+      "title": "Concept Evaluation of a Cellular-Digital Phenotypic Diagnostic PCR Platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7F09605F-F3CE-4724-B91C-4811298334A6",
+      "title": "Examination of the technical feasibility of providing on-site diagnostic PCR for aquaculture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E3B3FBBF-BC40-4D58-BFB8-D3C28F44DFD8",
+      "title": "Ultra-rapid full spectral detection optical system facilitating novel PCR based assays- The iPCR approach",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=8FC7BEE8-BE20-45FE-8E54-CFB9F0339EF6",
+      "title": "Improvement of microbiome sample processing and analysis using novel testing standards",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=97CD4DD2-1EAB-499E-A5F0-71581CEA12BF",
+      "title": "Functionalised Graphene Electrode Biosensor",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=135CBA66-92E0-4EA1-98B4-1F932C1F64CA",
+      "title": "Resonant sensing, a novel form of DNA detection for low-cost highly informative tests; construction of an assay for multidrug resistant TB and bovine TB",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CB797C73-5F3F-40F5-A153-438EFBE87DA4",
+      "title": "Developing molecular biology kits for more sensitive diagnostics and gene expression analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F8B884A3-18A2-4E82-ADDF-7BCF89E6267A",
+      "title": "Novel Technologies for the Diagnosis of Influenza and Other Infectious Diseases at the Point-of-Care.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=30D65742-22C1-4277-A3FC-89C2B05962CA",
+      "title": "Preparing for the Next Pandemic - a Rapid, Low-Cost, Instrument-Free Molecular Diagnostic Test for Respiratory Pathogens",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=65F31887-497A-4D20-BD66-41845CDEC376",
+      "title": "Development of a polymer-based point-of-care diagnostic in primary care for targeted detection of bacterial DNA in patient samples",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EB4F85DC-5AB6-4D22-A8B3-55C882A4CD45",
+      "title": "Engineering Enzymes to Transform Molecular Diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=23C6FC41-1975-49D7-9A98-39DFC90C4F59",
+      "title": "Novel strategies for single step molecular diagnostics assays with full dynamic range quantitation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B04741A4-DC08-42BB-A09B-6E3D649EF776",
+      "title": "Development of a new biosensor platform for Point-Of-Care (POC) diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4E0AE1F4-E81E-47AA-8FD6-5D7F8138A14D",
+      "title": "Improving diagnosis of brain infections in Indonesia using novel and established molecular diagnostic tools.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7718AF90-81E1-4087-8176-8A5441C0300B",
+      "title": "Performance Evaluation of a PCR Test Targeting Novel Leukocyte Biomarkers for Early Detection of Pancreatic Cancer: A Pilot Study",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2B29D973-A553-499F-B6B8-98ED4C7F866B",
+      "title": "Enabling dairy farmers to conduct onsite, early stage monitoring of bovine mastitis \u2013 Assessing a route to market for a portable PCR workflow.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6AB06439-37DB-4B8D-93D1-31C197C77012",
+      "title": "Presymptom: development of a novel machine-learning-derived diagnostic test to rule out infection to enable enhanced clinical care and better targeted anti-microbial use",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A9DB911F-B777-4EF5-8F54-C1C978892BFD",
+      "title": "Development of novel approaches for HIV drug resistance detection using nanopore sequencing technology",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4284B1EA-B290-496B-BD03-7B1FBA8F5AB8",
+      "title": "ONI-CoV2RNA: A single step imaging-based assay for direct detection of SARS-CoV-2 RNA",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/42430219",
+      "title": "Novel Multiplex Near-Point-of-Care PCR Assay for Detecting Sexually Transmitted Infections Among PrEP Users in Western Kenya: Protocol for a Cross-Sectional Pilot Study With an Epidemiological Assessment.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602820",
+      "title": "Collaborative Research: Group Structure, Hydrodynamics, and Sensing of Squids during Collective Swimming",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601780",
+      "title": "Collaborative Research: An Integrative Approach To Examine Freshwater Mussel Physiological Responses to Multiple Stressors",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2622134",
+      "title": "AGS-PRF: High-Speed Spectral Imaging of Sprite Streamer Systems",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2553302",
+      "title": "ERI: Birefringence and Optical Defect Mapping of Crystalline Mirror Coatings Using a Scanning and Rastering Optical Cavity",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2548397",
+      "title": "REU Site: Skill-building for Community College Undergraduates in Plant Chemical Biology Research",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2526522",
+      "title": "Collaborative Research: Bird flight in turbulence",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610730",
+      "title": "Collaborative Research: Privacy-Preserving Statistical Learning for High-Dimensional Spatial Omics",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541651",
+      "title": "CAREER: Defining Spatiotemporal Regulation and Integration of phytochrome B Signaling Complexes",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2543400",
+      "title": "CAREER: Defining the role of orexin input to the mouse olfactory bulb",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618292",
+      "title": "Collaborative Research: Phosphorus-driven metabolic switching in marine mixoplankton",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618283",
+      "title": "NSFGEO-NERC: Investigating phytoplankton biogeography and nutrient limitation using trace metals, genomics, and artificial intelligence",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2614944",
+      "title": "Collaborative Research: EcoCARE: A Use-inspired Ecological-Economic Collaboratory for Advancing Coastal Wetland REstoration and Resilience",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602053",
+      "title": "RUI: Mathematical modeling of innate antiviral and inflammatory responses for viral myocarditis",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2534403",
+      "title": "Understanding the role of C. elegans histidine-rich protein condensates in metal homeostasis",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544197",
+      "title": "CAREER:  Discovering the Spatial Modes of Tissue Perturbation with Volumetric DNA Microscopy",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2622486",
+      "title": "NSF-BSF: Controlling Droplet Shape and Liquid-Crystal Order via Interfacial Freezing",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=384F0D7E-133F-48A7-A539-AB6D0D9513E4",
+      "title": "Quantum-Enhanced Photonic-Semiconductor Platform for Sensitive Detection of Misfolded Proteins in Neurodegenerative Diseases",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5F03C206-828B-4DFF-AA34-04A3891715F3",
+      "title": "Platform technology for full dynamic range infectious disease detection and quantification.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=67A52602-BB46-42B3-BF6C-C42944A2B4D8",
+      "title": "Biosensor Development for In-Field Plant Diagnostics and Physiology Monitoring",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=BD317975-A392-45B7-9A1C-7BFE9902262C",
+      "title": "Molecular diagnostic soil testing platform as a decision making tool for agronomists",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3AB3BCB2-73FA-47B0-9DA2-42894102DBF1",
+      "title": "Novel Isothermal Nucleic Acid Amplification technology and Its Potential Use for Decentralised Cancer Diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=34DDEE0F-E7A8-4FFC-A670-81A835EEED3A",
+      "title": "Nottingham Molecular Pathology Node (NMPN) for Integrated Multi-platform Biomarker Research and Knowledge Transfer",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5CA6B1EF-66A1-4DCC-9724-6ACF8751ED3F",
+      "title": "Nano-Probes for Point of Care Diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D16DD991-01A2-4A5F-B123-4DE0EB747D8B",
+      "title": "Low Cost Sample Preparation System for Detection of Respiratory Pathogens at Point of Care",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=43C03D0E-81F0-4912-9192-135205C5D4B3",
+      "title": "Abundant Crop Diagnostic Platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=41B32716-2F2A-40B2-A9E7-48EBEB49AB0F",
+      "title": "Nanoscale Molecularly Imprinted Polymers for Blood Biopsy Multi-Cancer Extracellular Vesicle Assay Improvements and Industrial Upscaling",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EDE26D9C-DF9F-4B61-9440-E2345249C44B",
+      "title": "A novel pathogen capture sample preparation device for point of care TB diagnostics on the genedrive molecular diagnostics platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0D2AB9D9-5101-476E-8C21-36FFCB4C8A56",
+      "title": "Centrifuge-free plasma separation consumable for global point of care viral diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=DBF2A5AD-EF41-42C4-9C7E-9DA5F4F42A50",
+      "title": "Development of a global diagnostic ecosystem for detecting and monitoring emergency-prone pathogens across species and in a unified way",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EB3AB8A4-9945-4439-8EE4-671815DBEE2F",
+      "title": "Low-cost Portable Molecular Diagnostic Platform for Rapid Detection of Poultry Infectious Pathogens (LMDP)",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=24909335-1481-4DCA-8FB0-28F85A839E52",
+      "title": "A Novel Deep Raman Spectroscopy Platform for Non-Invasive In-Vivo Diagnosis of Breast Cancer",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F38AA976-9617-4575-A63F-96CC1CAC982B",
+      "title": "Evolutionary optimisation of advanced biomimetic systems for healthcare applications",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E91209A1-55FC-41C8-864E-D9EC6F10D42E",
+      "title": "Characterisation of BiologIC\u2019s 3D printed biocomputer platform for advanced therapies, cellular agriculture and diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0B0AB5B4-B974-42D3-A71B-2CAA2807B67A",
+      "title": "Stratified Medicine Business Platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541382",
+      "title": "CAREER: Investigating New Frameworks for the Physiology and Functional Significance of Dermal Photoreception in Dynamic Color Change",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544622",
+      "title": "CAREER: Solute and particle transport in granular microgels",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602738",
+      "title": "Collaborative Research: Mapping how the intrinsically disordered regions affect the search and binding of heterochromatin-associated proteins in living cells",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602153",
+      "title": "Mechanistic Quantification of Capacity Decay in Solid-State Batteries through Degradation Pathway Decoupling",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2516239",
+      "title": "Collaborative Research: RESEARCH-PGR: Cis-Regulatory Dynamics of Maize Domestication and Improvement QTL at Single-Cell Resolution",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2622889",
+      "title": "Conference: 12th International Conference on Legume Genetics and Genomics (ICLGG 2026)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2547945",
+      "title": "REU Site: Electrochemical and Chemical Energy Storage",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2619492",
+      "title": "Probing Connectivity Update Rules in Biological Neural Networks in vivo",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2614136",
+      "title": "Characterization of the archaeal cell division regulatory network",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2630111",
+      "title": "Conference: Stem Cell and Developmental Biology: Early Career Symposium",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2626041",
+      "title": "Conference: Society for Research on Biological Rhythms 2026 - Time Matters: Biological Rhythms Shaping Life and Health",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2540827",
+      "title": "CAREER: Neural and behavioral modulation by developmental temperature changes",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541566",
+      "title": "CAREER: Multi-Area Neural Dynamics Underlying Perceptual Decision-Making",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2617659",
+      "title": "From Neurons to Circuit Dynamics: Mechanisms of Fast Rhythm Generation, Initiation, and Termination",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544417",
+      "title": "CAREER: Lessons from a simple brain: Decoding neural computations underlying navigational and social behaviors in Drosophila larva",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2545424",
+      "title": "Retinal development in a Chondrichthyes species with only rod photoreceptors",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611043",
+      "title": "Collaborative Research: Understanding the role of the RNA covalent modification, dihydrouridine, in maintaining photosynthesis and metabolism under stress in plants",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C49D6C14-FF33-4B33-A0DE-9D387EC8C481",
+      "title": "Mathematical assessment of sperm motility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5E6C5464-CABA-4145-83EB-1843F0D3CF2A",
+      "title": "Engineering motile artificial cells capable of swimming up concentration gradients",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=AAA55601-C7F2-48A6-98A4-C0437D4C9382",
+      "title": "Engineering synthetic cells using next-generation robotics and machine learning",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=208D0A2A-E783-4214-B286-9573B37B01AD",
+      "title": "Modelling sperm dispersion within and guidance by microarchitecture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E9552F0D-AB7F-45A6-9BFC-B2B93F1EB8F2",
+      "title": "Systematic analysis of polarised trafficking during cell motility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7797713D-56D5-4869-A9A7-88E74F3DA552",
+      "title": "Tensin regulation of tumour cell movement: a link between metabolism and motility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FBA03136-4966-4A05-B2A6-0647C6AE495F",
+      "title": "From active matter to sustainable agriculture: how do beneficial bacteria use collective motility to colonise plant roots?",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2FBA97A9-141E-4093-9AD2-950FC4A6F44F",
+      "title": "Stochastic Versus Deterministic: Mechanisms of Bi-Directional Endosomes Motility in the Plant Pathogen Ustilago maydis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0E3AC168-B71D-4C7B-8807-FF2F3A47A328",
+      "title": "Investigating bacteroidetes gliding motility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=89916E17-9FB1-48FA-9DEF-47B53264AE8F",
+      "title": "Analysis of FGF-signalling mechanisms in controlling cell migration in Drosophila",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B1863564-6707-4398-8876-B1E1FB97393B",
+      "title": "Tuneable multifocal plane microscopy for high frame rate three-dimensional fluorescence microscopy of cilia/flagella",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D038FD48-34E1-4099-9A3A-EED7517FD563",
+      "title": "The dynamics of secretory vesicles in living hyphae of the pathogen Ustilago maydis.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F17ED12F-CEFA-4996-81C9-207BA2CA58F2",
+      "title": "14 NSFBIO: Asymmetric division and the temporal dynamics of cell motility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0CBDE279-E28A-44DD-BFD3-59F9D4AA2EC1",
+      "title": "Rab GTPases as therapeutic targets in metastatic medulloblastoma?",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=03CA7ADE-8A58-4443-A63E-D908966F42E8",
+      "title": "Spectroscopic Probes of Energy Regulation &amp; Metabolism (SPERM): Using High Resolution MR spectroscopy to identify biomarkers of male fertility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A45F671A-F882-43B1-89CC-57B41436AE60",
+      "title": "Bacterial motility and chemotaxis as drivers of antimicrobial resistance in biofilms",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1916A66F-A412-4D11-ADFF-BCFCCBD2348D",
+      "title": "DiaMot: Motility of diatoms and its contribution to benthic biofilm formation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=504363A9-A3C7-48EF-BC62-9BF60A31377B",
+      "title": "A moving account of degradation: receptor signalling, endosomes and motor proteins",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=91C2B280-146B-4131-9A2E-4B8C6D6E1CAE",
+      "title": "Dissecting the regulation and function of actin flows during cell motility",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=261AC29C-015D-4557-872A-CA4B54D8D39E",
+      "title": "Biomechanical regulation of cell extrusion and migration during metastasis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://reporter.nih.gov/project-details/5R44AG063589-04",
+      "title": "Validation and clinicaldevelopment of plasma EV protein biomarkers for minimally-invasive detection of Alzheimersdisease",
+      "source": "NIH RePORTER"
+    },
+    {
+      "url": "https://reporter.nih.gov/project-details/5R01DE026728-09",
+      "title": "Restoring the Immunogenicity of Head and Neck Cancer",
+      "source": "NIH RePORTER"
+    },
+    {
+      "url": "https://reporter.nih.gov/project-details/2R01AI092531-16",
+      "title": "Megaplasmids in Gut Microbial Colonization of Premature Infants",
+      "source": "NIH RePORTER"
+    },
+    {
+      "url": "https://reporter.nih.gov/project-details/7R01CA262090-06",
+      "title": "Programmed splicing derangement as new EBV host cell shut-off mechanism",
+      "source": "NIH RePORTER"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2547893",
+      "title": "REU Site: Understanding complex rural environments through the integration of field, laboratory, and quantitative biology",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601665",
+      "title": "Collaborative Research: MFAI: Mathematical Foundations of Structure-Aware Adaptive Machine Learning Algorithms",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555022",
+      "title": "Collaborative Research: SaTC 2.0: RES: TTE: Architecting Microarchitectural Side-Channels for Proactive Defense Development in Extended Reality",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2553936",
+      "title": "Collaborative Research: Configurable Smart Spectral Imager for Data-compression and Classification",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2624229",
+      "title": "Collaborative Research: Unified Modeling of Grid-Data Center Power Electronics Interactions for Reliable and Stable Power Systems",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618408",
+      "title": "Collaborative Research: A global 3D ocean particle field from optical and geochemical particle data",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2629256",
+      "title": "Conference: NSF Quantum Computing Security Workshop",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618565",
+      "title": "Eco-evolutionary effects of heatwaves on bacterium-yeast competition in nectar and consequences for plant-pollinator mutualism",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2548509",
+      "title": "REU Site: Applying Data Science on Energy-efficient Cluster Systems and Applications",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2551752",
+      "title": "Collaborative Research: III: Knowledge Augmentation Towards Generalizable Model Editing",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2553143",
+      "title": "ERI: Understanding How Prototype Fidelity and Functionality Influence Stakeholder Perceptions of Emerging Manufactured Products",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2615342",
+      "title": "Feedback, Learning, and Robustness in Recurrent Neural Networks: Implications for Human and Artificial Intelligence",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610434",
+      "title": "Analyzing Weak Spikes via Cycle Counts: Estimation, Testing, and Computation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2556242",
+      "title": "Geometric mapping theory in Euclidean space and metric spaces",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2542522",
+      "title": "CAREER: Origins of microbial niche adaptation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610236",
+      "title": "Efficient Bayesian Computations for Inference from Privatized Data",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2539133",
+      "title": "CAREER: Evaluating controls on marine-terminating outlet glacier stability in Southwest Alaska",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2554957",
+      "title": "Forging New Paradigms in Analysis and Partial Differential Equations: A Synergy of Artificial Intelligence and Computer-Assisted Proofs",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2622129",
+      "title": "A Route to Pure Optical Rotation through Nano-Engineered Chirality",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555736",
+      "title": "Spin Transport Across Interfaces in Unconventional Superconductors",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2543459",
+      "title": "CAREER: Towards Automated and Reliable Time-Series Anomaly Detection",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2606349",
+      "title": "Problems in Local and Fractional Elliptic Partial Differential Equations Involving Surfaces",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0A2D99B8-7EEC-42DF-87F4-9F29679E1CF5",
+      "title": "Impedance spectroscopy for label-free cell analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=67790531-A696-4B57-AD13-4D186B2FC2EF",
+      "title": "Label-Free Intraoperative Histological Imaging",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EEC91CC2-4184-4936-9DD6-8CBE849DF65E",
+      "title": "Label-free physical biomarkers for next generation cell sorting",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0340CE27-4E9A-4B91-A49C-258272AAD2C3",
+      "title": "Modelling healthy and diseased cell behaviour from label-free imaging",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3B6CCC48-3F3E-44CB-973B-8A1D4AB025E3",
+      "title": "Quantitative phase imaging microscopy for label-free, high-content imaging",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B79A4EE7-DF05-41A3-AB4C-3D1309B49464",
+      "title": "Label-free Raman Imaging for Investigating Drug Localisation Inside Cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=04092E41-9BD0-43B7-9BE8-A286C59CB778",
+      "title": "Point of Care Blood Cell Analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=81796070-4968-4CEA-B174-4CF9C5CE60DA",
+      "title": "Good Vibrations: Visualising life with multiphoton/Coherent Raman Scattering microscopy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EB3B00E0-356C-43A8-8310-8038FE46BED2",
+      "title": "14 NSFBIO: Mining of imaging flow cytometry data for label free, single cell analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3203C2D6-F2C5-4BFC-A038-588918C9F566",
+      "title": "3D OrbiSIMS: Label free chemical imaging of materials, cells and tissues",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A099B6AF-AE4E-4D1C-9FC9-398193750D5B",
+      "title": "TERACELL: Integrated Microwave-to-Terahertz Sensors for label-free circulating tumour cell detection",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=23BC4DD8-DA81-47C0-BFA6-045ED6584ACC",
+      "title": "The PPP-labels software for quantitative proteomics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=74F48665-178C-48F2-A66F-3E4E3493BD74",
+      "title": "Cartilage Regenerative Medicine - Harnessing Multimodal Label-free Imaging-based Bioanalysis to change cartilage repair",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5B5282AC-19CC-47BA-A0C8-FA38F39FCA6B",
+      "title": "Programmable DNA-origami-based platform for label-free biomolecular analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0EF91ADE-0A80-4106-A068-B7B28D787AC6",
+      "title": "Developing novel label-free technologies for studying drug molecules and their ability to induce protein complex formation in cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=891C3615-3D46-44D4-9470-19515726F2B5",
+      "title": "Label-free plastic bottles",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=27B2B640-92B2-427D-89A7-3370F165A1E3",
+      "title": "On demand delivery of single molecules in living cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1C0B8A2D-16E5-4CD1-839B-9A7F3F885DB8",
+      "title": "Biosensing platforms to detect bacterial lectins",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2629633",
+      "title": "Conference: Quantum Artificial Intelligence for Engineering Education",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627912",
+      "title": "Conference: 2027 Quantitative Genetics and Genomics GRC and GRS",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555652",
+      "title": "Extending Charge Carrier Lifetimes in Black Phosphorus/Carbon Nitride Heterojunctions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2607547",
+      "title": "Sports Phenomena and Authentic Data for Real-World Knowledge and Artificial Intelligence Interest (SPARK-AI)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2536114",
+      "title": "SBIR Phase II: Advancing MentorAI to improve academic and workforce outcomes",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2555635",
+      "title": "Vibrational Strong Coupling on Non-Statistical Reactions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602117",
+      "title": "CDS&E: Generative Modeling of Atomic Disorder in High-Entropy Oxide Materials",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602788",
+      "title": "Metabolomics-Guided Explorations of Wastewater Comamonas for Mixed Conversion of Aromatic Carbons in Lignin and Plastic Wastes",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541218",
+      "title": "CAREER: Quality control during ribosome assembly",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2550323",
+      "title": "Spacecraft Charging in the Lunar Environment",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610250",
+      "title": "Light-Emitting Biological Photonic Crystals: A Bottom-up Route toward Biolasers",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2536584",
+      "title": "STAR: Role of Wild Galliformes in Transmission of Highly Pathogenic Avian Influenza H5N1",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2605896",
+      "title": "CRCNS Research Proposal: Computational and Neural Mechanisms of Learning in Speech Motor Control",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611659",
+      "title": "Single-Cell Resolution of The Genetic Basis of Regulatory Evolution in Threespine Stickleback",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2619800",
+      "title": "NSF-SNSF: Hybrid Optical Metasurfaces: Towards Micro&Nano-Environment Control of Photocatalysis",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=49C8F96A-E14E-4E88-8882-DA4F48CBA2B1",
+      "title": "A Scaled-up High Content Photon-Counting Detector for Life Science Applications",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6D13112A-CF76-4A1D-AFCE-BE6BF1597259",
+      "title": "Development and evaluation of diagnostics for visceral leishmaniasis (VL) in HIV patients in elimination settings.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0B4F1C10-DAE5-4823-9898-35F841D42DBC",
+      "title": "Feature display diagnostics: A new approach for a new class of medical biomarker",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9035EB24-CE0E-44FF-8F79-ABC6782955AA",
+      "title": "High-Flux Multi-Spectral X-Ray Imaging with Energy-Sensitive CZT Detectors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B0432348-B100-4AB1-B45E-91D84AA243DF",
+      "title": "High-Flux Multi-Spectral X-Ray Imaging for Accurate and Early Cancer Diagnosis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1EB694E9-9882-4072-8317-47384D85877D",
+      "title": "Novel Lateral Flow Diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=78F6EEE2-C2A4-4F72-9173-0A5B0AE2E66E",
+      "title": "Can many biomarkers make light work of ovine fasciolosis diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=08A69A75-50BA-4AC4-ACF3-A8AFCB1FB68D",
+      "title": "The evaluation of molecular diagnostics for the detection of antimicrobial resistance markers from river water in Malawi.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3FD61272-429A-4D58-B40C-4D38D63FD11C",
+      "title": "Advanced dynamic atomic force microscopy methods for high-resolution in vitro biomechanical assays of cancer cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7D1ED559-4BEE-4D6E-9345-DFE22B67E759",
+      "title": "Mobile Phone-Based Disease Detection: Towards Single-Molecule Approaches",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=00038614-B2E8-41CA-84DC-D8057D6CD26E",
+      "title": "Engineering enzymes to enhance diagnostic devices for improved antibiotic stewardship",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=006BB9AE-0530-415D-99A5-2F55295103A6",
+      "title": "A Molecular Touchscreen",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FBFE5F9B-3E6A-4470-AA12-DA1E323FEEFC",
+      "title": "Dual Capability Time-resolved Fluorescence and Colourimetric Based Lateral Flow Reader for High Sensitivity Diagnostics Applications",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=25E5509D-606F-4293-9E71-519463197165",
+      "title": "AgPlus Electrochemical COVID-19 Diagnostic Assay",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0973AA37-4802-4D5B-9B97-30D5551CBDB4",
+      "title": "Development of a molecular diagnostic assay for infectious keratitis and corneal ulcer",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=03E4DAC9-41EF-4B7F-8F6C-489708159365",
+      "title": "Development of Point of Use Bionanosensors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CFBCFB76-4663-4D0C-825E-3C754D380F1D",
+      "title": "Comprehensive blood counts in a handheld device",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C5202DE1-42C4-48DF-8BA4-8736A8654FD3",
+      "title": "Bioinformatics Advanced Technology Platform (BAT Plat)",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7A62EA1D-207D-4C9E-BA04-BC108C992BF6",
+      "title": "Multiplexed Scleral Lens Sensors for Monitoring Ocular Physiology",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=80069A24-2649-4645-93B8-6AF3D898A536",
+      "title": "Improving treatment efficacy in hypertension by biomarker-guided personalised decision support",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3D6003F7-2E16-4D8C-AB9A-02B039B56077",
+      "title": "The development of a companion diagnostic to improve patient management and pharmacoeconomics in diabetic retinopathy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B12F1872-85B7-478C-9AD3-B5029E5E6C5C",
+      "title": "Proof of concept for nf-P2X7 to treat and diagnose cancers",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=93D7718F-2E34-46C0-AAFB-8A77DD890C26",
+      "title": "Improved control of priority animal diseases: Novel vaccines and companion diagnostic tests for African horse sickness, peste des petits ruminants and foot- and-mouth disease",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D2406758-F974-4B8D-97DF-641F68609816",
+      "title": "DNA Nanorobots for Screening and Monitoring of Noncommunicable Diseases",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=DD66ED5B-6248-4157-9BA6-643E5DCF7E69",
+      "title": "Clinical validation of a revolutionary multi-analyte companion diagnostic platform technology and treatment algorithm for precision medicine",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B96B5D32-6FEF-4DFE-8F8B-D34699CAF74B",
+      "title": "Beacon: a companion diagnostic for cyclin dependent kinase inhibitors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=014E3789-E602-4CDF-BB42-F32B94B3B948",
+      "title": "Digistain - Breast Cancer Companion Diagnostic for over-prescribed chemotherapy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5C8B89AE-31AB-4A1B-B38D-F24F23E7D634",
+      "title": "The application of Artificial Intelligence in Pathology Research to discover, develop, validate and deliver novel diagnostics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D5743D0B-08F0-4E37-8A44-7B4060E80D11",
+      "title": "GSK and OGT: Innovative Business Models for CDx Development",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D666CAFE-C215-4F1E-AA60-4E5692E6AB9C",
+      "title": "Adjuvant free vaccines and companion diagnostics to control emerging flaviviruses",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6B19CEBC-72D0-499C-BA06-3B7BDA4119A6",
+      "title": "First in class non-invasive companion diagnostic test for dementia",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A8C98871-707A-441C-BB2C-BCE902EA0FBF",
+      "title": "Novel hemocyanin protein adjuvant for animal vaccine market.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/41730121",
+      "title": "Hypothermic vs Normothermic Machine Perfusion in Liver Transplantation in the US: A Cohort Study.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/42470240",
+      "title": "When Machine Perfusion Falls Short: Identifying Risks of Liver Graft Failure After Normothermic Machine Perfusion.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/42467995",
+      "title": "Continuous normothermic machine perfusion is independently associated with lower risk of acute kidney injury and renal replacement therapy in donation after circulatory death liver transplantation: a propensity score matched analysis.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/42426136",
+      "title": "Infusion of human mesenchymal stromal cells during normothermic machine perfusion of porcine kidneys: a randomized, blinded, preclinical study.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://europepmc.org/article/MED/42448667",
+      "title": "A clinically deployed dual-compartment biochemical monitoring platform for human liver perfusion.",
+      "source": "Europe PMC"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601507",
+      "title": "RET Site: Artificial Intelligence and Machine Learning Approach for Sustainable and Resilient Infrastructure in Urban Communities",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2539336",
+      "title": "CAREER: A Computational Framework for Integrating Trust, Shared Awareness, and Joint Action in Human-AI Driving Teams",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2548314",
+      "title": "NSF REU SITE: ASSET: Advanced Secured Sensor Enabling Technologies",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2630122",
+      "title": "Travel: NSF Student Travel Grant for 2027 IEEE World Haptics Conference (WHC 2027)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610668",
+      "title": "Collaborative Research: Integrating Multimodal Data in AI for Precision Medicine",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541878",
+      "title": "CAREER: Random Matrices, Schrodinger Bridges, Optimal Transport, and Generative Modeling",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610524",
+      "title": "Multivariate Marked Point Process Fusion and Statistical Emulation for Uncertainty Quantification in Geophysical Extremes",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2556205",
+      "title": "Collaborative Research: RI: Gaussian Processes that Embrace Heterogeneity for Multi-Sensor Sampling Mission",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628007",
+      "title": "Center: CREST Phase II: Center for Research, Education, Application, and Technology Transfer Excellence for AI-Driven Agricultural Water Sustainability (CREATE-AI Water)",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2618021",
+      "title": "Frontal Meanders and Salinity Intrusions from Along-Shelf glider observations at the Pioneer-New England Shelf Array",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2543961",
+      "title": "CAREER: Nonlinear Algebra for Quantum Materials",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601736",
+      "title": "Deep Comparative Learning for Estimating Protein Structural Model Accuracy",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=DF1AA216-0EE8-4729-85BD-1CFAF4B41A3E",
+      "title": "Metabolic assessment of perfused livers using magnetic resonance imaging and spectroscopy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5978F770-F993-432B-A09E-D7A40C3B9776",
+      "title": "Multi-modal assessment of liver grafts undergoing normothermic machine perfusion to stratify quality and deliver therapy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F2C50B30-A322-415C-AFBC-85242279E21C",
+      "title": "Immunometabolic impact of machine perfusion strategies in liver transplantation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9DC377DB-3137-405F-BE2C-CF2A5F2D350A",
+      "title": "Reconditioning discarded human donor livers using machine perfusion: novel technologies to increase the pool of donor organs",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6DC56356-B8A4-47A1-9994-45BCDA2AEAB4",
+      "title": "ScubaTx - Saving More Lives, Giving Transplant Organs Air to Breath",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1EE87609-4122-4269-8865-AE7483DABCC9",
+      "title": "Optical spectroscopy to enable screening in the liver transplant theatre",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6E570D0D-C185-4BDA-96C4-E2480E8A2472",
+      "title": "Use of normo-thermic perfused organs to profile PK and infection efficiency of novel viral gene therapy vectors.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=05E9D78B-FA19-4328-908A-AB1E8065363B",
+      "title": "Ex-vivo normothermic perfusion of organs to minimise ischemia reperfusion injury",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=24AA21F0-26BF-4C1D-9F82-1E49F79AAA96",
+      "title": "MICA: Novel approaches in optimising steatotic livers for transplantation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A546D01B-C968-470C-B3E5-3EB0F303EC03",
+      "title": "MICA: Optimisation of prolonged normothermic liver machine perfusion and assessment of its feasibility to provide extra-corporeal liver support",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5A526FA9-3C8C-4F2C-AD60-9CFED06B28E8",
+      "title": "Repurposing existing Sphingosine-1-phosphate receptor modulators to reduce risk of primary graft dysfunction (PGD) after lung transplantation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CFCC14F1-99A0-428B-8702-48E14B3BCBB2",
+      "title": "Robust quality-controlled quantitative stress perfusion cardiac MRI",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0483619A-19C9-4132-B610-539DB0B1A92C",
+      "title": "A platform facilitating research on human organs maintained ex-vivo.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=8557DE0A-A0DE-4276-BB0E-0215DACFA293",
+      "title": "ICF: Hollow-fiber bioreactor technology to explore mechanisms and delivery of cellular therapy during machine perfusion of donated human kidneys",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=784013B0-479C-4F58-AA8F-1EC46DB600FD",
+      "title": "Using minimal Factor H therapy and normothermic conditions to prepare kidneys for transplantation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A01F56FF-6A22-4057-87CF-D0ADA9C18BCD",
+      "title": "Pharmacokinetic modelling and adaptive design for regional tissue flow and extraction for preclinical PET/CT",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F9A63863-4943-4106-A715-6C73C93E71A6",
+      "title": "Controlling structure induced variations in non-invasive perfusion MRI of neurodegeneration",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E9862C2C-19D5-4887-9D63-2AF1699070F4",
+      "title": "Development of a Perfusion System for Routine Three Dimensional Cell Culture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FF96A452-4B0A-4004-BFC5-3E518FB9B68A",
+      "title": "The impact of cell retention devices in the industrialisation of perfusion processes for recombinant protein manufacture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2610404",
+      "title": "Phonon-Engineered Topological Conductors",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2556184",
+      "title": "Data-Driven Understanding of Grain-Boundary Roles in Self-Healing Perovskites",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2607858",
+      "title": "Collaborative Research: Computational and mathematical modeling for efficient design of integrated energy microgenerators",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601681",
+      "title": "Collaborative Research: MFAI: Conformality-Guided Learning with Evolving and Heterogeneous Data",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2537752",
+      "title": "SBIR Phase II: NeuroBionics IO Fiber: A Multifunctional Neural Probe for Advancing Neuroscience Research",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2532428",
+      "title": "NSF\u202fSTELLAR\u202fEngine in\u202fthe Rochester/Finger Lakes Region of New York",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627409",
+      "title": "NSF FF: Planning: A Teacher- and Guardian-Co-Designed System for Capturing Small-Group Scientific Argumentation in High-School Science",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2617286",
+      "title": "Understanding Self-Assembly and Properties of Ionic Composites Based on a Charged Double Helical Polymer",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2531708",
+      "title": "Conference: Reproducibility in Materials Science",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2533720",
+      "title": "Synthetic Bioreceptors and Enzyme Mimetic Signal Interfaces for Advanced Molecular Detection",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544887",
+      "title": "Regulation of motor mechanisms in active mechanosensation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4CDEFC94-A156-4B71-845D-F3FAFFDB1421",
+      "title": "ScubaTx - Pre-Commercialisation Design Finalisation and Collaboration",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=8D50A02E-FDA2-497E-B146-58968C9600DE",
+      "title": "Revolutionising Organ Preservation: Innovative Anti-Necrotic Technology for Enhanced Viability and Equity in Transplantation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=01200744-F1BF-401E-856A-E3DCC2B181EE",
+      "title": "Preservation of organic matter by reactive iron species on Mars relevant to Mars Sample Return",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=20297BBA-C692-443F-91AA-581A9B726518",
+      "title": "OrganOx Phase 2 Clinical Investigation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D11D6C55-319C-49CE-9FE9-A28BCF17B402",
+      "title": "Archiving the Disaster: Preservation, Separation and Encounter",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C3739753-E1B1-477C-9537-8E6B5DDDE5FD",
+      "title": "Food Preservation Transit Unit",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C6B6D7FD-858F-40F1-B4B4-F7A0FBEB5219",
+      "title": "Fertility Preservation in Monovulatory Species",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1944DEEE-FF6F-4187-A998-0774F76A4F81",
+      "title": "ORQUID - ORganic QUantum Integrated Devices",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=381E4C03-4349-48F5-B8E0-3A3ED78257A6",
+      "title": "Bioprocessing Research For Cellular Products",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B6AFDEA5-AEF9-4A01-B3B7-E2F73F31176F",
+      "title": "OPEN:Fading Star - Shining light: Integrating an evidence-based decision support system for in situ preservation of waterlogged archaeological remains",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=15EAC617-6879-4E1B-9D26-3B888252019C",
+      "title": "High-speed imaging based study of ultrasonic tissue cutting for surgery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=85AB58B0-F679-4FC7-8430-78D94B44DF60",
+      "title": "Perfect Privacy-Preservation as a Service",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F339409A-45EE-4608-BC8F-A4028D11760A",
+      "title": "The Geochemistry of Fossil Pigment Preservation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FC9D346B-53EE-45AF-81D5-D0667859ED30",
+      "title": "Next Generation. Preserving, curating and exhibiting videogames: a UK-Japanese collaborative approach.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FB5C2183-2496-4DAA-AE2F-3D3FF4686FE5",
+      "title": "Suspicious minds: a molecular taphonomic approach to preservation of the central nervous system in the archaeological and fossil records",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=DAC37CD0-2E21-4117-B8CA-FB09A5C11657",
+      "title": "Plasma deposition for thermoelectrics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=04DA11F3-A3A7-4C1F-A463-345410007D4C",
+      "title": "Heterointerface control of organic semiconductor devices",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2536046",
+      "title": "Collaborative Research: Two-photon DeepSpiral super-resolution imaging of in vivo molecular dynamics in deep tissue",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611448",
+      "title": "Collaborative Research: Mechanics of Ferroelastic Crystalline-Amorphous Nanolaminates",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=513B8525-2770-469D-B81C-ABFD0839F526",
+      "title": "Bioengineered Vascular Grafts Derived from Tubular Collagen Constructs",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E2EA5883-6C87-45EC-898B-8FA79F355537",
+      "title": "Lab-based produced vascularised tissue for in vitro lab on a chip models of healthy and diseased tissue",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1A31E227-E9D3-40A6-B096-813FEC94A550",
+      "title": "Characterisation at the organ level of SARS-CoV-2-induced macrophage-dependent inflammation in the spleen",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B29A43B8-0C68-4ED0-9EFD-E03BFBAB74F5",
+      "title": "Computational Models of Perfusion Circuits for Organ Transplantation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1B8A70A9-896E-4302-99C3-297F2118DC9D",
+      "title": "Refining in vivo studies of cancer metastasis with next-generation explant-in-chip perfusion models",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B1D7CCC6-55DA-4084-BE03-53E6D74149D0",
+      "title": "3D Bioprinting Engineering Artificial Respiratory Tract Tissue",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4151853C-232B-4C78-B11A-F4448D1C80E4",
+      "title": "Epithelial cell-antigen presenting cell crosstalk in the maintenance of immune homeostasis in the lung",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F0F9F13F-7C52-470E-8F85-429857D58CBD",
+      "title": "Evaluation of Hypothermic Oxygenated Perfusion Ex-Vivo Heart Perfusion to Expand the Donor Pool and Improve Transplant Outcomes",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3CA4C5A6-70CC-4941-9295-ACD63F6B95D2",
+      "title": "Integrated in vitro and in silico microphysiological human placental barrier models for reproductive toxicology testing in the pharmaceutical industr",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=51E2F26C-CC4E-45F2-A0BE-AA13FBFB5B32",
+      "title": "Investigation and treatment of trabecular meshwork fibrosis using 3D glaucoma models",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D2801E3E-4AA1-4A4D-A166-457114E7BFEA",
+      "title": "Developing human organotypic perfused bioreactors for physiologically reproducible therapeutic compound screening of a tumour microenvironment",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6B046AB2-AA76-4AB9-AC52-569E8A18A39E",
+      "title": "Evaluation of adult stem cell differentiation in the trabecular meshwork of the eye as a regenerative medicine approach for Glaucoma using novel polym",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5749F653-60FE-44BA-A91C-086ECFB22C91",
+      "title": "Controlling metabolic fluxes for better human haematopoietic stem cell function",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2600541",
+      "title": "Robotics Program Expansion for Automation Workforce Development",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2554990",
+      "title": "Conference: Promoting Cross-institutional Evidence-based Practices Implementation and Assessment to Enhance Student Outcomes Through a Meeting of the SCIENCE Collaborative",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2619407",
+      "title": "MCA: Expanding Taxonomic Perspectives in Evolutionary Developmental Research",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2617786",
+      "title": "TEA Center Renewal: Environmental Research Center",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2536006",
+      "title": "Evolutionary Ecology of Siderophores in Bacteria-Insect-Plant Interactions",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541736",
+      "title": "CAREER: Decoding Tissue Architecture Through Spatial Transcriptomics Integration and 3D Reconstruction",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627675",
+      "title": "I-Corps:  Translation Potential of Shape-stable Salogels for Low-Cost Thermal Batteries",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2601565",
+      "title": "RET Site: Feel the Force: Bringing Mechanobiology to 6-12 Classrooms",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627843",
+      "title": "I-Corps:  Translation potential of a direct-to-chip (D2C) cold plate for electronic cooling and data centers",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=81FDDE36-428C-4F1D-B7F8-6435C765ED10",
+      "title": "Development of a Novel Multi-Stage Limb Salvage Technology for the optimisation of tissue viability in severely injured limbs.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3F327119-C4B6-480F-9370-6FAF1C0B12CB",
+      "title": "Engineering encapsulation materials and methods to preserve organoids and biopsy material",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=245C87A1-3D73-46D9-A25A-A363032E0480",
+      "title": "Electrically Conductive Biomaterials For The Preservation and Regeneration of Soft Tissue",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B056BE67-6D14-4AEA-BF10-E045C77CD813",
+      "title": "A Preservation and Packaging Platform for Cell and Tissue Based Therapies",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C20E068D-C93F-48BD-9A9D-7131A984C097",
+      "title": "Innovation Fellowship: Computational modelling of cryopreservation of biological tissue",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CFCEBE29-8835-4C11-9AFB-2908B5B1B572",
+      "title": "Functional Tissue Replacement and Substitution: Platform Grant",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E062D261-2C86-494D-B22C-302072B32C11",
+      "title": "Intra-Operative Sensing for Human-Robot Interaction in Neurosurgery",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A49B870E-9667-4C0F-A747-34DC562264D8",
+      "title": "The soft tissue fossil record to elucidate the origin and diversification of vertebrates",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7071630D-EFAF-455C-A4C3-368E68A67FBE",
+      "title": "Exceptional fossil preservation in the Comley Lagerst&auml;tte, Shropshire: testing the phylogeny of Early Cambrian animals",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4DD8E8BA-1E0E-4882-9CA4-67BB56008437",
+      "title": "PreCisE: A Precision laser scalpel for Cancer diagnostics and Eradication",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1E698754-460F-4AA0-96CE-2F29B4A25FE9",
+      "title": "Uniting taphonomy and tomography to illuminate early actinopterygian evolution",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0CE954CE-D54D-4ECC-812F-AD3870430B7C",
+      "title": "Extending the shelf life of fresh human biopsies to enable improved diagnostics and pre-clinical development.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C029C926-CC14-4D85-8264-C5576823A105",
+      "title": "Surgery enabled by ultrasonics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0EDE1942-BE33-4CB2-A844-ADB432EB17B8",
+      "title": "Mapping the acoustic properties of tissues at low temperatures for ultrasound rewarming",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7B9CB32B-4DE0-4A82-8FA4-FE5899F5634D",
+      "title": "Fibre-integrated Picosecond mid-Infrared Laser (fPIRL) for biomolecular analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2541133",
+      "title": "CAREER: Soil SWELL-SMART: Soil SWELLing Solutions through Materials that Adapt, Respond, and Transform",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2516235",
+      "title": "Collaborative Research: Small: Immersive Multimodal Plan-to-Grasp Neural Decoders: Integrating Deep Graph-based and Adaptive Shared Control Theories",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2542181",
+      "title": "CAREER: From sensing to action: Enabling robot speech, gestures, and touch to provide supportive responses for human emotional distress",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611252",
+      "title": "NSFDEB-BSF: Evolution of the aerodynamic feathered wing: development of shape-function relationship through deep time",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2614884",
+      "title": "Collaborative Research: FEC: AI-Enabled Environmental Surveillance of Microbial and Chemical Threats to Food Production Systems",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1905A6C5-51FA-447B-9C6C-C53D8754C0F8",
+      "title": "A closed automatic modular cell culture system for personalised autologous cell therapy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=BF9DF2DA-57A4-454A-A194-DE4042C15B68",
+      "title": "Personalised iPS Cell Culture System",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2D01AA1F-E7C5-4C3A-9069-11AE1192103F",
+      "title": "OGI - Follow on fund application",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EB148907-18AF-46E5-9230-1737F3110BBA",
+      "title": "OGI Bio Follow on Fund - COVID Resilience Fund",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C6D801E3-D2E2-4041-A254-1DF039FE0EE0",
+      "title": "High Throughput Tools for Mammilian CellCulture Bioprocessing and Analysis",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=53EA458C-9EA4-4BD0-8359-E9196F8C8447",
+      "title": "Automated Cell Culture For Batch Release Assays",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FCA6773C-7792-438B-BE12-E5CFE3CE4FFD",
+      "title": "'Future-Proof' Synthetic Surfaces for the Automated Manufacture of Human Pluripotent Stem Cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F33FABD4-9D05-4C7F-880C-67B96A8136A1",
+      "title": "Automation of 3D cell model assembly by additive printing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F0B80190-A65D-47F4-8DE4-621FFBADE7B2",
+      "title": "Identification and impact of polymers on stem cell products in an automated biomanufacturing platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=66863B2D-2254-4AE5-9C89-449FA0A4164E",
+      "title": "Establishment of an Organ-on-a-chip facility for Veterinary Species",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5D747CFA-4789-4B51-853B-770BE4839ACF",
+      "title": "MICA: Development of Metrics and Quality Standards for Scale up of Human Pluripotent Stem Cells",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=BDE72E79-726D-4F31-8EAC-DD5253DE9864",
+      "title": "Automated Cell Culture Solutions to Accelerate Rare Disease Treatment Development",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=558BA321-56E7-45E7-A0C8-74B4ACC33BBE",
+      "title": "Miniaturisation of high throughput healthcare bioreactors for advanced therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F5C8C9B1-81F3-48F7-9FAD-2A79D36395D9",
+      "title": "Combining biosensing data with mathematical modelling to predict stem cell behaviour to improve cell manufacturing efficiency",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E3DAB49C-8C84-47A8-A9C7-C337144A3BD5",
+      "title": "Integration of in-line process analytical technologies with bioreactors for bio-adaptive cell manufacturing in advanced therapeutics",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=63260C03-A7D9-4910-B795-D307F272BE7C",
+      "title": "Scale up and In-vitro Testing of Exosomes for Regenerative Medicine Applications",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D3863F2B-8E82-4678-8640-25AC36D801E1",
+      "title": "BRIC DOCTORATE PROGRAMME on Linking High Throughput Cell Culture Multivariate Analysis and Economics for More Effective Process Integration",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=688CEDEF-7E08-4EDD-BCC5-E68BA641FCE4",
+      "title": "Active Microscopy: Machine learning optimization of cell-based imaging microscopy.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=39F10FAD-D992-4CC6-8888-A229503338A3",
+      "title": "COMBO: CONTROL-BASED BIODESIGN OF MAMMALIAN CELL DYNAMICS",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1606DFC4-07F3-4894-959B-C6CC99AA1EDB",
+      "title": "Plasticity of clathrin-mediated endocytosis in development",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2532380",
+      "title": "NSF Grid Modernization Engine in the Carolinas",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2556154",
+      "title": "Stereospecific Transformations of Anomeric Nucleophiles",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627823",
+      "title": "NSF FF: Planning: An AI-Driven Simulation Platform for Interdisciplinary STEM Skill Development and Career Exploration",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2552068",
+      "title": "HCC: Understanding and Supporting Rural Community Adaptation to Workplace Automation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2448402",
+      "title": "CPS: Small: Enhancing Cybersecurity in Remote-Controlled Robots Using Depth-Compressed Encrypted Adaptive Control and Virtual Trip-Wire Overflow Traps",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2614151",
+      "title": "Participant Support for 2026 American Control Conference (ACC); New Orleans, Louisiana; 26-29 May 2026",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FDFBAFE1-3447-498F-88D2-3A8621ABDC30",
+      "title": "Aston University and The Automation Partnership (Cambridge) Limited",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=FA8A0554-D3DF-443D-80A6-518C49495670",
+      "title": "Harness optogenetic control and real-time analysis of chemicals production in bioreactors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D3ED99BA-F847-473A-87C3-8965AD792876",
+      "title": "Porous Scaffolds for 3D biocatalysis using biofilms",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9AE065C5-58DF-4DAF-BE04-EAB9C9C03A2F",
+      "title": "A novel automated, aerated and affordable bioreactor technology",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=55FB98CA-6007-4AD7-AE48-F09E81267CAF",
+      "title": "Integrating data intelligence and hybrid modelling to develop continuous CHO cell lines for recombinant protein production",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E4AD34A1-290E-4100-BD7E-6289A999AB0A",
+      "title": "BioSMART: BIOreactor Spatial Mapping and Actuation in Real Time",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2A943D18-E91C-497C-8844-A23B9D77FA33",
+      "title": "Co-Metabolism of Sulfonamides in Anaerobic Wastewater Treatment Incorporating Direct Interspecies Electron Transfer",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=DFEE72EE-E8E6-42F6-8887-3E4456E6DCFB",
+      "title": "Design and characterisation of a scale-down perfusion platform for mammalian cell process development",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=E55F359F-155D-459D-BAE9-0D3ABF15D6D2",
+      "title": "A sustainable future factory",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=04DD2C0D-6860-42C8-B019-995EBBBDF4FE",
+      "title": "In-line digital holographic microscopy for automated QC and process control in cell therapy manufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F47A8FA2-97A5-43E5-B7C3-D87B557C6338",
+      "title": "Optimising pharmaceutical forms through flow crystallisation with in situ powder X-ray diffraction and inline visual analysis.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4A71C258-A875-4A77-97A9-EC30F3B09628",
+      "title": "Bioreactor and Bioprocessing of organoids to enable their market-wide drug screening application",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1C49058D-2AE8-4C03-90F3-335F4A4BE1A2",
+      "title": "MICA: Moving From Autologous to Allogeneic Cell Therapy: Developing Up-Scale GMP Protocols for Orthopaedics.",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1EB973EB-7CC4-4D0D-AE94-F59C61EA3DCD",
+      "title": "Redesigning bioreactors for sustainable bio-based manufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=24C02C24-CD15-4DBE-AA50-FDE3DF595F43",
+      "title": "Designing Bioreactors for in vitro Clinical-Scale Red Blood Cell Manufacture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A7FB85BD-B476-4769-8F38-312110A0239C",
+      "title": "Translation of a novel electrical stimulation perfusion bioreactor",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0E6D3F74-02D4-4FC4-8D53-E382D672A717",
+      "title": "An advanced bioreactor facility for automated, industry-aligned production of high-value proteins",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F50002F3-DBE0-49B7-BC76-64F66A2BA1FE",
+      "title": "A bench-top, parallel 8 bioreactor platform for optimizing the sustainable production of pharmaceuticals, biologics, materials, fuels and foods",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=EC17A175-469D-4CA9-9C58-1727A59202D5",
+      "title": "Integrating Continuous Technologies Rapid Delivery of Cost Effective Biotherapeutics to Patients",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2603660",
+      "title": "New Strategies for Accessible Anionic Polymerizations",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2602175",
+      "title": "CDS&E: A Deep Learning Framework for Material Parameters Estimation in Multi-principal Element Alloys",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2547823",
+      "title": "REU Site: Summer Undergraduate Research Opportunity in Chemistry (SUROC) at UNC Chapel Hill",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4923C1CE-406B-4691-963F-17E8DFC1BE54",
+      "title": "Closed Loop Home Manufacture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=92386B0D-BE90-424B-AF78-EC5C99A8B29F",
+      "title": "Closed loop optimisation for sustainable chemical manufacture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=D50CA662-5574-48D6-A965-CAD91C544893",
+      "title": "Design of new tools for closed loop manufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4E60043C-DA7A-42B5-845E-CFB3239B6DC1",
+      "title": "Advanced manufacturing process for the production of individualised cell therapies",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2FB1136E-CD9F-44CC-B007-703FCD337D3B",
+      "title": "EcoCAR: Sustainable CAR T cell manufacture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7901ECAF-EDDD-4967-8B73-EB42F57C1EE4",
+      "title": "Material and process development for low cost 1-10kW UK fuel cell stack manufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5381E3BE-7391-40CA-9202-03CAF976326B",
+      "title": "Closed loop control systems for optimisation of treatment",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4D0C9A9C-4BB8-45FD-9415-FCE5E0FA5409",
+      "title": "Closed loop manufacture of bio-based polyester fibres for a circular bioeconomy",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=99479B55-1B2D-4BA9-9B3D-E0863DF9464A",
+      "title": "Novel production process for a highly potent recombinant protein using doggybone DNA (dbDNA) vector and cell free expression technology",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=976144B3-5D6F-4EB0-9A71-B6E45D1D0BE5",
+      "title": "RELIEVE: First Closed-loop non-Invasive Seizure Prevention System",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9C097D0B-030E-4A28-8F91-BA86E1B27356",
+      "title": "Quantum dynamics in closed and open many-particle systems",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=CF8E83F0-1633-4EC1-8359-68178D3CD501",
+      "title": "Twinning IZTECH in Robotics Manufacturing Systems (TWIN-IT-ROMANS)",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=F92E1DCA-8CA6-41FE-B76C-BDED0EB16BFD",
+      "title": "TWIN-IT-ROMANS",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7C9DB5AE-51F3-4BB6-BCBA-128152BCD58B",
+      "title": "Perception-guided Aerial Additive Manufacture: A StepTowards Closed-loop Construction with Aerial Robots",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=456FE71C-C3D6-476C-AC84-457CCC5F0A53",
+      "title": "Quantum sensors for end-of-line battery testing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0806B954-4329-48EA-8B74-7926123712F1",
+      "title": "Amber-UI: A closed-loop bioelectronic system for urinary incontinence",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6EBD5C00-7E4C-4238-BCD3-3C127E0E3998",
+      "title": "Lasers for Accelerated Net-Zero Transition-Lasers4NetZero",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=491D6B3E-8264-4ACB-A15C-A9889802A51A",
+      "title": "3D Printing for World Class Additive Biofabrication",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2546549",
+      "title": "RUI Forty Years of Coral Reef Change in the Caribbean",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2628989",
+      "title": "Collaborative Research: NSF-SNSF: Fire Impacts on the Response of terrestrial Ecosystems",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=7C4BC4B9-9549-4273-9C37-6B8E863374DB",
+      "title": "Developing a real-time live cell imaging platform at Newcastle University",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=601A736B-6A73-422C-8128-7231330C233B",
+      "title": "BCre8ive Online",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=8ACF979D-4612-4D87-BD92-398ED7267E46",
+      "title": "Colony: new models of digital distribution for film",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C482219A-D353-4E4B-B276-9FF1E3E04A5E",
+      "title": "Development of a novel, affordable neonate/infant transport incubator",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2D28EABA-DB66-4835-9D12-B05DBFA62017",
+      "title": "The mOm Essential Incubator: Neonatal Care for the Covid-19 Pandemic and Beyond",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=BA012E23-925D-47B3-8A89-64FC978483C2",
+      "title": "Further Development of an Anti-EGFR Bispecific Antibody for Metastatic Colorectal Cancer and a Platform Asset",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=C0C48B8A-89CB-4193-9E73-A81B93002C61",
+      "title": "Global Incubator Programme \u2013 \u2013 Canada - Agritech",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=65C6E289-11B7-4198-A045-3BBCA2265588",
+      "title": "MOM Incubators Ltd",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5A6DB9AA-6A82-42B5-971B-ABAA6CD801B8",
+      "title": "Global Incubator Programme \u2013 Gateway to Asia",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5324D045-D541-4E62-AB33-7A287D70D309",
+      "title": "Global Incubator Programme",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=542FA5BE-8B53-4E29-A4E5-933DDCD7CF61",
+      "title": "D2A Smart Incubator",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=25232F18-41EA-4F53-967F-F381672C4F46",
+      "title": "Development and implementation of metrology standards for mammalian cell-free systems",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=20F5FB81-05EB-4B82-BAA6-63ECEAE82DE5",
+      "title": "CambridgeIP - Collaborative Patent Landscaping and Technology Intelligence Platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=328AAA40-A09B-4034-99C9-0912F4FB024C",
+      "title": "Global Incubator Programme \u2013 Canada",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=BFC4714B-2BD9-413B-A186-2EC07178A385",
+      "title": "Incubators of Public Spaces",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=B718139D-9D92-441C-8281-F0C89BA44FE7",
+      "title": "A novel low-cost and compact solution for neonatal care by mOm Incubators",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=656B11D9-1298-4599-92C0-7440087FABEB",
+      "title": "Asset Monitoring Platform (AMP_",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=945D1333-3015-4991-9A6D-E23CDB3D5B78",
+      "title": "NIAB Malling Agri-Robotics Site - NIAB MARS",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3C08AE50-7888-4284-ADB5-CE44E9EDDEA4",
+      "title": "UK Incubator and Accelerator Network (IAN) Directory",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6F899674-B577-4FF6-83EF-64C1AD0DAF6C",
+      "title": "OMWaNA Operationalising kangaroo Mother care before stabilisation among low birth Weight Neonates in Africa: RCT to examine mortality impact in Uganda",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2536297",
+      "title": "Collaborative Research: III: Small: Toward Reliable Language Model Systems via Uncertainty Quantification, Unification, and Adaptation",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2551666",
+      "title": "AF: Advancing the Theory of Online Optimization and Learning within Multi-Agent Systems",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2611217",
+      "title": "Collaborative Research: Automated Donning and Assembling Garments for Enhanced Independence",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2627624",
+      "title": "NSF FF: Planning: Reimagining Creative Computing with Pedagogical AI Code Assistance",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2544353",
+      "title": "CAREER: Harnessing Graph Dynamics for Learning in Changing Environments",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2551623",
+      "title": "CPS-FR: AI-Enabled CPS: Perception Contracts, Generative Design Domains, and Codesign of Certificates",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2552967",
+      "title": "ERI: Perceptual Quality Assessment of Volumetric Videos in Immersive Virtual Reality",
+      "source": "NSF Award Search"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=168620F9-F45B-4495-B12A-39CA07FACC0D",
+      "title": "High-throughput bioprocessing system for cell therapy manufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A487A71E-7465-4757-8844-21CC2039B05C",
+      "title": "Cost-Effective, AI-driven Automation Technology for Cell Culture Monitoring: Boosting Efficiency and Sustainability in Industrial Biomanufacturing and Streamlining Supply Chains",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=757F5AC9-26EB-4400-B4F7-B9FC58373EA6",
+      "title": "Cost-Effective AI-powered Automation Technology for Optimal Culture Monitoring and Feeding: Advancing Productivity and Streamlining Scale-Up in Bioprocessing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=3D122B84-7226-4BE5-8198-3FCA09A1988F",
+      "title": "Enabling sustainable biomanufacturing by reducing the use of single use plastics in biopharma with the biocomputer platform",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=A9D346CA-F357-47C3-8491-A0536073C4E8",
+      "title": "BiologIC - The use of predictive biology to accelerate development of customized bioprocessing platforms",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=76EF5DE2-2D00-4834-ACAF-DB41491EC420",
+      "title": "Continuous Bioproduction of Succinic Acid from Biorefinery Glycerol",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5155A9B0-CF7E-4D63-8027-D638D2322326",
+      "title": "Automated Technoeconomic Analysis for Biomanufacturing Optimisation",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=4C8C25C7-973F-41B7-AC36-E3558B08BD73",
+      "title": "Innovative Non-invasive and Affordable Technology to Automate Monitoring of Cultures to Enhance Productivity and Accelerate Fermentation and Scale-up in Bioprocessing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2B9B8D74-22A2-4552-ACF3-9D82BF7145DB",
+      "title": "Design and manufacture of high-throughput microfluidics for cell culture",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=33F0A200-AF31-4F3E-8646-E6B3DF27F21C",
+      "title": "Towards process automation in biopharmaceuticals production",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=DD222A4B-0384-45BF-AE1E-D4F051FC750D",
+      "title": "ProNaGen: Engineering of Recombinant Protein Nanosheet-Based Bioemulsions for Next Generation Bioprocessing and Biomanufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=2137C6B3-4FBE-4824-88F8-27B4B9760EDF",
+      "title": "GluSens - Advancing Bioprocessing with Single-Use Glucose Sensors",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9B357EA4-1A00-4040-A83F-6473150869ED",
+      "title": "Digitalisation and automation of high-value biomanufacturing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=9A3FAD9B-4B0F-4AFF-B61E-8AC9BAA869CE",
+      "title": "A Bioprocess Discovery Tool to Speed Up New Vaccine Development",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=8F6B838D-C13A-4757-92C2-EF75DE5886D8",
+      "title": "Nexus: Intelligent Manufacturing Systems for Sustainable Bioprocessing",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=0A7320AE-D7A7-4A73-8906-CEEED9892F17",
+      "title": "Application of Process Raman Spectroscopy for bioprocessing using gene edited production hosts and cell-free systems",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=5546B491-A7FC-4A56-A697-2827A089AA25",
+      "title": "Bioprocessing Network: BioProNET",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=6A7CC52A-F7C6-42FC-B616-9A26960D0856",
+      "title": "EPSRC Centre for Doctoral Training in Bioprocess Engineering Leadership",
+      "source": "UKRI Gateway to Research"
+    },
+    {
+      "url": "https://gtr.ukri.org/projects?ref=1EA6BAA2-8178-47B6-92A8-630B9789712A",
+      "title": "Next-generation sustainable liquid packaging using only bio-based feedstock derived from non-food waste - Pulpex UK BioScience Initiative",
+      "source": "UKRI Gateway to Research"
+    }
+  ]
+}

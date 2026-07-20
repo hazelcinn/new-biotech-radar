@@ -7,77 +7,123 @@ from extract import extract_all
 BASIC_SEARCH_KEYWORDS = DOMAINS.get("Basic Search", [])
 
 
-def fetch_europepmc_records(keywords, max_per_keyword=3):
+def fetch_grist_grant_records(keywords, max_per_keyword=5):
     """
-    Queries Europe PMC REST API for research papers matching config keywords.
-    Formats data into the dictionary schema expected by extract.py.
+    Queries Europe PMC GRIST REST API for funded grant records based on search terms.
+    Parses GRIST-specific data fields (Grant ID, Funder, PI, Institution, Abstract).
     """
     raw_items = []
-    seen_ids = set()
+    seen_grant_ids = set()
 
-    print(f"[harvest] Querying Europe PMC across {len(keywords)} keyword(s)...")
+    print(f"[harvest] Querying Europe PMC GRIST API across {len(keywords)} keyword(s)...")
 
-    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+    # Europe PMC GRIST API endpoint
+    url = "https://europepmc.org/GristAPI/rest/getGrants"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0"
+    }
 
     for kw in keywords:
-        # Search query: broad search for keyword with abstract available
-        query = f'"{kw}" HAS_ABSTRACT:y'
+        # GRIST search query syntax
+        query_str = f'"{kw}"'
         params = {
-            "query": query,
+            "query": query_str,
             "format": "json",
             "pageSize": max_per_keyword,
-            "resultType": "core",
-            "sort": "P_PD_DATE desc"
+            "page": 1
         }
 
         try:
-            response = requests.get(url, params=params, timeout=10)
-            
+            response = requests.get(url, params=params, headers=headers, timeout=12)
+
             if response.status_code != 200:
                 print(f"[harvest] HTTP {response.status_code} for keyword: '{kw}'")
                 continue
 
             data = response.json()
-            results = data.get("resultList", {}).get("result", [])
+            
+            # GRIST response payload path for grant records
+            grant_list = (
+                data.get("recordList", {}).get("grant", [])
+                or data.get("responseWrapper", {}).get("userGrantList", {}).get("grant", [])
+                or data.get("grantList", {}).get("grant", [])
+            )
 
-            # Fallback query if exact phrase + filter yielded 0 results
-            if not results:
-                print(f"[harvest] 0 results for '{query}', trying broader term '{kw}'...")
+            # Standardize single dictionary response into list if necessary
+            if isinstance(grant_list, dict):
+                grant_list = [grant_list]
+
+            # Fallback retry with unquoted search if phrase yielded no results
+            if not grant_list:
+                print(f"[harvest] 0 GRIST grants for phrase '{query_str}', trying '{kw}'...")
                 params["query"] = kw
-                response = requests.get(url, params=params, timeout=10)
+                response = requests.get(url, params=params, headers=headers, timeout=12)
                 if response.status_code == 200:
-                    results = response.json().get("resultList", {}).get("result", [])
+                    data = response.json()
+                    grant_list = (
+                        data.get("recordList", {}).get("grant", [])
+                        or data.get("responseWrapper", {}).get("userGrantList", {}).get("grant", [])
+                        or data.get("grantList", {}).get("grant", [])
+                    )
+                    if isinstance(grant_list, dict):
+                        grant_list = [grant_list]
 
-            print(f"[harvest] Keyword '{kw}': Found {len(results)} items.")
+            print(f"[harvest] Keyword '{kw}': Found {len(grant_list)} grant record(s).")
 
-            for item in results:
-                pmc_id = item.get("id") or item.get("pmid") or item.get("title")
+            for item in grant_list:
+                # Extract GRIST Data Fields
+                grant_id = item.get("id") or item.get("grantId") or item.get("code")
+                title = item.get("title") or item.get("projectTitle", "Untitled Grant")
                 
-                # Prevent duplicates across overlapping keyword searches
-                if pmc_id in seen_ids:
+                # Deduplicate records by Grant ID
+                unique_key = grant_id if grant_id else title
+                if unique_key in seen_grant_ids:
                     continue
-                seen_ids.add(pmc_id)
+                seen_grant_ids.add(unique_key)
 
-                # Extract Grant or Publisher information
-                grants = item.get("grantsList", {}).get("grant", [])
-                funding_agency = grants[0].get("agency") if grants else item.get("journalTitle", "Europe PMC")
+                # Extract Funder/Agency
+                funder_info = item.get("funder") or item.get("fundingAgency") or {}
+                funder_name = funder_info.get("name") if isinstance(funder_info, dict) else str(funder_info or "Europe PMC Funder")
 
-                # Build public article link
-                article_source = item.get("source", "MED")
-                link = f"https://europepmc.org/article/{article_source}/{item.get('id')}" if item.get("id") else "#"
+                # Extract Grant Holder / Principal Investigator (PI)
+                holder_info = item.get("grantHolder") or item.get("person") or {}
+                pi_name = (
+                    f"{holder_info.get('firstName', '')} {holder_info.get('lastName', '')}".strip()
+                    if isinstance(holder_info, dict)
+                    else str(holder_info or "Unlisted PI")
+                )
+
+                # Extract Institution & ROR ID
+                inst_info = item.get("institution") or item.get("institutionName") or {}
+                inst_name = inst_info.get("name") if isinstance(inst_info, dict) else str(inst_info or "Unlisted Institution")
+                ror_id = inst_info.get("rorId", "") if isinstance(inst_info, dict) else ""
+
+                # Extract Dates & Abstract
+                abstract_text = item.get("abstract") or item.get("abstractText") or "No grant description available."
+                start_date = item.get("startDate", "N/A")
+                end_date = item.get("endDate", "N/A")
+
+                # Construct Grant Finder link
+                grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id else "https://europepmc.org/grantfinder"
 
                 raw_items.append({
-                    "title": item.get("title", "Untitled Research"),
-                    "abstract": item.get("abstractText", "No abstract text available."),
-                    "source": funding_agency,
+                    "title": title,
+                    "abstract": abstract_text,
+                    "source": funder_name,
+                    "grant_id": grant_id or "N/A",
+                    "principal_investigator": pi_name or "N/A",
+                    "institution": inst_name,
+                    "ror_id": ror_id,
+                    "start_date": start_date,
+                    "end_date": end_date,
                     "keyword": kw,
-                    "link": link
+                    "link": grant_link
                 })
 
         except Exception as e:
-            print(f"[harvest] Connection error fetching '{kw}': {e}")
+            print(f"[harvest] Error parsing GRIST data for '{kw}': {e}")
 
-    print(f"[harvest] Total harvested records: {len(raw_items)}")
+    print(f"[harvest] Total harvested grant records: {len(raw_items)}")
     return raw_items
 
 
@@ -86,15 +132,15 @@ def main():
         print("❌ No keywords found in DOMAINS['Basic Search']. Please check config.py.")
         return
 
-    # Step 1: Harvest papers from Europe PMC
-    raw_items = fetch_europepmc_records(BASIC_SEARCH_KEYWORDS, max_per_keyword=3)
+    # Step 1: Harvest grants using Europe PMC GRIST API
+    raw_items = fetch_grist_grant_records(BASIC_SEARCH_KEYWORDS, max_per_keyword=5)
 
     if not raw_items:
-        print("⚠️ No items were harvested. Verify internet access or check search terms in config.py.")
+        print("⚠️ No grant records were harvested. Verify internet access or check search terms.")
         return
 
-    # Step 2: Pass harvested items to extract.py pipeline
-    print("\n[pipeline] Handing harvested records to extract.py...")
+    # Step 2: Pass harvested records to extract.py pipeline
+    print("\n[pipeline] Handing harvested GRIST records to extract.py...")
     success = extract_all(raw_items, OUTPUT_DIR, DOCS_DIR)
 
     if success:

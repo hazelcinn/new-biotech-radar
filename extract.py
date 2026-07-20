@@ -1,10 +1,8 @@
 import requests
 
-
 def extract_all(fresh_items, output_dir=None, docs_dir=None):
     """
-    Processes fresh harvested items locally using Ollama and returns 
-    enhanced extracted items with summaries for the digest generators.
+    Processes fresh harvested items locally using Ollama and retains metadata links.
     """
     print(f"[extract] Processing {len(fresh_items)} harvested items for digest locally using Ollama...")
     
@@ -12,7 +10,7 @@ def extract_all(fresh_items, output_dir=None, docs_dir=None):
     
     for i, item in enumerate(fresh_items, 1):
         title = item.get("title", "Untitled")
-        print(f"[extract] Analyzing paper {i}/{len(fresh_items)}: {title[:50]}...")
+        print(f"[extract] Analyzing item {i}/{len(fresh_items)}: {title[:50]}...")
         
         summary = "Summary unavailable due to local processing error."
         try:
@@ -30,8 +28,16 @@ def extract_all(fresh_items, output_dir=None, docs_dir=None):
         except Exception as e:
             print(f"[extract] Warning: Ollama connection failed ({e}). Using fallback text.")
 
-        item["summary"] = summary
-        extracted_items.append(item)
+        # Ensure all key fields—including the source link—are preserved
+        extracted_items.append({
+            "title": title,
+            "abstract": item.get("abstract", "No abstract available."),
+            "source": item.get("source", "Unknown Source"),
+            "keyword": item.get("keyword", ""),
+            "domain": item.get("domain", ""),
+            "link": item.get("link", "#"),
+            "summary": summary
+        })
 
-    print(f"[extract] Successfully processed {len(extracted_items)} items.")
+    print(f"[extract] Successfully processed {len(extracted_items)} items with links included.")
     return extracted_items

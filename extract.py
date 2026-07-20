@@ -1,17 +1,13 @@
 import os
 import json
-import ollama  # Swapped from anthropic
+import ollama
 
-def extract_all(raw_items, output_dir, docs_dir):
+def extract_all(raw_items, output_dir, docs_dir, unique_filename="index.html"):
     print(f"[extract] Processing {len(raw_items)} harvested items for digest locally using Ollama...")
     
-    # 1. Initialize local model name
-    # Ensure you ran `ollama run llama3.2:3b` in your terminal first!
     MODEL_NAME = "llama3.2:3b"
-    
     analyzed_papers = []
 
-    # 2. Process each paper individually so we don't break the local model's memory limit
     for idx, item in enumerate(raw_items, 1):
         print(f"[extract] Analyzing paper {idx}/{len(raw_items)}: {item.get('title')[:50]}...")
         
@@ -39,7 +35,6 @@ def extract_all(raw_items, output_dir, docs_dir):
             
             summary = response['message']['content'].strip()
             
-            # Save the analyzed structure to build the HTML later
             analyzed_papers.append({
                 "title": item.get('title'),
                 "link": item.get('link'),
@@ -50,7 +45,6 @@ def extract_all(raw_items, output_dir, docs_dir):
             
         except Exception as e:
             print(f"[extract] Error analyzing paper #{idx}: {e}")
-            # Fallback if an individual item fails so the whole run doesn't die
             analyzed_papers.append({
                 "title": item.get('title'),
                 "link": item.get('link'),
@@ -59,7 +53,6 @@ def extract_all(raw_items, output_dir, docs_dir):
                 "summary": "Summary unavailable due to local processing error."
             })
 
-    # 3. Dynamically construct the beautiful HTML dashboard string using Python
     print("[extract] Building the HTML dashboard layout...")
     
     cards_html = ""
@@ -142,10 +135,11 @@ def extract_all(raw_items, output_dir, docs_dir):
 </body>
 </html>"""
 
-    # 4. Ensure directories exist and save the live dashboard
     try:
-        os.makedirs(docs_dir, exist_ok=True)
-        html_path = os.path.join(docs_dir, "index.html")
+        # Saving files directly to your sequential location inside docs/digests
+        target_dir = os.path.join(docs_dir, "digests")
+        os.makedirs(target_dir, exist_ok=True)
+        html_path = os.path.join(target_dir, unique_filename)
         
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)

@@ -1,112 +1,96 @@
-import csv
 import os
-import xml.etree.ElementTree as ET
 import requests
-from config import BASIC_SEARCH_KEYWORDS, DOCS_DIR, OUTPUT_DIR
+from config import DOMAINS, OUTPUT_DIR, DOCS_DIR
+from extract import extract_all
 
-# Endpoint syntax per Europe PMC GRIST API documentation:
-# https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query=kw:<keyword>
-GRIST_BASE_URL = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
+# Get basic search keywords from config.py
+BASIC_SEARCH_KEYWORDS = DOMAINS.get("Basic Search", [])
 
 
-def extract_grist_data(keywords, limit_per_kw=5):
-    """Fetches exact grant metadata directly from Europe PMC GRIST API (XML)."""
-    records = []
+def fetch_europepmc_records(keywords, max_per_keyword=3):
+    """
+    Queries Europe PMC REST API for research papers/grants matching config keywords.
+    Formats data into the schema expected by extract.py.
+    """
+    raw_items = []
     seen_ids = set()
 
+    print(f"[harvest] Querying Europe PMC across {len(keywords)} keywords...")
+
+    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+
     for kw in keywords:
-        # Construct GRIST search query with keyword tag
-        url = f"{GRIST_BASE_URL}kw:{kw}"
+        # Search for keyword with grant funding filter
+        query = f'"{kw}" HAS_GRANT:y'
+        params = {
+            "query": query,
+            "format": "json",
+            "pageSize": max_per_keyword,
+            "resultType": "core",
+            "sort": "P_PD_DATE desc"
+        }
 
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, params=params, timeout=10)
             if response.status_code != 200:
-                print(f"Failed HTTP {response.status_code} for query: {kw}")
+                print(f"[harvest] HTTP {response.status_code} for keyword: '{kw}'")
                 continue
 
-            # Parse XML response
-            root = ET.fromstring(response.content)
+            data = response.json()
+            results = data.get("resultList", {}).get("result", [])
 
-            # GRIST records are nested under <Record> or <Grant> tags
-            grants = root.findall(".//Record") or root.findall(".//Grant")
-
-            count = 0
-            for grant in grants:
-                # Extract exact string values from XML nodes
-                grant_id = getattr(grant.find("Id"), "text", "N/A")
-                title = getattr(grant.find("Title"), "text", "Untitled")
-                funder = getattr(
-                    grant.find("GrantedAuthority"), "text", "Unknown"
-                )
-                abstract = getattr(grant.find("Abstract"), "text", "")
-
-                # Skip duplicates
-                key = grant_id if grant_id != "N/A" else title
-                if key in seen_ids:
+            for item in results:
+                pmc_id = item.get("id") or item.get("pmid") or item.get("title")
+                
+                # Avoid duplicate records across overlapping keywords
+                if pmc_id in seen_ids:
                     continue
+                seen_ids.add(pmc_id)
 
-                seen_ids.add(key)
-                records.append(
-                    {
-                        "Keyword": kw,
-                        "Grant ID": grant_id,
-                        "Title": title,
-                        "Funder": funder,
-                        "Abstract": abstract[
-                            :200
-                        ]
-                        + "..."  # Truncated for table formatting
-                        if abstract
-                        else "N/A",
-                    }
-                )
+                # Extract Grant/Funding Agency if available
+                grants = item.get("grantsList", {}).get("grant", [])
+                funding_agency = grants[0].get("agency", "Europe PMC / Funded") if grants else "Europe PMC"
 
-                count += 1
-                if count >= limit_per_kw:
-                    break
+                # Construct paper article link
+                article_source = item.get("source", "MED")
+                link = f"https://europepmc.org/article/{article_source}/{item.get('id')}" if item.get("id") else "#"
 
-        except ET.ParseError:
-            print(f"Could not parse XML payload for term: '{kw}'")
+                raw_items.append({
+                    "title": item.get("title", "Untitled Research"),
+                    "abstract": item.get("abstractText", "No abstract available."),
+                    "source": funding_agency,
+                    "keyword": kw,
+                    "link": link
+                })
+
         except Exception as e:
-            print(f"Error requesting GRIST API for '{kw}': {e}")
+            print(f"[harvest] Error fetching keyword '{kw}': {e}")
 
-    return records
+    print(f"[harvest] Successfully harvested {len(raw_items)} items.")
+    return raw_items
 
 
-def export_to_csv(data, filename="grants_digest.csv"):
-    """Saves exact retrieved data to CSV file."""
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    filepath = os.path.join(OUTPUT_DIR, filename)
-
-    if not data:
-        print("No records found to export.")
+def main():
+    if not BASIC_SEARCH_KEYWORDS:
+        print("❌ No keywords found in DOMAINS['Basic Search']. Check config.py.")
         return
 
-    fieldnames = ["Grant ID", "Title", "Funder", "Keyword", "Abstract"]
-    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(data)
+    # Step 1: Harvest papers from Europe PMC
+    raw_items = fetch_europepmc_records(BASIC_SEARCH_KEYWORDS, max_per_keyword=3)
 
-    print(f"Saved {len(data)} raw records to: {filepath}")
+    if not raw_items:
+        print("⚠️ No items were harvested. Check your network connection.")
+        return
+
+    # Step 2: Pass items to your extract.py Ollama pipeline
+    print("\n[pipeline] Handing harvested items over to extract.py...")
+    success = extract_all(raw_items, OUTPUT_DIR, DOCS_DIR)
+
+    if success:
+        print("\n🎉 Pipeline completed successfully!")
+    else:
+        print("\n❌ Pipeline encountered an issue during extraction.")
 
 
 if __name__ == "__main__":
-    print(
-        f"Pulling raw grant data across {len(BASIC_SEARCH_KEYWORDS)} keywords..."
-    )
-    grant_records = extract_grist_data(BASIC_SEARCH_KEYWORDS, limit_per_kw=3)
-
-    if grant_records:
-        # Display extracted facts directly as a table
-        print("\n### Extracted GRIST API Grant Records\n")
-        print("| Grant ID | Title | Funder | Matched Keyword |")
-        print("| --- | --- | --- | --- |")
-        for rec in grant_records:
-            print(
-                f"| {rec['Grant ID']} | {rec['Title'][:50]}... | {rec['Funder']} | {rec['Keyword']} |"
-            )
-
-        export_to_csv(grant_records)
-    else:
-        print("0 records returned.")
+    main()

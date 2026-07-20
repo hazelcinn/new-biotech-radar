@@ -2,7 +2,7 @@ import urllib.parse
 import requests
 
 def fetch(keyword: str, lookback_days: int, domain: str) -> list:
-    """Fetches standard research papers from Europe PMC."""
+    """Fetches standard research papers from Europe PMC, limited to top 10."""
     raw_items = []
     url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
     
@@ -14,7 +14,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
     params = {
         "query": f'"{keyword}" HAS_ABSTRACT:y',
         "format": "json",
-        "pageSize": 25,
+        "pageSize": 10,  # Capped at top 10 per keyword
         "resultType": "core"
     }
 
@@ -23,7 +23,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
         if response.status_code == 200:
             data = response.json()
             results = data.get("resultList", {}).get("result", [])
-            for item in results:
+            for item in results[:10]:
                 raw_items.append({
                     "title": item.get("title", "Untitled Research"),
                     "abstract": item.get("abstractText", "No abstract available."),
@@ -40,11 +40,11 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
-    Fetches actual grant records using the official Europe PMC GRIST REST API.
+    Fetches actual grant records using the official Europe PMC GRIST REST API,
+    limited to the top 10 per keyword.
     """
     raw_items = []
     
-    # Fully qualified clean base URL separate from the query path
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
     
     headers = {
@@ -52,7 +52,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
         "Accept": "application/json"
     }
 
-    # Clean and encode query keyword
     clean_kw = keyword.strip()
     encoded_query = urllib.parse.quote(clean_kw)
     url = f"{base_url}{encoded_query}&format=json"
@@ -72,7 +71,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             if isinstance(records, dict):
                 records = [records]
 
-            for item in records:
+            # Slice to only take the top 10 records per keyword
+            for item in records[:10]:
                 grant_id = item.get("Id") or item.get("id") or "N/A"
                 title = item.get("Title") or item.get("title") or "Untitled Grant Project"
                 abstract = item.get("Abstract") or item.get("abstract") or "No abstract description provided."

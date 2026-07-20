@@ -37,9 +37,13 @@ def main():
     lookback_days = compute_lookback_days(STATE_FILE, LOOKBACK_DAYS)
     raw_items = harvest_all(lookback_days)
 
-    fresh_items, updated_state = deduplicate(raw_items, STATE_FILE)
-    print(f"[main] {len(fresh_items)} new items after deduplication.")
-
+    # --- TEMPORARILY BYPASS DEDUP FOR TESTING ---
+    #fresh_items, updated_state = deduplicate(raw_items, STATE_FILE)
+    fresh_items = raw_items  # Force all harvested items to be treated as "fresh"
+    updated_state = {}       # Dummy state
+    print(f"[main] Bypassed dedup. Sending {len(fresh_items)} items to extraction.")
+    # --------------------------------------------
+    
     if not fresh_items:
         print("[main] Nothing new since last run. Saving state, no digest written.")
         save_state(STATE_FILE, updated_state)

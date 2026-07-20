@@ -1,109 +1,73 @@
-import os
-import requests
-from config import DOMAINS, OUTPUT_DIR, DOCS_DIR
+import sys
+from config import DOMAINS, LOOKBACK_DAYS, STATE_FILE, OUTPUT_DIR, DOCS_DIR
+
+from sources import europepmc, biorxiv, semantic_scholar, nih_reporter, nsf, ukri_gtr, cordis, fwf
+from dedup import deduplicate, save_state, compute_lookback_days
 from extract import extract_all
+from digest import write_markdown, write_csv, write_html, write_pages_index
 
-BASIC_SEARCH_KEYWORDS = DOMAINS.get("Basic Search", [])
 
-def fetch_grist_grants(keywords, max_per_keyword=5):
-    """
-    Queries Europe PMC Search API specifically for Grant records.
-    Uses the official EBI REST base URL to prevent HTTP 403 blocks.
-    """
-    raw_items = []
-    seen_ids = set()
+def harvest_all(lookback_days: int):
+    all_items = []
+    all_keywords = [(kw, domain) for domain, kws in DOMAINS.items() for kw in kws]
 
-    print(f"[harvest] Querying Europe PMC Grant DB across {len(keywords)} keyword(s)...")
+    print(f"[main] Harvesting across {len(all_keywords)} keyword queries, "
+          f"{lookback_days}-day lookback...")
 
-    # Official EBI Europe PMC endpoint
-    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) PythonGrantHarvester/1.0",
-        "Accept": "application/json"
-    }
+    for kw, domain in all_keywords:
+        all_items.extend(europepmc.fetch(kw, lookback_days, domain))
+        all_items.extend(europepmc.fetch_grants(kw, lookback_days, domain))
+        all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))
+        all_items.extend(nih_reporter.fetch(kw, lookback_days, domain))
+        all_items.extend(nsf.fetch(kw, lookback_days, domain))
+        all_items.extend(ukri_gtr.fetch(kw, lookback_days, domain))
+        all_items.extend(cordis.fetch(kw, lookback_days, domain))
+        all_items.extend(fwf.fetch(kw, lookback_days, domain))
 
-    for kw in keywords:
-        # Querying specifically for Grant objects or grant metadata
-        query = f'"{kw}" TYPE:GRANT'
-        params = {
-            "query": query,
-            "format": "json",
-            "pageSize": max_per_keyword,
-            "resultType": "core"
-        }
+    # bioRxiv/medRxiv is date-range based, not per-keyword — pull once
+    flat_keywords = [kw for kw, _ in all_keywords]
+    domain_hints = {kw: domain for kw, domain in all_keywords}
+    all_items.extend(biorxiv.fetch(flat_keywords, lookback_days, domain_hints))
 
-        try:
-            response = requests.get(url, params=params, headers=headers, timeout=12)
-
-            if response.status_code == 403:
-                # Fallback to broader grant search if TYPE filter is blocked
-                params["query"] = f'"{kw}"'
-                response = requests.get(url, params=params, headers=headers, timeout=12)
-
-            if response.status_code != 200:
-                print(f"[harvest] HTTP {response.status_code} for keyword: '{kw}'")
-                continue
-
-            data = response.json()
-            results = data.get("resultList", {}).get("result", [])
-
-            # Fallback if phrase query yielded 0 results
-            if not results:
-                print(f"[harvest] 0 results for '{query}', trying broader term '{kw}'...")
-                params["query"] = kw
-                response = requests.get(url, params=params, headers=headers, timeout=12)
-                if response.status_code == 200:
-                    results = response.json().get("resultList", {}).get("result", [])
-
-            print(f"[harvest] Keyword '{kw}': Found {len(results)} items.")
-
-            for item in results:
-                grant_id = item.get("id") or item.get("pmid") or item.get("title")
-                
-                if grant_id in seen_ids:
-                    continue
-                seen_ids.add(grant_id)
-
-                # Extract Grant / Funding Metadata
-                grants = item.get("grantsList", {}).get("grant", [])
-                funder = grants[0].get("agency") if grants else item.get("journalTitle", "Europe PMC Grant DB")
-                award_id = grants[0].get("grantId") if grants else "N/A"
-
-                raw_items.append({
-                    "title": item.get("title", "Untitled Grant"),
-                    "abstract": item.get("abstractText", "No description or abstract available."),
-                    "source": funder,
-                    "grant_id": award_id,
-                    "keyword": kw,
-                    "link": f"https://europepmc.org/article/{item.get('source', 'MED')}/{item.get('id')}" if item.get("id") else "#"
-                })
-
-        except Exception as e:
-            print(f"[harvest] Connection error fetching '{kw}': {e}")
-
-    print(f"[harvest] Total harvested grant records: {len(raw_items)}")
-    return raw_items
+    print(f"[main] Harvested {len(all_items)} raw items (pre-dedup).")
+    return all_items
 
 
 def main():
-    if not BASIC_SEARCH_KEYWORDS:
-        print("❌ No keywords found in DOMAINS['Basic Search']. Please check config.py.")
+    lookback_days = compute_lookback_days(STATE_FILE, LOOKBACK_DAYS)
+    raw_items = harvest_all(lookback_days)
+
+    fresh_items, updated_state = deduplicate(raw_items, STATE_FILE)
+    print(f"[main] {len(fresh_items)} new items after deduplication.")
+
+    if not fresh_items:
+        print("[main] Nothing new since last run. Saving state, no digest written.")
+        save_state(STATE_FILE, updated_state)
         return
 
-    raw_items = fetch_grist_grants(BASIC_SEARCH_KEYWORDS, max_per_keyword=5)
+    # Updated to pass output/docs paths matching your local Ollama pipeline structure
+    extracted_items = extract_all(fresh_items, OUTPUT_DIR, DOCS_DIR)
 
-    if not raw_items:
-        print("⚠️ No items were harvested. Check internet access or keywords.")
+    if not extracted_items:
+        print("[main] Extraction returned no items.")
+        save_state(STATE_FILE, updated_state)
         return
 
-    print("\n[pipeline] Handing harvested records to extract.py...")
-    success = extract_all(raw_items, OUTPUT_DIR, DOCS_DIR)
+    md_path = write_markdown(extracted_items, OUTPUT_DIR)
+    csv_path = write_csv(extracted_items, OUTPUT_DIR)
+    html_path = write_html(extracted_items, DOCS_DIR)
+    index_path = write_pages_index(DOCS_DIR)
 
-    if success:
-        print("\n🎉 Pipeline completed successfully!")
-    else:
-        print("\n❌ Pipeline encountered an issue during extraction.")
+    save_state(STATE_FILE, updated_state)
+
+    print(
+        "[main] Digest written:\n"
+        f"  {md_path}\n"
+        f"  {csv_path}\n"
+        f"  {html_path}  (published via GitHub Pages)\n"
+        f"  {index_path}  (archive index, also published)"
+    )
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

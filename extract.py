@@ -125,7 +125,7 @@ def extract_all(raw_items, output_dir, docs_dir):
             margin-right: 8px;
         }}
         .source {{ background-color: #0369a1; color: #e0f2fe; }}
-        .keyword {{ background-color: #065f46; color: #d1fae5; }}
+        .keyword {{ background-color: #991b1b; color: #fef2f2; border: 1px solid #ef4444; }}
         .summary {{
             line-height: 1.6;
             color: #cbd5e1;

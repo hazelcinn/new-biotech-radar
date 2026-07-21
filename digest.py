@@ -97,33 +97,56 @@ def write_csv(items: list, output_dir: str) -> str:
     return path
 
 
-def write_html(extracted_items, docs_dir):
-    # Ensure directory exists
-    os.makedirs(docs_dir, exist_ok=True)
-    # ... setup paths and headers ...
+def write_html(extracted_items, docs_dir="docs"):
+    """Writes the extracted items into a timestamped HTML digest inside docs/digests/."""
+    digests_dir = os.path.join(docs_dir, "digests")
+    os.makedirs(digests_dir, exist_ok=True)
     
-    html_content = "<html><head><title>Biotech Radar Digest</title></head><body><h1>Digest Report</h1><ul>"
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    filename = f"{date_str}.html"
+    filepath = os.path.join(digests_dir, filename)
     
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Biotech Radar Digest - {date_str}</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #fdfbf7; }}
+        h1 {{ color: #1a365d; border-bottom: 2px solid #cbd5e1; padding-bottom: 10px; }}
+        .item {{ background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
+        .item h3 {{ margin-top: 0; color: #2b6cb0; }}
+        .meta {{ font-size: 0.85rem; color: #64748b; margin-bottom: 10px; }}
+        a {{ color: #2563eb; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
+    </style>
+</head>
+<body>
+    <h1>Biotech Radar Digest: {date_str}</h1>
+    <p><a href="../index.html">← Back to Archive Index</a></p>
+    <hr style="margin: 20px 0; border:0; border-top:1px solid #e2e8f0;">
+"""
+
     for item in extracted_items:
         title = item.get("title", "Untitled")
         summary = item.get("summary", "No summary available.")
         source = item.get("source", "Source")
         link = item.get("link", "#")
-        
-        # Explicitly building the anchor tag for the original link
+        keyword = item.get("keyword", "")
+
         html_content += f"""
-        <li>
+        <div class="item">
             <h3><a href="{link}" target="_blank">{title}</a></h3>
-            <p><strong>Source:</strong> {source}</p>
+            <div class="meta"><strong>Keyword:</strong> {keyword} | <strong>Source:</strong> {source}</div>
             <p><strong>Summary:</strong> {summary}</p>
-            <p><a href="{link}" target="_blank">👉 View Original Source</a></p>
-        </li>
-        <hr>
+            <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>
+        </div>
         """
-        
-    html_content += "</ul></body></html>"
-    
-    # Save file path logic...
+
+    html_content += """
+</body>
+</html>
+"""
 
 def write_pages_index(docs_dir: str) -> str:
     """

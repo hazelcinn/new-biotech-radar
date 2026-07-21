@@ -36,12 +36,11 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
         print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")
 
     return raw_items
-
-
+    
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
     Fetches actual grant records using the official Europe PMC GRIST REST API,
-    limited to the top 10 per keyword.
+    limited to the top 10 per keyword with robust title fallbacks.
     """
     raw_items = []
     
@@ -71,19 +70,31 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             if isinstance(records, dict):
                 records = [records]
 
-            # Slice to only take the top 10 records per keyword
             for item in records[:10]:
-                # Broaden field capture to avoid 'Untitled Grant Project' fallbacks
-                grant_id = item.get("id") or item.get("Id") or item.get("grantId") or "N/A"
-                title = item.get("title") or item.get("Title") or item.get("projectTitle") or "Untitled Grant Project"
-                abstract = item.get("abstract") or item.get("Abstract") or item.get("abstractText") or "No abstract description provided."
-                funder = item.get("agency") or item.get("GrantedAuthority") or item.get("funder") or "Europe PMC / GRIST"
+                grant_id = item.get("Id") or item.get("id") or item.get("grantId") or "N/A"
+                
+                # Check all possible title variations, including nested or alternative fields
+                title = (
+                    item.get("Title") 
+                    or item.get("title") 
+                    or item.get("projectTitle") 
+                    or item.get("ProjectTitle")
+                )
+                
+                # Fallback: If title is missing, generate a clean title using the keyword and grant ID
+                if not title or title.strip() == "":
+                    title = f"Grant Research: {keyword.capitalize()} ({grant_id})"
 
-                # Construct direct grant URL fallback if standard ID is missing
-                if grant_id != "N/A":
-                    grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}"
-                else:
-                    grant_link = "https://europepmc.org/grantfinder"
+                abstract = (
+                    item.get("Abstract") 
+                    or item.get("abstract") 
+                    or item.get("abstractText") 
+                    or "No abstract description provided."
+                )
+                
+                funder = item.get("GrantedAuthority") or item.get("funder") or item.get("agency") or "Europe PMC / GRIST"
+
+                grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id != "N/A" else "https://europepmc.org/grantfinder"
 
                 raw_items.append({
                     "title": title,

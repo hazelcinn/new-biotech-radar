@@ -147,34 +147,58 @@ def write_html(extracted_items, docs_dir="docs"):
 </body>
 </html>
 """
+with open(filepath, "w", encoding="utf-8") as f:
+        f.write(html_content)
+        
+    print(f"[digest] HTML successfully written to: {filepath}")
+    return filepath
 
-def write_pages_index(docs_dir: str) -> str:
-    """
-    Rebuilds docs/index.html each run: a simple list of every digest that
-    exists in docs/digests/, newest first, so you always have one stable
-    URL (yourusername.github.io/repo-name/) to check for the latest links.
-    """
+
+def write_pages_index(docs_dir="docs"):
+    """Scans docs/digests/ and updates docs/index.html with an archive list."""
+    os.makedirs(docs_dir, exist_ok=True)
     digests_dir = os.path.join(docs_dir, "digests")
+    
     os.makedirs(digests_dir, exist_ok=True)
-    files = sorted(
-        (f for f in os.listdir(digests_dir) if f.endswith(".html")),
-        reverse=True,
-    )
+    files = sorted([f for f in os.listdir(digests_dir) if f.endswith(".html")], reverse=True)
+    
+    index_path = os.path.join(docs_dir, "index.html")
+    
+    index_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Biotech Radar Archive</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #fdfbf7; }}
+        h1 {{ color: #1a365d; }}
+        ul {{ padding-left: 20px; }}
+        li {{ margin-bottom: 10px; font-size: 1.1rem; }}
+        a {{ color: #2563eb; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
+    </style>
+</head>
+<body>
+    <h1>Biotech Radar Archive</h1>
+    <p>Explore past intelligence reports and research digests:</p>
+    <ul>
+"""
 
-    parts = [
-        "<!DOCTYPE html>",
-        '<html lang="en"><head><meta charset="utf-8">',
-        "<title>Pharma Technology Radar — Digest Archive</title>",
-        "</head><body>",
-        "<h1>Pharma Technology Radar — Digest Archive</h1>",
-        "<ul>",
-    ]
-    for f in files:
-        label = f.replace(".html", "")
-        parts.append(f'<li><a href="digests/{f}">{html.escape(label)}</a></li>')
-    parts.append("</ul></body></html>")
+    if not files:
+        index_content += "<li>No digests generated yet.</li>"
+    else:
+        for file in files:
+            date_name = file.replace(".html", "")
+            index_content += f'<li><a href="digests/{file}">Digest Report – {date_name}</a></li>\n'
 
-    path = os.path.join(docs_dir, "index.html")
-    with open(path, "w") as fh:
-        fh.write("\n".join(parts))
-    return path
+    index_content += """
+    </ul>
+</body>
+</html>
+"""
+
+    with open(index_path, "w", encoding="utf-8") as f:
+        f.write(index_content)
+        
+    print(f"[digest] Index successfully updated: {index_path}")
+    return index_path

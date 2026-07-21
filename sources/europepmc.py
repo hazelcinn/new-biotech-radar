@@ -23,14 +23,25 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
         if response.status_code == 200:
             data = response.json()
             results = data.get("resultList", {}).get("result", [])
-            for item in results[:1]:
+            for item in results:
+                title = item.get("title", "Untitled Grant").strip()
+                abstract = item.get("abstractText", "No grant abstract available.").strip()
+                source_agency = item.get("grantsList", [{}])[0].get("agency", "Europe PMC Funder")
+                grant_id = item.get("grantsList", [{}])[0].get("grantId", "")
+                
+                if grant_id:
+                    link = f"https://europepmc.org/grantfinder/grantid?id={urllib.parse.quote(grant_id)}"
+                else:
+                    item_id = item.get("id")
+                    link = f"https://europepmc.org/article/MED/{item_id}" if item_id else "https://europepmc.org/grantfinder"
+                    
                 raw_items.append({
-                    "title": item.get("title", "Untitled Research"),
-                    "abstract": item.get("abstractText", "No abstract available."),
-                    "source": item.get("journalTitle", "Europe PMC"),
+                    "title": title,
+                    "abstract": abstract,
+                    "source": f"Grant: {source_agency} ({grant_id})" if grant_id else f"Grant: {source_agency}",
                     "keyword": keyword,
                     "domain": domain,
-                    "link": f"https://europepmc.org/article/{item.get('source', 'MED')}/{item.get('id')}" if item.get("id") else "#"
+                    "link": link
                 })
     except Exception as e:
         print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")

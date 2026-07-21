@@ -40,7 +40,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
     Fetches actual grant records using the official Europe PMC GRIST REST API,
-    limited to the top 10 per keyword with robust title fallbacks.
+    limited to the top 1 per keyword with robust title fallbacks.
     """
     raw_items = []
     
@@ -70,7 +70,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             if isinstance(records, dict):
                 records = [records]
 
-            for item in records[:10]:
+            for item in records[:1]:
                 grant_id = item.get("Id") or item.get("id") or item.get("grantId") or "N/A"
                 
                 # Check all possible title variations, including nested or alternative fields

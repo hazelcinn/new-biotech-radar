@@ -124,69 +124,6 @@ def write_html(extracted_items, docs_dir):
     html_content += "</ul></body></html>"
     
     # Save file path logic...
-    """
-    Writes a single, simply-structured HTML page for this week's digest into
-    docs_dir/digests/. Deliberately avoids CSS, layout divs, and styling —
-    Medium's import tool works best with plain semantic HTML (h1/h2/h3, p,
-    ul/li, a) and strips most styling anyway, so keeping it minimal reduces
-    import artifacts.
-    """
-    digests_dir = os.path.join(docs_dir, "digests")
-    os.makedirs(digests_dir, exist_ok=True)
-    today = date.today().isoformat()
-    path = os.path.join(digests_dir, f"{today}.html")
-
-    by_domain = {}
-    for item in items:
-        ext = item.get("extracted") or {}
-        if ext.get("relevant") is False:
-            continue
-        domain = item.get("domain_hint", "")
-        by_domain.setdefault(domain, []).append(item)
-
-    total = sum(len(v) for v in by_domain.values())
-
-    parts = []
-    parts.append("<!DOCTYPE html>")
-    parts.append('<html lang="en"><head><meta charset="utf-8">')
-    parts.append(f"<title>Pharma Technology Radar — {today}</title>")
-    parts.append("</head><body>")
-    parts.append(f"<h1>Pharma Technology Radar — Weekly Digest ({today})</h1>")
-    parts.append(f"<p>{total} new items this week.</p>")
-
-    for domain, domain_items in sorted(by_domain.items(), key=lambda kv: -len(kv[1])):
-        parts.append(f"<h2>{html.escape(_domain_label(domain))} ({len(domain_items)})</h2>")
-        for item in domain_items:
-            ext = item.get("extracted") or {}
-            tech_name = ext.get("technology_name") or item["title"]
-            stage = STAGE_LABELS.get(ext.get("development_stage", "unknown"), "Unknown stage")
-
-            parts.append(f"<h3>{html.escape(tech_name)}</h3>")
-            parts.append("<ul>")
-            meta_line = f"{html.escape(item['source'])} ({html.escape(item.get('item_type',''))}) — {html.escape(stage)}"
-            parts.append(f"<li><strong>Source:</strong> {meta_line}</li>")
-            if item.get("institution"):
-                loc = item.get("institution", "")
-                if item.get("country"):
-                    loc += f" ({item['country']})"
-                parts.append(f"<li><strong>Institution:</strong> {html.escape(loc)}</li>")
-            if item.get("date"):
-                parts.append(f"<li><strong>Date:</strong> {html.escape(item['date'])}</li>")
-            parts.append("</ul>")
-            if ext.get("plain_description"):
-                parts.append(f"<p><strong>What it is:</strong> {html.escape(ext['plain_description'])}</p>")
-            if ext.get("pharma_relevance"):
-                parts.append(f"<p><strong>Pharma relevance:</strong> {html.escape(ext['pharma_relevance'])}</p>")
-            if item.get("url"):
-                safe_url = html.escape(item["url"], quote=True)
-                parts.append(f'<p><a href="{safe_url}">Original source</a></p>')
-
-    parts.append("</body></html>")
-
-    with open(path, "w") as f:
-        f.write("\n".join(parts))
-    return path
-
 
 def write_pages_index(docs_dir: str) -> str:
     """

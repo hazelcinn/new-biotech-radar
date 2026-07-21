@@ -2,7 +2,7 @@ import urllib.parse
 import requests
 
 def fetch(keyword: str, lookback_days: int, domain: str) -> list:
-    """Fetches standard research papers from Europe PMC, limited to top 10."""
+    """Fetches standard research papers from Europe PMC, limited to top 1."""
     raw_items = []
     url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
     

@@ -13,7 +13,7 @@ def fetch(kw, lookback_days, domain):
     
     # 2. Fetch recent preprints from the bioRxiv API
     # Note: bioRxiv API fetches by date range, then we filter by keyword
-    url = f"https://biorxiv.org{start_str}/{end_str}/0/json"
+    url = f"https://api.biorxiv.org/details/biorxiv/{start_date}/{end_date}"
     
     try:
         response = requests.get(url, timeout=15)

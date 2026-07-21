@@ -147,7 +147,8 @@ def write_html(extracted_items, docs_dir="docs"):
 </body>
 </html>
 """
-with open(filepath, "w", encoding="utf-8") as f:
+
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(html_content)
         
     print(f"[digest] HTML successfully written to: {filepath}")

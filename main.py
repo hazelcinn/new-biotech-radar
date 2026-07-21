@@ -15,7 +15,6 @@ def harvest_all(lookback_days: int):
           f"{lookback_days}-day lookback...")
 
     for kw, domain in all_keywords:
-        all_items.extend(europepmc.fetch(kw, lookback_days, domain))
         all_items.extend(europepmc.fetch_grants(kw, lookback_days, domain))
         all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))
         all_items.extend(nih_reporter.fetch(kw, lookback_days, domain))

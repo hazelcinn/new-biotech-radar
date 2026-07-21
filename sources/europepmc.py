@@ -1,7 +1,7 @@
 import requests
 import urllib.parse
 
-def fetch(keyword: str, lookback_days: int, domain: str) -> list:
+def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
     Fetches grants exclusively from Europe PMC's GristAPI.
     """
@@ -35,7 +35,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
             if isinstance(records, dict):
                 records = [records]
 
-            for item in records[:10]:
+            for item in records[:1]:
                 grant_id = item.get("id") or item.get("Id") or item.get("grantId") or ""
                 
                 title = (

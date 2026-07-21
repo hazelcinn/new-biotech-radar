@@ -14,7 +14,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
     params = {
         "query": f'"{keyword}" HAS_ABSTRACT:y',
         "format": "json",
-        "pageSize": 1,  # Capped at top 10 per keyword
+        "pageSize": 1,  # Capped at top 1 per keyword
         "resultType": "core"
     }
 
@@ -23,7 +23,7 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
         if response.status_code == 200:
             data = response.json()
             results = data.get("resultList", {}).get("result", [])
-            for item in results[:10]:
+            for item in results[:1]:
                 raw_items.append({
                     "title": item.get("title", "Untitled Research"),
                     "abstract": item.get("abstractText", "No abstract available."),
@@ -36,11 +36,12 @@ def fetch(keyword: str, lookback_days: int, domain: str) -> list:
         print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")
 
     return raw_items
-    
+
+
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
     Fetches actual grant records using the official Europe PMC GRIST REST API,
-    limited to the top 1 per keyword with robust title fallbacks.
+    limited to the top 1 per keyword.
     """
     raw_items = []
     
@@ -70,29 +71,12 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             if isinstance(records, dict):
                 records = [records]
 
+            # Slice to only take the top 1 records per keyword
             for item in records[:1]:
-                grant_id = item.get("Id") or item.get("id") or item.get("grantId") or "N/A"
-                
-                # Check all possible title variations, including nested or alternative fields
-                title = (
-                    item.get("Title") 
-                    or item.get("title") 
-                    or item.get("projectTitle") 
-                    or item.get("ProjectTitle")
-                )
-                
-                # Fallback: If title is missing, generate a clean title using the keyword and grant ID
-                if not title or title.strip() == "":
-                    title = f"Grant Research: {keyword.capitalize()} ({grant_id})"
-
-                abstract = (
-                    item.get("Abstract") 
-                    or item.get("abstract") 
-                    or item.get("abstractText") 
-                    or "No abstract description provided."
-                )
-                
-                funder = item.get("GrantedAuthority") or item.get("funder") or item.get("agency") or "Europe PMC / GRIST"
+                grant_id = item.get("Id") or item.get("id") or "N/A"
+                title = item.get("Title") or item.get("title") or "Untitled Grant Project"
+                abstract = item.get("Abstract") or item.get("abstract") or "No abstract description provided."
+                funder = item.get("GrantedAuthority") or item.get("funder") or "Europe PMC / GRIST"
 
                 grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id != "N/A" else "https://europepmc.org/grantfinder"
 

@@ -1,7 +1,7 @@
 import urllib.parse
 import requests
 
-#def fetch(keyword: str, lookback_days: int, domain: str) -> list:
+# def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 1."""
 #    raw_items = []
 #    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
@@ -76,7 +76,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             record_list = response_box.get("resultsList", response_box.get("RecordList", data.get("RecordList", {})))
             records = (
                 result_list.get("result", [])
-                or result_list.get("Record,[])
+                or result_list.get("Record",[])
                 or result_list.get("grant", [])
                 or data.get("Record", [])
             )

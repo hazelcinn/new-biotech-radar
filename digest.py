@@ -5,9 +5,7 @@ Builds the weekly digest in three formats:
 - HTML, written to docs/ for GitHub Pages, formatted simply so Medium's
   "Import a story" tool converts it cleanly into an editable draft
 """
-import csv
 import os
-import html
 from datetime import datetime
 
 STAGE_LABELS = {

@@ -57,19 +57,19 @@ def main():
         save_state(STATE_FILE, updated_state)
         return
 
-    md_path = write_markdown(extracted_items, OUTPUT_DIR)
-    csv_path = write_csv(extracted_items, OUTPUT_DIR)
-    html_path = write_html(extracted_items, DOCS_DIR)
-    index_path = write_pages_index(DOCS_DIR)
+    md_path = write_markdown(extracted_items, "output")
+    csv_path = write_csv(extracted_items, "output")
+    html_path = write_html(extracted_items, "docs")
+    index_path = write_pages_index("docs")
 
     save_state(STATE_FILE, updated_state)
 
     print(
-        "[main] Digest written:\n"
-        f"  {md_path}\n"
-        f"  {csv_path}\n"
-        f"  {html_path}  (published via GitHub Pages)\n"
-        f"  {index_path}  (archive index, also published)"
+        "[main] Digest written successfully:\n"
+        f"  Markedown: {md_path}\n"
+        f"  CSV: {csv_path}\n"
+        f"  HTML Digest: {html_path}\n"
+        f"  Archive Index: {index_path}"
     )
 
 

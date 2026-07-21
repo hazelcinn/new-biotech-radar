@@ -8,7 +8,7 @@ Builds the weekly digest in three formats:
 import csv
 import os
 import html
-from datetime import date
+from datetime import datetime
 
 STAGE_LABELS = {
     "basic_research": "Basic research",

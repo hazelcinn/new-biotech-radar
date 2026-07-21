@@ -3,7 +3,7 @@ import urllib.parse
 
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
-    Fetches grants exclusively from Europe PMC's GristAPI.
+    Fetches grants exclusively from Europe PMC's GristAPI using fetch_grants.
     """
     raw_items = []
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="

@@ -6,7 +6,7 @@ Builds the weekly digest in three formats:
   "Import a story" tool converts it cleanly into an editable draft
 """
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 STAGE_LABELS = {
     "basic_research": "Basic research",

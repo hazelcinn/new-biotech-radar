@@ -97,7 +97,33 @@ def write_csv(items: list, output_dir: str) -> str:
     return path
 
 
-def write_html(items: list, docs_dir: str) -> str:
+def write_html(extracted_items, docs_dir):
+    # Ensure directory exists
+    os.makedirs(docs_dir, exist_ok=True)
+    # ... setup paths and headers ...
+    
+    html_content = "<html><head><title>Biotech Radar Digest</title></head><body><h1>Digest Report</h1><ul>"
+    
+    for item in extracted_items:
+        title = item.get("title", "Untitled")
+        summary = item.get("summary", "No summary available.")
+        source = item.get("source", "Source")
+        link = item.get("link", "#")
+        
+        # Explicitly building the anchor tag for the original link
+        html_content += f"""
+        <li>
+            <h3><a href="{link}" target="_blank">{title}</a></h3>
+            <p><strong>Source:</strong> {source}</p>
+            <p><strong>Summary:</strong> {summary}</p>
+            <p><a href="{link}" target="_blank">👉 View Original Source</a></p>
+        </li>
+        <hr>
+        """
+        
+    html_content += "</ul></body></html>"
+    
+    # Save file path logic...
     """
     Writes a single, simply-structured HTML page for this week's digest into
     docs_dir/digests/. Deliberately avoids CSS, layout divs, and styling —

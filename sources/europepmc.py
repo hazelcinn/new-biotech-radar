@@ -89,7 +89,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 given_name = person.get("GivenName", "")
                 family_name = person.get("FamilyName", "")
                 pi = f"{given_name} {family_name}".strip() or "N/A"
-                pi_id = person.get("Orcid") or person.get("orcid") or "N/A"
                 aff = person.get("Affiliation") or "N/A"
                 
                 # Category / subject if available
@@ -107,7 +106,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 raw_items.append({
                     "title": title,
                     "project contact": pi,
-                    "PI orcid": pi_id,
                     "affiliation": aff,
                     "abstract": abstract,
                     "source": f"{funder} (Grant ID: {grant_id})",

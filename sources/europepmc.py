@@ -37,7 +37,6 @@ import requests
 #
 #    return raw_items
 
-
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
     Fetches actual grant records using the official Europe PMC GRIST REST API,
@@ -73,7 +72,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
             # Slice to only take the top 10 records per keyword
             for item in records[:10]:
-                # Navigate into the nested 'Grant' dictionary
                 grant_data = item.get("grant", item.get("Grant", item))
                 
                 grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
@@ -93,15 +91,16 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
                 
-                # Affiliation and ROR integration fields
+                # Affiliation
                 aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
                 
-                # Category / subject if available
-                cat = grant_data.get("Subject") or grant_data.get("category") or "N/A"
+                # Category / subject (Grist schema uses Subject or category)
+                cat = grant_data.get("Subject") or grant_data.get("subject") or grant_data.get("category") or "N/A"
 
-                # Grant Amount and Duration fields matching the Grist data fields schema
+                # Grant Amount (Grist schema uses amount, awardAmount, or totalAwardAmount)
                 amount = grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
 
+                # Grant Duration / Dates
                 start_date = grant_data.get("startDate") or grant_data.get("StartDate") or ""
                 end_date = grant_data.get("endDate") or grant_data.get("EndDate") or ""
                 
@@ -109,15 +108,12 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     duration = f"{start_date} to {end_date}"
                 else:
                     duration = grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
-                    
-                active_date = grant_data.get("active date") or grant_data.get("date") or "N/A"
 
                 grant_doi = grant_data.get("doi") or grant_data.get("Doi")
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"
                 elif grant_id != "N/A":
-                    # Correct direct detail view path
-                    grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(grant_id)}%22"
+                    grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
                 else:
                     grant_link = "https://europepmc.org/grantfinder"
                     

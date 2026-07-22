@@ -1,9 +1,10 @@
-import requests
 import urllib.parse
+import requests
 
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     """
-    Fetches grants exclusively from Europe PMC's GristAPI using fetch_grants.
+    Fetches actual grant records using the official Europe PMC GRIST REST API,
+    limited to the top 10 per keyword with valid live links.
     """
     raw_items = []
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
@@ -14,8 +15,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     }
 
     clean_kw = keyword.strip()
-    query_str = f'kw:"{clean_kw}"'
-    encoded_query = urllib.parse.quote(query_str)
+    encoded_query = urllib.parse.quote(clean_kw)
     url = f"{base_url}{encoded_query}&format=json"
 
     try:
@@ -23,57 +23,33 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
         if response.status_code == 200:
             data = response.json()
             
-            response_box = data.get("response", data)
-            result_list = response_box.get("resultList", response_box.get("RecordList", data.get("RecordList", {})))
+            record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
             records = (
-                result_list.get("result", [])
-                or result_list.get("Record", [])
-                or result_list.get("grant", [])
+                record_list.get("Record", [])
+                or record_list.get("grant", [])
                 or data.get("Record", [])
             )
 
             if isinstance(records, dict):
                 records = [records]
 
-            for item in records[:1]:
-                grant_id = item.get("id") or item.get("Id") or item.get("grantId") or ""
-                
-                title = (
-                    item.get("projectTitle")
-                    or item.get("Title")
-                    or item.get("title")
-                    or item.get("ProjectTitle")
-                )
-                
-                if not title or not title.strip():
-                    if grant_id:
-                        title = f"Grant Award: {keyword.capitalize()} ({grant_id})"
-                    else:
-                        continue
+            for item in records[:10]:
+                grant_id = item.get("Id") or item.get("id") or "N/A"
+                title = item.get("Title") or item.get("title") or "Untitled Grant Project"
+                abstract = item.get("Abstract") or item.get("abstract") or "No abstract description provided."
+                funder = item.get("GrantedAuthority") or item.get("funder") or "Europe PMC / GRIST"
 
-                abstract = (
-                    item.get("abstractText")
-                    or item.get("Abstract")
-                    or item.get("abstract")
-                    or "No grant abstract provided."
-                )
-                
-                funder = item.get("agency") or item.get("GrantedAuthority") or item.get("funder") or "Europe PMC Funder"
-
-                if grant_id:
-                    link = f"https://europepmc.org/grantfinder/grantid?id={urllib.parse.quote(str(grant_id))}"
-                else:
-                    link = "https://europepmc.org/grantfinder"
+                grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id != "N/A" else "https://europepmc.org/grantfinder"
 
                 raw_items.append({
-                    "title": title.strip(),
-                    "abstract": abstract.strip(),
-                    "source": f"{funder} (Grant ID: {grant_id})" if grant_id else f"{funder}",
+                    "title": title,
+                    "abstract": abstract,
+                    "source": f"{funder} (Grant ID: {grant_id})",
                     "keyword": keyword,
                     "domain": domain,
-                    "link": link
+                    "link": grant_link
                 })
     except Exception as e:
-        print(f"[europepmc] Grist API connection error for '{keyword}': {e}")
+        print(f"[europepmc] Connection error during GRIST grant fetch for '{keyword}': {e}")
 
     return raw_items

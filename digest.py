@@ -48,14 +48,12 @@ def write_markdown(items: list, output_dir: str) -> str:
                 abstract = item.get("abstract", "No abstract available.")
                 source = item.get("source", "N/A")
                 keyword = item.get("keyword", "N/A")
-                subject = item.get("subject", "N/A")
                 link = item.get("link", "#")
 
                 # 1. Unlinked Title
                 f.write(f"### {title}\n")
                 f.write(f"- **Project Contact:** {pi}\n")
                 f.write(f"- **Affiliation:** {aff}\n")
-                f.write(f"- **Subject:** {subject}\n")
                 f.write(f"- **Source:** {source} | **Keyword:** {keyword}\n")
                 f.write(f"- **Abstract:** {abstract}\n")
                 f.write(f"- [🔗 View Original Source]({link})\n\n")
@@ -77,7 +75,6 @@ def write_csv(items: list, output_dir: str) -> str:
                 "title": item.get("title", ""),
                 "project contact": item.get("project contact", ""),
                 "affiliation": item.get("affiliation", ""),
-                "subject": item.get("subject", ""),
                 "source": item.get("source", ""),
                 "keyword": item.get("keyword", ""),
                 "domain": item.get("domain", ""),
@@ -124,7 +121,6 @@ def write_html(extracted_items, docs_dir="docs"):
         duration = item.get("grant duration", "N/A")
         pi = item.get("project contact", "N/A")
         aff = item.get("affiliation", "N/A")
-        subject = item.get("subject", "N/A")
         abstract = item.get("abstract", "No abstract available.")
         source = item.get("source", "Source")
         link = item.get("link", "#")

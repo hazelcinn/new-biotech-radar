@@ -37,13 +37,13 @@ def main():
     lookback_days = compute_lookback_days(STATE_FILE, LOOKBACK_DAYS)
     raw_items = harvest_all(lookback_days)
 
-    fresh_items, updated_state = deduplicate(raw_items, STATE_FILE)
-    print(f"[main] {len(fresh_items)} new items after deduplication.")
-
-    if not fresh_items:
-        print("[main] Nothing new since last run. Saving state, no digest written.")
-        save_state(STATE_FILE, updated_state)
-        return
+#    fresh_items, updated_state = deduplicate(raw_items, STATE_FILE)
+#    print(f"[main] {len(fresh_items)} new items after deduplication.")
+#
+#    if not fresh_items:
+#        print("[main] Nothing new since last run. Saving state, no digest written.")
+#        save_state(STATE_FILE, updated_state)
+#        return
 
     # Updated to pass output/docs paths matching your local Ollama pipeline structure
 #    extracted_items = extract_all(fresh_items, OUTPUT_DIR, DOCS_DIR)
@@ -59,7 +59,7 @@ def main():
     html_path = write_html(extracted_items, DOCS_DIR)
     index_path = write_pages_index(DOCS_DIR)
 
-    save_state(STATE_FILE, updated_state)
+#    save_state(STATE_FILE, updated_state)
 
     print(
         "[main] Digest written:\n"

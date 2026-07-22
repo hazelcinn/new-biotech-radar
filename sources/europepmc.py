@@ -84,13 +84,24 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 funder_dict = grant_data.get("Funder", {})
                 funder = funder_dict.get("Name") or grant_data.get("GrantedAuthority") or "Europe PMC / GRIST"
 
-                grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id != "N/A" else "https://europepmc.org/grantfinder"
-
+                grant_doi = grant_data.get("Doi") or grant_data.get("doi")
+                if grant_doi:
+                    grant_link = f"https://doi.org/{grant_doi}"
+                elif grant_id != "N/A":
+                    # Correct direct detail view path
+                    grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(grant_id)}%22"
+                else:
+                    grant_link = "https://europepmc.org/grantfinder"
+                    
                 raw_items.append({
                     "title": title,
+                    "project contact": pi,
+                    "PI orcid": pi_id,
+                    "affiliation": aff,
                     "abstract": abstract,
                     "source": f"{funder} (Grant ID: {grant_id})",
                     "keyword": keyword,
+                    "subject": cat,
                     "domain": domain,
                     "link": grant_link
                 })

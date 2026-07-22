@@ -71,6 +71,12 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             if isinstance(records, dict):
                 records = [records]
 
+            # --- ADD THIS DEBUG LINE ---
+            if records:
+                print(f"[DEBUG europepmc] First raw record keys: {list(records[0].keys())}")
+                print(f"[DEBUG europepmc] First raw record sample: {records[0]}")
+            # ---------------------------
+            
             # Slice to only take the top 10 records per keyword
             for item in records[:10]:
                 grant_id = item.get("Id") or item.get("id") or "N/A"

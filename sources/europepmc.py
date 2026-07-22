@@ -74,16 +74,16 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             # Slice to only take the top 10 records per keyword
             for item in records[:10]:
                 # Navigate into the nested 'Grant' dictionary
-                grant_data = item.get("Grant", item)
+                grant_data = item.get("grant", item.get("Grant", item))
                 
-                grant_id = grant_data.get("Id") or grant_data.get("id") or grant_data.get("grantId") or "N/A"
-                title = grant_data.get("Title") or grant_data.get("title") or "Untitled Grant Project"
-                abstract = grant_data.get("Abstract") or grant_data.get("abstract") or "No abstract description provided."
+                grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
+                title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
+                abstract = grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."
                 
-                # Navigate into the nested 'Funder' dictionary
+                # Funder details
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):
-                    funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedauthority") or grant_data.get("GrantedAuthority") or "Europe PMC / GRIST"
+                    funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
                 else:
                     funder = str(funder_dict)
 
@@ -98,16 +98,20 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
                 # Category / subject if available
                 cat = grant_data.get("Subject") or grant_data.get("category") or "N/A"
+
                 # Grant Amount and Duration fields matching the Grist data fields schema
                 Amount = grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or "N/A"
-                StartDate = grant_data.get("startDate") or grant_data.get("StartDate") or ""
-                EndDate = grant_data.get("endDate") or grant_data.get("EndDate") or ""
+
+                start_date = grant_data.get("startDate") or grant_data.get("StartDate") or ""
+                end_date = grant_data.get("endDate") or grant_data.get("EndDate") or ""
+                
                 if start_date and end_date:
                     duration = f"{start_date} to {end_date}"
                 else:
-                    duration = grant_data.get("duration") or grant_data.get("Duration") or "N/A"
-
+                    duration = grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
+                    
                 active_date = grant_data.get("active date") or grant_data.get("date") or "N/A"
+
                 grant_doi = grant_data.get("doi") or grant_data.get("Doi")
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"

@@ -89,12 +89,15 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 given_name = person.get("GivenName", "")
                 family_name = person.get("FamilyName", "")
                 pi = f"{given_name} {family_name}".strip() or "N/A"
-                aff = person.get("Affiliation") or "N/A"
+                aff = person.get("Affiliation") or person.get("affiliation") or "N/A"
                 
                 # Category / subject if available
                 cat = grant_data.get("Subject") or grant_data.get("category") or "N/A"
-                grant_doi = grant_data.get("Doi") or grant_data.get("doi")
-                
+                amount = grant_data.get("AwardAmount") or grant_data.get("amount") or "N/A"
+                start_date = grant_data.get("StartDate", "")
+                end_date = grant_data.get("EndDate", "")
+                duration = f"{start_date} to {end_date}" if start_date and end_date else grant_data.get("Duration", "N/A")
+                grant_doi = grant_data.get("Doi") or grant_data.get("doi")                
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"
                 elif grant_id != "N/A":
@@ -107,10 +110,12 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     "title": title,
                     "project contact": pi,
                     "affiliation": aff,
+                    "subject": cat,
+                    "grant amount": amount,
+                    "grant duration": duration,
                     "abstract": abstract,
                     "source": f"{funder} (Grant ID: {grant_id})",
                     "keyword": keyword,
-                    "subject": cat,
                     "domain": domain,
                     "link": grant_link
                 })

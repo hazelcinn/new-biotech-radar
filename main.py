@@ -46,7 +46,8 @@ def main():
         return
 
     # Updated to pass output/docs paths matching your local Ollama pipeline structure
-    extracted_items = extract_all(fresh_items, OUTPUT_DIR, DOCS_DIR)
+#    extracted_items = extract_all(fresh_items, OUTPUT_DIR, DOCS_DIR)
+    extracted_items = raw_items
 
     if not extracted_items:
         print("[main] Extraction returned no items.")

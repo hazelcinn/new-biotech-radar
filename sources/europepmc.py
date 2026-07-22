@@ -93,19 +93,28 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
                 aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
                 
-                # Extract raw amount value
-                raw_amount = grant_data.get("awardAmount") or grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount")
-                # Extract currency symbol/code (often stored as 'currency' or nested in the amount object)
+                # Comprehensive extraction for grant amount and currency
+                amount_node = (
+                    grant_data.get("amount") 
+                    or grant_data.get("AwardAmount") 
+                    or grant_data.get("awardAmount") 
+                    or grant_data.get("totalAwardAmount") 
+                    or grant_data.get("fundAmount") 
+                    or grant_data.get("financial")
+                )
+                
                 currency = grant_data.get("currency") or grant_data.get("Currency") or ""
-                if isinstance(raw_amount, dict):
-                    currency = raw_amount.get("currency", currency)
-                    raw_amount = raw_amount.get("value") or raw_amount.get("amount") or "N/A"
-                # Format amount with currency symbol or code if available
-                if raw_amount and str(raw_amount) != "N/A":
-                    # Clean symbol mapping if needed, or default to the code/symbol provided
+                
+                if isinstance(amount_node, dict):
+                    currency = amount_node.get("currency", currency)
+                    raw_val = amount_node.get("value") or amount_node.get("content") or amount_node.get("amount")
+                else:
+                    raw_val = amount_node
+
+                if raw_val is not None and str(raw_val).strip() and str(raw_val) != "N/A":
                     curr_symbols = {"GBP": "£", "USD": "$", "EUR": "€"}
-                    curr_display = curr_symbols.get(currency.upper(), currency)
-                    amount = f"{curr_display} {raw_amount}".strip() if curr_display else str(raw_amount)
+                    curr_display = curr_symbols.get(str(currency).upper(), str(currency))
+                    amount = f"{curr_display} {raw_val}".strip() if curr_display else str(raw_val)
                 else:
                     amount = "N/A"
                     

@@ -17,17 +17,17 @@ def harvest_all(lookback_days: int):
     for kw, domain in all_keywords:
 #        all_items.extend(europepmc.fetch(kw, lookback_days, domain))
         all_items.extend(europepmc.fetch_grants(kw, lookback_days, domain))
-        all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))
-        all_items.extend(nih_reporter.fetch(kw, lookback_days, domain))
-        all_items.extend(nsf.fetch(kw, lookback_days, domain))
-        all_items.extend(ukri_gtr.fetch(kw, lookback_days, domain))
-        all_items.extend(cordis.fetch(kw, lookback_days, domain))
-        all_items.extend(fwf.fetch(kw, lookback_days, domain))
+#        all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))
+#        all_items.extend(nih_reporter.fetch(kw, lookback_days, domain))
+#        all_items.extend(nsf.fetch(kw, lookback_days, domain))
+#        all_items.extend(ukri_gtr.fetch(kw, lookback_days, domain))
+#        all_items.extend(cordis.fetch(kw, lookback_days, domain))
+#        all_items.extend(fwf.fetch(kw, lookback_days, domain))
 
     # bioRxiv/medRxiv is date-range based, not per-keyword — pull once
-    flat_keywords = [kw for kw, _ in all_keywords]
-    domain_hints = {kw: domain for kw, domain in all_keywords}
-    all_items.extend(biorxiv.fetch(flat_keywords, lookback_days, domain_hints))
+#    flat_keywords = [kw for kw, _ in all_keywords]
+#    domain_hints = {kw: domain for kw, domain in all_keywords}
+#    all_items.extend(biorxiv.fetch(flat_keywords, lookback_days, domain_hints))
 
     print(f"[main] Harvested {len(all_items)} raw items (pre-dedup).")
     return all_items

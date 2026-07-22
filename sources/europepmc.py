@@ -76,39 +76,36 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
                 grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
                 title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
-                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."                
-
-                # Funder details
+                
+                # Abstract is frequently keyed under 'abstractText' or 'abstract' in the Grist API
+                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."
+                
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):
                     funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
                 else:
                     funder = str(funder_dict)
 
-                # Extract person / PI details safely
                 person = item.get("person", item.get("Person", {}))
                 given_name = person.get("givenName") or person.get("GivenName") or ""
                 family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
                 
-                # Affiliation
-                aff = grant.get("Name") or grant_data.get("name") or "N/A"
-                
-                # Category / subject (Grist schema uses Subject or category)
-                cat = grant_data.get("cat") or "N/A"
+                aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
+                cat = grant_data.get("subject") or grant_data.get("Subject") or grant_data.get("category") or "N/A"
 
-                # Grant Amount (Grist schema uses amount, awardAmount, or totalAwardAmount)
-                amount = grant_data.get("Amount") or grant_data.get("amount") or "N/A"
+                # Grant Amount fields (Grist API schema maps financial amounts to awardAmount, amount, or fundAmount)
+                amount = grant_data.get("awardAmount") or grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
                 
-                # Grant Duration / Dates
+                # Date Duration mapping using active dates, start/end dates, or period keys
                 start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
                 end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""
                 
                 if start_date and end_date:
                     duration = f"{start_date} to {end_date}"
                 else:
-                    duration = grant_data.get("activeDate") or grant_data.get("activedate") or grant_data.get("date") or grant_data.get("ActiveDate") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
-                    
+                    duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
+
                 grant_doi = grant_data.get("doi") or grant_data.get("Doi")
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"
@@ -116,7 +113,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
                 else:
                     grant_link = "https://europepmc.org/grantfinder"
-                    
+
                 raw_items.append({
                     "title": title,
                     "project contact": pi,

@@ -84,7 +84,18 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 funder_dict = grant_data.get("Funder", {})
                 funder = funder_dict.get("Name") or grant_data.get("GrantedAuthority") or "Europe PMC / GRIST"
 
+                # Extract person / PI details safely
+                person = item.get("Person", {})
+                given_name = person.get("GivenName", "")
+                family_name = person.get("FamilyName", "")
+                pi = f"{given_name} {family_name}".strip() or "N/A"
+                pi_id = person.get("Orcid") or person.get("orcid") or "N/A"
+                aff = person.get("Affiliation") or "N/A"
+                
+                # Category / subject if available
+                cat = grant_data.get("Subject") or grant_data.get("category") or "N/A"
                 grant_doi = grant_data.get("Doi") or grant_data.get("doi")
+                
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"
                 elif grant_id != "N/A":

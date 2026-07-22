@@ -118,13 +118,15 @@ def write_html(extracted_items, docs_dir="docs"):
 """
 
     for item in extracted_items:
+        keyword = item.get("keyword", "")
         title = item.get("title", "Untitled")
+        amount = item.get("affiliation", "N/A")
+        duration = item.get("grant duration", "N/A")
         pi = item.get("project contact", "N/A")
         aff = item.get("affiliation", "N/A")
+        subject = item.get("subject", "N/A")
         abstract = item.get("abstract", "No abstract available.")
         source = item.get("source", "Source")
-        keyword = item.get("keyword", "")
-        subject = item.get("subject", "N/A")
         link = item.get("link", "#")
 
         html_content += f"""
@@ -134,7 +136,10 @@ def write_html(extracted_items, docs_dir="docs"):
             <div class="meta">
                 <strong>Keyword:</strong> {keyword} | 
                 <strong>Source:</strong> {source} | 
-                <strong>Subject:</strong> {subject}
+                <strong>Subject:</strong> {subject} | 
+                <strong>Grant Amount:</strong> {amount} | 
+                <strong>Grant Duration:</strong> {duration} | 
+                
             </div>
             <p><strong>Project Contact (PI):</strong> {pi}</p>
             <p><strong>Affiliation:</strong> {aff}</p>

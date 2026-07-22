@@ -51,7 +51,7 @@ def main():
 
     if not extracted_items:
         print("[main] Extraction returned no items.")
-        save_state(STATE_FILE, updated_state)
+#        save_state(STATE_FILE, updated_state)
         return
 
     md_path = write_markdown(extracted_items, OUTPUT_DIR)

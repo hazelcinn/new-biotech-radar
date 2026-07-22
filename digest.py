@@ -32,67 +32,57 @@ def write_markdown(items: list, output_dir: str) -> str:
     # group by domain
     by_domain = {}
     for item in items:
-        domain = item.get("domain_hint", "")
+        domain = item.get("domain", "Uncategorized")
         by_domain.setdefault(domain, []).append(item)
 
-    with open(path, "w") as f:
-        f.write(f"# Pharma Technology Radar — Weekly Digest ({date.today().isoformat()})\n\n")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(f"# Biotechnology Radar — Weekly Digest ({date.today().isoformat()})\n\n")
         f.write(f"{len(items)} new items this week.\n\n")
 
         for domain, domain_items in sorted(by_domain.items(), key=lambda kv: -len(kv[1])):
-            f.write(f"## {_domain_label(domain)} ({len(domain_items)})\n\n")
+            f.write(f"## {domain} ({len(domain_items)})\n\n")
             for item in domain_items:
-                ext = item.get("extracted") or {}
-                if ext.get("relevant") is False:
-                    continue
-                tech_name = ext.get("technology_name") or item["title"]
-                stage = STAGE_LABELS.get(ext.get("development_stage", "unknown"), "Unknown stage")
-                f.write(f"### {tech_name}\n")
-                f.write(f"- **Source:** {item['source']} ({item.get('item_type','')}) — {stage}\n")
-                if item.get("institution"):
-                    loc = item.get("institution", "")
-                    if item.get("country"):
-                        loc += f" ({item['country']})"
-                    f.write(f"- **Institution:** {loc}\n")
-                if item.get("date"):
-                    f.write(f"- **Date:** {item['date']}\n")
-                if ext.get("plain_description"):
-                    f.write(f"- **What it is:** {ext['plain_description']}\n")
-                if ext.get("pharma_relevance"):
-                    f.write(f"- **Pharma relevance:** {ext['pharma_relevance']}\n")
-                if item.get("url"):
-                    f.write(f"- **Link:** {item['url']}\n")
-                f.write("\n")
-    return path
+                title = item.get("title", "Untitled")
+                pi = item.get("project contact", "N/A")
+                aff = item.get("affiliation", "N/A")
+                abstract = item.get("abstract", "No abstract available.")
+                source = item.get("source", "N/A")
+                keyword = item.get("keyword", "N/A")
+                subject = item.get("subject", "N/A")
+                link = item.get("link", "#")
 
+                # 1. Unlinked Title
+                f.write(f"### {title}\n")
+                f.write(f"- **Project Contact:** {pi}\n")
+                f.write(f"- **Affiliation:** {aff}\n")
+                f.write(f"- **Subject:** {subject}\n")
+                f.write(f"- **Source:** {source} | **Keyword:** {keyword}\n")
+                f.write(f"- **Abstract:** {abstract}\n")
+                f.write(f"- [🔗 View Original Source]({link})\n\n")
+    return path
 
 def write_csv(items: list, output_dir: str) -> str:
     os.makedirs(output_dir, exist_ok=True)
     path = os.path.join(output_dir, f"digest_{date.today().isoformat()}.csv")
 
     fieldnames = [
-        "technology_name", "domain", "development_stage", "source", "item_type",
-        "institution", "country", "date", "plain_description", "pharma_relevance", "url",
+        "title", "project contact", "affiliation", "subject", "source",
+        "keyword", "domain", "abstract", "link",
     ]
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for item in items:
-            ext = item.get("extracted") or {}
-            if ext.get("relevant") is False:
-                continue
             writer.writerow({
-                "technology_name": ext.get("technology_name") or item["title"],
-                "domain": _domain_label(item.get("domain_hint", "")),
-                "development_stage": STAGE_LABELS.get(ext.get("development_stage", "unknown"), "Unknown"),
-                "source": item["source"],
-                "item_type": item.get("item_type", ""),
-                "institution": item.get("institution", ""),
-                "country": item.get("country", ""),
-                "date": item.get("date", ""),
-                "plain_description": ext.get("plain_description", ""),
-                "pharma_relevance": ext.get("pharma_relevance", ""),
-                "url": item.get("url", ""),
+                "title": item.get("title", ""),
+                "project contact": item.get("project contact", ""),
+                "affiliation": item.get("affiliation", ""),
+                "subject": item.get("subject", ""),
+                "source": item.get("source", ""),
+                "keyword": item.get("keyword", ""),
+                "domain": item.get("domain", ""),
+                "abstract": item.get("abstract", ""),
+                "link": item.get("link", ""),
             })
     return path
 
@@ -129,16 +119,27 @@ def write_html(extracted_items, docs_dir="docs"):
 
     for item in extracted_items:
         title = item.get("title", "Untitled")
-        summary = item.get("summary", "No summary available.")
+        pi = item.get("project contact", "N/A")
+        aff = item.get("affiliation", "N/A")
+        abstract = item.get("abstract", "No abstract available.")
         source = item.get("source", "Source")
-        link = item.get("link", "#")
         keyword = item.get("keyword", "")
+        subject = item.get("subject", "N/A")
+        link = item.get("link", "#")
 
         html_content += f"""
         <div class="item">
-            <h3><a href="{link}" target="_blank">{title}</a></h3>
-            <div class="meta"><strong>Keyword:</strong> {keyword} | <strong>Source:</strong> {source}</div>
-            <p><strong>Summary:</strong> {summary}</p>
+            <!-- 1. Unlinked Title -->
+            <h3>{title}</h3>
+            <div class="meta">
+                <strong>Keyword:</strong> {keyword} | 
+                <strong>Source:</strong> {source} | 
+                <strong>Subject:</strong> {subject}
+            </div>
+            <p><strong>Project Contact (PI):</strong> {pi}</p>
+            <p><strong>Affiliation:</strong> {aff}</p>
+            <p><strong>Abstract:</strong> {abstract}</p>
+            <!-- Separate View Original Source Link -->
             <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>
         </div>
         """

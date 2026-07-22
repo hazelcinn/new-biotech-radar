@@ -93,9 +93,22 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
                 aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
                 
-                # Grant Amount fields (Grist API schema maps financial amounts to awardAmount, amount, or fundAmount)
-                amount = grant_data.get("awardAmount") or grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
-                
+                # Extract raw amount value
+                raw_amount = grant_data.get("awardAmount") or grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount")
+                # Extract currency symbol/code (often stored as 'currency' or nested in the amount object)
+                currency = grant_data.get("currency") or grant_data.get("Currency") or ""
+                if isinstance(raw_amount, dict):
+                    currency = raw_amount.get("currency", currency)
+                    raw_amount = raw_amount.get("value") or raw_amount.get("amount") or "N/A"
+                # Format amount with currency symbol or code if available
+                if raw_amount and str(raw_amount) != "N/A":
+                    # Clean symbol mapping if needed, or default to the code/symbol provided
+                    curr_symbols = {"GBP": "£", "USD": "$", "EUR": "€"}
+                    curr_display = curr_symbols.get(currency.upper(), currency)
+                    amount = f"{curr_display} {raw_amount}".strip() if curr_display else str(raw_amount)
+                else:
+                    amount = "N/A"
+                    
                 # Date Duration mapping using active dates, start/end dates, or period keys
                 start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
                 end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""

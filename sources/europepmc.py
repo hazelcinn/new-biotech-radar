@@ -76,28 +76,39 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 # Navigate into the nested 'Grant' dictionary
                 grant_data = item.get("Grant", item)
                 
-                grant_id = grant_data.get("Id") or grant_data.get("id") or "N/A"
+                grant_id = grant_data.get("Id") or grant_data.get("id") or grant_data.get("grantId") or "N/A"
                 title = grant_data.get("Title") or grant_data.get("title") or "Untitled Grant Project"
                 abstract = grant_data.get("Abstract") or grant_data.get("abstract") or "No abstract description provided."
                 
                 # Navigate into the nested 'Funder' dictionary
-                funder_dict = grant_data.get("Funder", {})
-                funder = funder_dict.get("Name") or grant_data.get("GrantedAuthority") or "Europe PMC / GRIST"
+                funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
+                if isinstance(funder_dict, dict):
+                    funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedauthority") or grant_data.get("GrantedAuthority") or "Europe PMC / GRIST"
+                else:
+                    funder = str(funder_dict)
 
                 # Extract person / PI details safely
-                person = item.get("Person", {})
-                given_name = person.get("GivenName", "")
-                family_name = person.get("FamilyName", "")
+                person = item.get("person", item.get("Person", {}))
+                given_name = person.get("givenName") or person.get("GivenName") or ""
+                family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
-                aff = person.get("Affiliation") or person.get("affiliation") or "N/A"
+                
+                # Affiliation and ROR integration fields
+                aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
                 
                 # Category / subject if available
                 cat = grant_data.get("Subject") or grant_data.get("category") or "N/A"
-                amount = grant_data.get("AwardAmount") or grant_data.get("amount") or "N/A"
-                start_date = grant_data.get("StartDate", "")
-                end_date = grant_data.get("EndDate", "")
-                duration = f"{start_date} to {end_date}" if start_date and end_date else grant_data.get("Duration", "N/A")
-                grant_doi = grant_data.get("Doi") or grant_data.get("doi")                
+                # Grant Amount and Duration fields matching the Grist data fields schema
+                Amount = grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or "N/A"
+                StartDate = grant_data.get("startDate") or grant_data.get("StartDate") or ""
+                EndDate = grant_data.get("endDate") or grant_data.get("EndDate") or ""
+                if start_date and end_date:
+                    duration = f"{start_date} to {end_date}"
+                else:
+                    duration = grant_data.get("duration") or grant_data.get("Duration") or "N/A"
+
+                active_date = grant_data.get("active date") or grant_data.get("date") or "N/A"
+                grant_doi = grant_data.get("doi") or grant_data.get("Doi")
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"
                 elif grant_id != "N/A":

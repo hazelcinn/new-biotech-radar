@@ -1,41 +1,41 @@
 import urllib.parse
 import requests
 
-def fetch(keyword: str, lookback_days: int, domain: str) -> list:
-    """Fetches standard research papers from Europe PMC, limited to top 10."""
-    raw_items = []
-    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
-        "Accept": "application/json"
-    }
-    
-    params = {
-        "query": f'"{keyword}" HAS_ABSTRACT:y',
-        "format": "json",
-        "pageSize": 1,  # Capped at top 10 per keyword
-        "resultType": "core"
-    }
-
-    try:
-        response = requests.get(url, params=params, headers=headers, timeout=12)
-        if response.status_code == 200:
-            data = response.json()
-            results = data.get("resultList", {}).get("result", [])
-            for item in results[:10]:
-                raw_items.append({
-                    "title": item.get("title", "Untitled Research"),
-                    "abstract": item.get("abstractText", "No abstract available."),
-                    "source": item.get("journalTitle", "Europe PMC"),
-                    "keyword": keyword,
-                    "domain": domain,
-                    "link": f"https://europepmc.org/article/{item.get('source', 'MED')}/{item.get('id')}" if item.get("id") else "#"
-                })
-    except Exception as e:
-        print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")
-
-    return raw_items
+#def fetch(keyword: str, lookback_days: int, domain: str) -> list:
+#    """Fetches standard research papers from Europe PMC, limited to top 10."""
+#    raw_items = []
+#    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+#    
+#    headers = {
+#        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
+#        "Accept": "application/json"
+#    }
+#    
+#    params = {
+#        "query": f'"{keyword}" HAS_ABSTRACT:y',
+#        "format": "json",
+#        "pageSize": 1,  # Capped at top 10 per keyword
+#        "resultType": "core"
+#    }
+#
+#    try:
+#        response = requests.get(url, params=params, headers=headers, timeout=12)
+#        if response.status_code == 200:
+#            data = response.json()
+#            results = data.get("resultList", {}).get("result", [])
+#            for item in results[:10]:
+#                raw_items.append({
+#                    "title": item.get("title", "Untitled Research"),
+#                    "abstract": item.get("abstractText", "No abstract available."),
+#                    "source": item.get("journalTitle", "Europe PMC"),
+#                    "keyword": keyword,
+#                    "domain": domain,
+#                    "link": f"https://europepmc.org/article/{item.get('source', 'MED')}/{item.get('id')}" if item.get("id") else "#"
+#                })
+#    except Exception as e:
+#        print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")
+#
+#    return raw_items
 
 
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:

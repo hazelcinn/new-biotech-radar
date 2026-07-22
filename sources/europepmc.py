@@ -92,15 +92,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 pi = f"{given_name} {family_name}".strip() or "N/A"
                 
                 aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
-                # Safely pull category/subject from available keys in the returned grant JSON
-                cat = (
-                    grant_data.get("category")
-                    or grant_data.get("Category")
-                    or grant_data.get("subject")
-                    or grant_data.get("Subject")
-                    or grant_data.get("keyword")
-                    or "N/A"
-                )
+                
                 # Grant Amount fields (Grist API schema maps financial amounts to awardAmount, amount, or fundAmount)
                 amount = grant_data.get("awardAmount") or grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
                 
@@ -125,7 +117,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     "title": title,
                     "project contact": pi,
                     "affiliation": aff,
-                    "subject": cat,
                     "grant amount": amount,
                     "grant duration": duration,
                     "abstract": abstract,

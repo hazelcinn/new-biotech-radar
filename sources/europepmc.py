@@ -70,19 +70,19 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
 
             if isinstance(records, dict):
                 records = [records]
-
-            # --- ADD THIS DEBUG LINE ---
-            if records:
-                print(f"[DEBUG europepmc] First raw record keys: {list(records[0].keys())}")
-                print(f"[DEBUG europepmc] First raw record sample: {records[0]}")
-            # ---------------------------
-            
+                
             # Slice to only take the top 10 records per keyword
             for item in records[:10]:
-                grant_id = item.get("Id") or item.get("id") or "N/A"
-                title = item.get("Title") or item.get("title") or "Untitled Grant Project"
-                abstract = item.get("Abstract") or item.get("abstract") or "No abstract description provided."
-                funder = item.get("GrantedAuthority") or item.get("funder") or "Europe PMC / GRIST"
+                # Navigate into the nested 'Grant' dictionary
+                grant_data = item.get("Grant", item)
+                
+                grant_id = grant_data.get("Id") or grant_data.get("id") or "N/A"
+                title = grant_data.get("Title") or grant_data.get("title") or "Untitled Grant Project"
+                abstract = grant_data.get("Abstract") or grant_data.get("abstract") or "No abstract description provided."
+                
+                # Navigate into the nested 'Funder' dictionary
+                funder_dict = grant_data.get("Funder", {})
+                funder = funder_dict.get("Name") or grant_data.get("GrantedAuthority") or "Europe PMC / GRIST"
 
                 grant_link = f"https://europepmc.org/grantfinder/grantid?id={grant_id}" if grant_id != "N/A" else "https://europepmc.org/grantfinder"
 

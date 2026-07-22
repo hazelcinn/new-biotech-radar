@@ -100,7 +100,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 cat = grant_data.get("Subject") or grant_data.get("category") or "N/A"
 
                 # Grant Amount and Duration fields matching the Grist data fields schema
-                Amount = grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or "N/A"
+                amount = grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
 
                 start_date = grant_data.get("startDate") or grant_data.get("StartDate") or ""
                 end_date = grant_data.get("endDate") or grant_data.get("EndDate") or ""

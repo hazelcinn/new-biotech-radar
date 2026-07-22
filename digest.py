@@ -132,7 +132,6 @@ def write_html(extracted_items, docs_dir="docs"):
             <div class="meta">
                 <strong>Keyword:</strong> {keyword} | 
                 <strong>Source:</strong> {source} | 
-                <strong>Subject:</strong> {subject} | 
                 <strong>Grant Amount:</strong> {amount} | 
                 <strong>Grant Duration:</strong> {duration} | 
                 

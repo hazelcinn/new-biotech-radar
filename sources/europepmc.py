@@ -76,8 +76,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
                 grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
                 title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
-                abstract = grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."
-                
+                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."                
+
                 # Funder details
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):
@@ -98,17 +98,16 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 cat = grant_data.get("Subject") or grant_data.get("subject") or grant_data.get("category") or "N/A"
 
                 # Grant Amount (Grist schema uses amount, awardAmount, or totalAwardAmount)
-                amount = grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
-
+                amount = grant_data.get("awardAmount") or grant_data.get("amount") or grant_data.get("AwardAmount") or grant_data.get("totalAwardAmount") or grant_data.get("fundAmount") or "N/A"
                 # Grant Duration / Dates
-                start_date = grant_data.get("startDate") or grant_data.get("StartDate") or ""
-                end_date = grant_data.get("endDate") or grant_data.get("EndDate") or ""
+                start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
+                end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""
                 
                 if start_date and end_date:
                     duration = f"{start_date} to {end_date}"
                 else:
-                    duration = grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
-
+                    duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
+                    
                 grant_doi = grant_data.get("doi") or grant_data.get("Doi")
                 if grant_doi:
                     grant_link = f"https://doi.org/{grant_doi}"

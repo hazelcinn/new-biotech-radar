@@ -78,7 +78,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
                 
                 # Abstract is frequently keyed under 'abstractText' or 'abstract' in the Grist API
-                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."
+                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or grant_data.get("abs") or "No abstract description provided."
                 
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):

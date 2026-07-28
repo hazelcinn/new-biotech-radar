@@ -192,6 +192,13 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             # Slice to only take the top 10 records per keyword
             for item in records[:10]:
                 grant_data = item.get("grant", item.get("Grant", item))
+
+                # --- TEMPORARY DEBUG ---
+                import json
+                print("=== RAW ITEM ===")
+                print(json.dumps(item, indent=2)[:3000])
+                print("=== END RAW ITEM ===")
+                # --- END TEMPORARY DEBUG ---
                 
                 grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
 

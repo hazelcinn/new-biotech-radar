@@ -229,20 +229,20 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 pi = f"{given_name} {family_name}".strip() or "N/A"
                 
                 # --- TEMPORARY DEBUG ---
-                import json
-                print("=== RAW ITEM ===")
-                if records.index(item) == 0:
-                    import copy
-                    grant_debug = copy.deepcopy(grant_data)
-                    if "Abstract" in grant_debug:
-                        grant_debug["Abstract"] = "<<TRUNCATED>>"
-                    print("=== GRANT KEYS ===", list(grant_data.keys()))
-                    print("=== GRANT (no abstract) ===")
-                    print(json.dumps(grant_debug, indent=2))
-                    print("=== PERSON KEYS ===", list(person.keys()) if isinstance(person, dict) else person)
-                    print("=== PERSON (full) ===")
-                    print(json.dumps(person, indent=2))
-                    print("=== END RAW ITEM ===")
+                #import json
+                #print("=== RAW ITEM ===")
+                #if records.index(item) == 0:
+                #    import copy
+                #    grant_debug = copy.deepcopy(grant_data)
+                #    if "Abstract" in grant_debug:
+                #        grant_debug["Abstract"] = "<<TRUNCATED>>"
+                #    print("=== GRANT KEYS ===", list(grant_data.keys()))
+                #    print("=== GRANT (no abstract) ===")
+                #    print(json.dumps(grant_debug, indent=2))
+                #    print("=== PERSON KEYS ===", list(person.keys()) if isinstance(person, dict) else person)
+                #    print("=== PERSON (full) ===")
+                #    print(json.dumps(person, indent=2))
+                #    print("=== END RAW ITEM ===")
                 # --- END TEMPORARY DEBUG ---
                 
                 aff_raw = (
@@ -313,6 +313,14 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     "domain": domain,
                     "link": grant_link
                 })
+                # --- TEMPORARY DEBUG ---
+                if records.index(item) == 0:
+                    print("=== FINAL FIELDS ===")
+                    print("affiliation:", repr(aff))
+                    print("amount:", repr(amount))
+                    print("amount_node (raw):", repr(amount_node))
+                    print("aff_raw (raw):", repr(aff_raw))
+                # --- END TEMPORARY DEBUG ---
     except Exception as e:
         print(f"[europepmc] Connection error during GRIST grant fetch for '{keyword}': {e}")
 

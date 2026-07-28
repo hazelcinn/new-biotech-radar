@@ -78,13 +78,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
 
                 title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
                 
-                abstract = (
-                    item.get("abstractText")
-                    or item.get("abstract")
-                    or item.get("description")
-                    or item.get("projectSummary")
-                    or "No abstract description provided."
-                )
+                abstract = grant_data.get ("abs") or grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("description") or grant_data.get("projectSummary") or "No abstract description provided."
                 
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):

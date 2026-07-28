@@ -192,23 +192,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             # Slice to only take the top 10 records per keyword
             for item in records[:10]:
                 grant_data = item.get("grant", item.get("Grant", item))
-
-                # --- TEMPORARY DEBUG ---
-                import json
-                print("=== RAW ITEM ===")
-                if records.index(item) == 0:
-                    import copy
-                    grant_debug = copy.deepcopy(grant_data)
-                    if "Abstract" in grant_debug:
-                        grant_debug["Abstract"] = "<<TRUNCATED>>"
-                    print("=== GRANT KEYS ===", list(grant_data.keys()))
-                    print("=== GRANT (no abstract) ===")
-                    print(json.dumps(grant_debug, indent=2))
-                    print("=== PERSON KEYS ===", list(person.keys()) if isinstance(person, dict) else person)
-                    print("=== PERSON (full) ===")
-                    print(json.dumps(person, indent=2))
-                    print("=== END RAW ITEM ===")
-                # --- END TEMPORARY DEBUG ---
                 
                 grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
 
@@ -244,6 +227,23 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 given_name = person.get("givenName") or person.get("GivenName") or ""
                 family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
+                
+                # --- TEMPORARY DEBUG ---
+                import json
+                print("=== RAW ITEM ===")
+                if records.index(item) == 0:
+                    import copy
+                    grant_debug = copy.deepcopy(grant_data)
+                    if "Abstract" in grant_debug:
+                        grant_debug["Abstract"] = "<<TRUNCATED>>"
+                    print("=== GRANT KEYS ===", list(grant_data.keys()))
+                    print("=== GRANT (no abstract) ===")
+                    print(json.dumps(grant_debug, indent=2))
+                    print("=== PERSON KEYS ===", list(person.keys()) if isinstance(person, dict) else person)
+                    print("=== PERSON (full) ===")
+                    print(json.dumps(person, indent=2))
+                    print("=== END RAW ITEM ===")
+                # --- END TEMPORARY DEBUG ---
                 
                 aff_raw = (
                     person.get("affiliation")

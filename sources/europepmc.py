@@ -64,7 +64,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             records = (
                 record_list.get("Record", [])
                 or record_list.get("grant", [])
-                or (data.get("Record", []) if isinstance(data,dict) else [])
+                or data.get("Record", [])
             )
 
             if isinstance(records, dict):
@@ -74,18 +74,9 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             for item in records[:10]:
                 grant_data = item.get("grant", item.get("Grant", item))
                 
-                grant_id = item.get("id") or item.get("grantId") or ""
-                funder = (
-                    item.get("funderName")
-                    or item.get("funder")
-                    or "Europe PMC GRIST"
-                )
-                title = (
-                    item.get("title")
-                    or item.get("titleText")
-                    or item.get("projectTitle")
-                    or "Untitled Grant"
-                )
+                grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
+
+                title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
                 
                 abstract = (
                     item.get("abstractText")

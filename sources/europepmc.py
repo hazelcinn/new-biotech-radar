@@ -1,6 +1,32 @@
 import urllib.parse
 import requests
 
+def _clean_abstract(abstract_node) -> str:
+    """Extracts raw text strings from GRIST abstract lists or dictionary nodes."""
+    if not abstract_node:
+        return ""
+    
+    if isinstance(abstract_node, list):
+        parts = []
+        for item in abstract_node:
+            if isinstance(item, dict):
+                val = item.get("value") or item.get("content") or item.get("text") or ""
+                if val:
+                    parts.append(str(val))
+            elif isinstance(item, str):
+                parts.append(item)
+        return " ".join(parts).strip()
+    
+    if isinstance(abstract_node, dict):
+        return str(
+            abstract_node.get("value") 
+            or abstract_node.get("content") 
+            or abstract_node.get("text") 
+            or ""
+        ).strip()
+        
+    return str(abstract_node).strip()
+    
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""
 #    raw_items = []
@@ -78,7 +104,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
 
                 title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
                 
-                abstract = (
+                abstract_raw = (
                     grant_data.get("abstractText") 
                     or grant_data.get("abstract")
                     or grant_data.get("ab")
@@ -95,6 +121,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     or item.get("description")
                     or "No abstract description provided."
                 )
+                # Unwraps list/dict structures into clean plain text
+                abstract = _clean_abstract(abstract_raw) or "No abstract description provided."
                 
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):

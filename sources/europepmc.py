@@ -196,8 +196,18 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 # --- TEMPORARY DEBUG ---
                 import json
                 print("=== RAW ITEM ===")
-                print(json.dumps(item, indent=2)[:3000])
-                print("=== END RAW ITEM ===")
+                if records.index(item) == 0:
+                    import copy
+                    grant_debug = copy.deepcopy(grant_data)
+                    if "Abstract" in grant_debug:
+                        grant_debug["Abstract"] = "<<TRUNCATED>>"
+                    print("=== GRANT KEYS ===", list(grant_data.keys()))
+                    print("=== GRANT (no abstract) ===")
+                    print(json.dumps(grant_debug, indent=2))
+                    print("=== PERSON KEYS ===", list(person.keys()) if isinstance(person, dict) else person)
+                    print("=== PERSON (full) ===")
+                    print(json.dumps(person, indent=2))
+                    print("=== END RAW ITEM ===")
                 # --- END TEMPORARY DEBUG ---
                 
                 grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"

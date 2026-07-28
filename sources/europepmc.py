@@ -37,7 +37,7 @@ def _clean_affiliation(aff_node) -> str:
         names = []
         for item in aff_node:
             cleaned = _clean_affiliation(item)
-            if cleaned and cleaned != "N/A":
+            if cleaned and cleaned != "N/A" and cleaned not in names:
                 names.append(cleaned)
         return "; ".join(names).strip()
     
@@ -52,9 +52,73 @@ def _clean_affiliation(aff_node) -> str:
             or aff_node.get("value")
             or aff_node.get("text")
             or ""
-        ).strip()
+        )
+        if isinstance(val, (dict, list)):
+            return _clean_affiliation(val)
+        return str(val).strip()
         
     return str(aff_node).strip()
+
+def _clean_amount(amount_node, currency: str = "") -> str:
+    """Extracts and formats grant amount and currency from GRIST response nodes."""
+    if amount_node is None:
+        return "N/A"
+
+    # Handle list of amount objects
+    if isinstance(amount_node, list):
+        for item in amount_node:
+            cleaned = _clean_amount(item, currency)
+            if cleaned != "N/A":
+                return cleaned
+        return "N/A"
+
+    raw_val = None
+    extracted_curr = currency
+
+    # Extract value and currency from dictionary
+    if isinstance(amount_node, dict):
+        extracted_curr = (
+            amount_node.get("currency")
+            or amount_node.get("currencyCode")
+            or amount_node.get("Currency")
+            or currency
+        )
+        raw_val = (
+            amount_node.get("value")
+            or amount_node.get("amount")
+            or amount_node.get("content")
+            or amount_node.get("text")
+            or amount_node.get("#text")
+            or amount_node.get("formattedAmount")
+            or amount_node.get("total")
+        )
+    else:
+        raw_val = amount_node
+
+    if raw_val is None or str(raw_val).strip().upper() in ("", "N/A", "NONE", "NULL"):
+        return "N/A"
+
+    raw_str = str(raw_val).strip()
+
+    # Format numeric values (e.g., 100000 -> 100,000)
+    try:
+        num_val = float(raw_str.replace(",", ""))
+        if num_val.is_integer():
+            raw_str = f"{int(num_val):,}"
+        else:
+            raw_str = f"{num_val:,.2f}"
+    except (ValueError, TypeError):
+        pass
+
+    curr_symbols = {"GBP": "£", "USD": "$", "EUR": "€"}
+    curr_str = str(extracted_curr).strip()
+    curr_display = curr_symbols.get(curr_str.upper(), curr_str)
+
+    # Avoid duplicating symbol if raw string already contains one
+    if curr_display and not any(symbol in raw_str for symbol in ["£", "$", "€", "EUR", "USD", "GBP"]):
+        return f"{curr_display} {raw_str}".strip()
+
+    return raw_str
     
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""
@@ -180,30 +244,26 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 
                 aff = _clean_affiliation(aff_raw) or "N/A"
                 
-                # Comprehensive extraction for grant amount and currency
+                # Extract grant amount and currency cleanly
                 amount_node = (
                     grant_data.get("amount") 
-                    or grant_data.get("AwardAmount") 
                     or grant_data.get("awardAmount") 
+                    or grant_data.get("AwardAmount") 
+                    or grant_data.get("grantAmount") 
                     or grant_data.get("totalAwardAmount") 
                     or grant_data.get("fundAmount") 
-                    or grant_data.get("financial")
+                    or item.get("amount")
+                    or item.get("awardAmount")
                 )
                 
-                currency = grant_data.get("currency") or grant_data.get("Currency") or ""
+                currency = (
+                    grant_data.get("currency") 
+                    or grant_data.get("Currency") 
+                    or item.get("currency") 
+                    or ""
+                )
                 
-                if isinstance(amount_node, dict):
-                    currency = amount_node.get("currency", currency)
-                    raw_val = amount_node.get("value") or amount_node.get("content") or amount_node.get("amount")
-                else:
-                    raw_val = amount_node
-
-                if raw_val is not None and str(raw_val).strip() and str(raw_val) != "N/A":
-                    curr_symbols = {"GBP": "£", "USD": "$", "EUR": "€"}
-                    curr_display = curr_symbols.get(str(currency).upper(), str(currency))
-                    amount = f"{curr_display} {raw_val}".strip() if curr_display else str(raw_val)
-                else:
-                    amount = "N/A"
+                amount = _clean_amount(amount_node, currency)
                     
                 # Date Duration mapping using active dates, start/end dates, or period keys
                 start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""

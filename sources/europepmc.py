@@ -135,7 +135,14 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
                 
-                aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"
+                aff = (
+                    person.get("affiliation") 
+                    or person.get("Affiliation") 
+                    or grant_data.get("affiliation")
+                    or item.get("affiliation")
+                    or item.get("Affiliation")
+                    or item.get("pers_orgUnit")
+                    or "N/A"
                 
                 # Comprehensive extraction for grant amount and currency
                 amount_node = (

@@ -80,7 +80,6 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     or item.get("funder")
                     or "Europe PMC GRIST"
                 )
-                records[:10]:
                 title = (
                     item.get("title")
                     or item.get("titleText")

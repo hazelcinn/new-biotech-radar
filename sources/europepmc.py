@@ -64,7 +64,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             records = (
                 record_list.get("Record", [])
                 or record_list.get("grant", [])
-                or data.get("Record", [])
+                or (data.get("Record", []) if isinstance(data,dict) else [])
             )
 
             if isinstance(records, dict):
@@ -74,11 +74,27 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             for item in records[:10]:
                 grant_data = item.get("grant", item.get("Grant", item))
                 
-                grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
-                title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
+                grant_id = item.get("id") or item.get("grantId") or ""
+                funder = (
+                    item.get("funderName")
+                    or item.get("funder")
+                    or "Europe PMC GRIST"
+                )
+                records[:10]:
+                title = (
+                    item.get("title")
+                    or item.get("titleText")
+                    or item.get("projectTitle")
+                    or "Untitled Grant"
+                )
                 
-                # Abstract is frequently keyed under 'abstractText' or 'abstract' in the Grist API
-                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or grant_data.get("abs") or "No abstract description provided."
+                abstract = (
+                    item.get("abstractText")
+                    or item.get("abstract")
+                    or item.get("description")
+                    or item.get("projectSummary")
+                    or "No abstract description provided."
+                )
                 
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):
@@ -142,7 +158,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     "grant amount": amount,
                     "grant duration": duration,
                     "abstract": abstract,
-                    "source": f"{funder} (Grant ID: {grant_id})",
+                    "source": funder,
                     "keyword": keyword,
                     "domain": domain,
                     "link": grant_link

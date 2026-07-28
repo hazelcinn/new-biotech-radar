@@ -117,7 +117,7 @@ def write_html(extracted_items, docs_dir="docs"):
     for item in extracted_items:
         keyword = item.get("keyword", "")
         title = item.get("title", "Untitled")
-        amount = item.get("affiliation", "N/A")
+        amount = item.get("grant amount", "N/A")
         duration = item.get("grant duration", "N/A")
         pi = item.get("project contact", "N/A")
         aff = item.get("affiliation", "N/A")

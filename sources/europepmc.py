@@ -251,8 +251,11 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     or grant_data.get("AwardAmount") 
                     or grant_data.get("grantAmount") 
                     or grant_data.get("totalAwardAmount") 
-                    or grant_data.get("fundAmount") 
+                    or grant_data.get("fundAmount")
+                    or grant_data.get("Amount")
+                    or grant_data.get("amount") 
                     or item.get("amount")
+                    or item.get("Amount")
                     or item.get("awardAmount")
                 )
                 

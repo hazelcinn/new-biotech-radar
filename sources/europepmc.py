@@ -27,6 +27,35 @@ def _clean_abstract(abstract_node) -> str:
         
     return str(abstract_node).strip()
     
+def _clean_affiliation(aff_node) -> str:
+    """Extracts plain text institution/university names from GRIST affiliation data."""
+    if not aff_node:
+        return ""
+    
+    # Handle list of affiliations
+    if isinstance(aff_node, list):
+        names = []
+        for item in aff_node:
+            cleaned = _clean_affiliation(item)
+            if cleaned and cleaned != "N/A":
+                names.append(cleaned)
+        return "; ".join(names).strip()
+    
+    # Handle dictionary node
+    if isinstance(aff_node, dict):
+        return str(
+            aff_node.get("name")
+            or aff_node.get("Name")
+            or aff_node.get("institutionName")
+            or aff_node.get("title")
+            or aff_node.get("Title")
+            or aff_node.get("value")
+            or aff_node.get("text")
+            or ""
+        ).strip()
+        
+    return str(aff_node).strip()
+    
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""
 #    raw_items = []
@@ -135,15 +164,21 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
                 
-                aff = (
-                    person.get("affiliation") 
-                    or person.get("Affiliation") 
+                aff_raw = (
+                    person.get("affiliation")
+                    or person.get("Affiliation")
+                    or person.get("institution")
+                    or person.get("Institution")
+                    or grant_data.get("institution")
+                    or grant_data.get("Institution")
                     or grant_data.get("affiliation")
-                    or item.get("affiliation")
-                    or item.get("Affiliation")
-                    or item.get("pers_orgUnit")
-                    or "N/A"
+                    or grant_data.get("Affiliation")
+                    or grant_data.get("grantee")
+                    or item.get("institution")
+                    or item.get("Institution")
                 )
+                
+                aff = _clean_affiliation(aff_raw) or "N/A"
                 
                 # Comprehensive extraction for grant amount and currency
                 amount_node = (

@@ -314,12 +314,17 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     "link": grant_link
                 })
                 # --- TEMPORARY DEBUG ---
-                if records.index(item) == 0:
-                    print("=== FINAL FIELDS ===")
+                # --- TEMPORARY DEBUG ---
+                import re
+                if amount != "N/A" and not re.search(r'[\d]', str(amount)):
+                    print(f"=== SUSPECT RECORD (keyword={keyword}) ===")
                     print("affiliation:", repr(aff))
                     print("amount:", repr(amount))
                     print("amount_node (raw):", repr(amount_node))
                     print("aff_raw (raw):", repr(aff_raw))
+                    print("grant_data keys:", list(grant_data.keys()))
+                    print("item keys:", list(item.keys()))
+                # --- END TEMPORARY DEBUG ---
                 # --- END TEMPORARY DEBUG ---
     except Exception as e:
         print(f"[europepmc] Connection error during GRIST grant fetch for '{keyword}': {e}")

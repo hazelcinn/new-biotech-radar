@@ -143,6 +143,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     or item.get("Affiliation")
                     or item.get("pers_orgUnit")
                     or "N/A"
+                )
                 
                 # Comprehensive extraction for grant amount and currency
                 amount_node = (

@@ -53,7 +53,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
 
     clean_kw = keyword.strip()
     encoded_query = urllib.parse.quote(clean_kw)
-    url = f"{base_url}{encoded_query}&format=json"
+    url = f"{base_url}{encoded_query}&format=json&resultType=core"
 
     try:
         response = requests.get(url, headers=headers, timeout=12)
@@ -78,7 +78,23 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
 
                 title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
                 
-                abstract = grant_data.get ("abstr") or grant_data.get("Abstr") or "No abstract description provided."
+                abstract = (
+                    grant_data.get("abstractText") 
+                    or grant_data.get("abstract")
+                    or grant_data.get("ab")
+                    or grant_data.get("abstr")
+                    or grant_data.get("Ab")
+                    or grant_data.get("Abstr") 
+                    or grant_data.get("Abstract")
+                    or grant_data.get("projectSummary")
+                    or grant_data.get("description")
+                    or item.get("abstractText")
+                    or item.get("abstract")
+                    or item.get("abs")
+                    or item.get("abstr")
+                    or item.get("description")
+                    or "No abstract description provided."
+                )
                 
                 funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
                 if isinstance(funder_dict, dict):

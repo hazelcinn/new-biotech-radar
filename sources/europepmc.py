@@ -3,45 +3,38 @@ import requests
 import re
 import json
 
-# Strict ORCID pattern (hyphenated form)
+# ORCID helpers and validators
 _ORCID_HYPHEN_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-[\dXx]{4})')
-# ORCID URL
 _ORCID_URL_RE = re.compile(r'https?://orcid\.org/(\d{4}-\d{4}-\d{4}-[\dXx]{4})', re.I)
-# ORCID-like digits (no hyphens) - exactly 16 chars (digits)
 _ORCID_DIGITS_RE = re.compile(r'(\d{16})')
+_ORCID_HTML_RE = re.compile(r'https?://orcid\.org/(\d{4}-\d{4}-\d{4}-[\dXx]{4})', re.I)
+_ORCID_META_RE = re.compile(r'ORCID[:\s]*([0-9Xx\-\s]{12,})', re.I)
 
 def _orcid_normalize(candidate: str) -> str | None:
-    """Return hyphenated ORCID (0000-0000-0000-0000 or with X) or None."""
     if not candidate:
         return None
     s = candidate.strip()
-    # If it's a full URL with orcid.org
     m = _ORCID_URL_RE.search(s)
     if m:
         return m.group(1)
-    # If it's already hyphenated
     m2 = _ORCID_HYPHEN_RE.search(s)
     if m2:
         return m2.group(1)
-    # If it's 16 digits in a row, hyphenate
-    m3 = _ORCID_DIGITS_RE.search(re.sub(r'\D', '', s))
+    digits = re.sub(r'\D', '', s)
+    m3 = _ORCID_DIGITS_RE.search(digits)
     if m3:
         d = m3.group(1)
         return f"{d[0:4]}-{d[4:8]}-{d[8:12]}-{d[12:16]}"
     return None
 
 def _orcid_checksum_is_valid(orcid_hyphenated: str) -> bool:
-    """
-    Validate ORCID using ISO 7064 mod 11-2 algorithm.
-    Input should be hyphenated orcid string like '0000-0002-1825-0097' or ending with 'X'.
-    """
+    """ISO 7064 mod 11-2 validation for ORCID (hyphenated or not)."""
     if not orcid_hyphenated:
         return False
     digits = re.sub(r'[^0-9Xx]', '', orcid_hyphenated)
     if len(digits) != 16:
         return False
     total = 0
-    # all but last char must be digits
     for ch in digits[:-1]:
         if not ch.isdigit():
             return False
@@ -52,7 +45,7 @@ def _orcid_checksum_is_valid(orcid_hyphenated: str) -> bool:
     return check_char == digits[-1].upper()
 
 def _find_strings(obj):
-    """Yield all string leaves from nested dict/list/tuple structures."""
+    """Yield string leaf values from nested dict/list/tuple structures."""
     if isinstance(obj, str):
         yield obj
     elif isinstance(obj, dict):
@@ -63,69 +56,56 @@ def _find_strings(obj):
             yield from _find_strings(v)
 
 def _extract_orcid_from_html(html_text: str, debug=False) -> str:
-    """
-    Try several approaches on the HTML to find a valid ORCID.
-    Returns the hyphenated ORCID (without URL prefix) or empty string.
-    """
+    """Return the hyphenated ORCID (no URL prefix) if found and valid, else ''."""
     if not html_text:
         return ""
-    # 1) explicit orcid.org URL in page
-    for m in _ORCID_URL_RE.finditer(html_text):
-        cand = m.group(1)
-        if _orcid_checksum_is_valid(cand):
-            return cand
-        if debug:
-            print("[orcid-debug] rejected orcid.org URL (checksum fail):", cand)
-
-    # 2) meta tags like <meta name="citation_author_orcid" content="...">
-    meta_matches = re.findall(r'<meta[^>]+name=["\']?([^"\'>]+)["\']?[^>]+content=["\']?([^"\'>]+)["\']?[^>]*>', html_text, flags=re.I)
+    # 1) explicit orcid.org URL
+    m = _ORCID_HTML_RE.search(html_text)
+    if m and _orcid_checksum_is_valid(m.group(1)):
+        return m.group(1)
+    # 2) meta tags
+    meta_matches = re.findall(
+        r'<meta[^>]+(?:name|property|itemprop)=["\']?([^"\'>]+)["\']?[^>]+content=["\']?([^"\'>]+)["\']?[^>]*>',
+        html_text, flags=re.I
+    )
     for name, content in meta_matches:
         if 'orcid' in name.lower() or 'orcid' in content.lower():
             norm = _orcid_normalize(content)
             if norm and _orcid_checksum_is_valid(norm):
                 return norm
-
     # 3) JSON-LD blocks
     for script in re.findall(r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html_text, flags=re.I|re.S):
         try:
             data = json.loads(script)
         except Exception:
             continue
-        # scan for URLs or identifiers
         for leaf in _find_strings(data):
             norm = _orcid_normalize(leaf)
             if norm and _orcid_checksum_is_valid(norm):
                 return norm
-
-    # 4) look for "ORCID" within nearby text + hyphenated pattern
-    # e.g. "ORCID: 0000-0001-2345-6789" or "ORCID iD 0000000123456789"
+    # 4) ORCID-labelled text
     for m in re.finditer(r'ORCID(?:\s*iD)?[:\s]*([0-9Xx\-\s]{12,})', html_text, flags=re.I):
         norm = _orcid_normalize(m.group(1))
         if norm and _orcid_checksum_is_valid(norm):
             return norm
         if debug:
-            print("[orcid-debug] found ORCID-labelled candidate but rejected:", m.group(1))
-
-    # 5) last resort: any hyphenated ORCID-like pattern (validate checksum)
+            print("[orcid-debug] found candidate but rejected:", m.group(1))
+    # 5) fallback: hyphenated candidate anywhere (strict checksum)
     for m in _ORCID_HYPHEN_RE.finditer(html_text):
         cand = m.group(1)
         if _orcid_checksum_is_valid(cand):
             return cand
         if debug:
-            print("[orcid-debug] found hyphenated candidate but rejected:", cand)
-
+            print("[orcid-debug] hyphenated candidate rejected:", cand)
     return ""
 
 def _get_orcid_url(person_data, fetch_fallback=False, grant_page_url=None, headers=None, debug=False) -> str:
     """
-    Robust ORCID extractor:
-     - looks in person_data top-level and nested values
-     - accepts authorId objects
-     - optionally (fetch_fallback=True) will fetch grant_page_url and scan HTML for orcid if not found in person_data
-    Returns canonical https://orcid.org/{id} or empty string.
+    Robust ORCID extractor. Returns canonical https://orcid.org/{id} or empty string.
+    If fetch_fallback=True and not present in person_data, will fetch grant_page_url and scan HTML.
     """
-    # 1) Search known top-level keys
     if isinstance(person_data, dict):
+        # top-level keys
         for key in ("orcid", "orcidId", "Orcid", "ORCID", "orcid-id", "orcid_id"):
             val = person_data.get(key)
             if val:
@@ -134,11 +114,10 @@ def _get_orcid_url(person_data, fetch_fallback=False, grant_page_url=None, heade
                     return f"https://orcid.org/{norm}"
                 if debug:
                     print("[orcid-debug] top-level candidate rejected:", val)
-
-        # authorId structure (sometimes {"type":"ORCID","value":"0000-..."} )
+        # authorId structures
         if "authorId" in person_data:
             aid = person_data["authorId"]
-            if isinstance(aid, dict) and str(aid.get("type","")).upper() == "ORCID":
+            if isinstance(aid, dict) and str(aid.get("type", "")).upper() == "ORCID":
                 cand = aid.get("value") or aid.get("id") or ""
                 norm = _orcid_normalize(str(cand))
                 if norm and _orcid_checksum_is_valid(norm):
@@ -151,16 +130,14 @@ def _get_orcid_url(person_data, fetch_fallback=False, grant_page_url=None, heade
                     return f"https://orcid.org/{norm}"
                 if debug:
                     print("[orcid-debug] authorId-string candidate rejected:", aid)
-
-    # 2) search nested string leaves for ORCID-like values
+    # search nested values
     for s in _find_strings(person_data):
         norm = _orcid_normalize(s)
         if norm and _orcid_checksum_is_valid(norm):
             return f"https://orcid.org/{norm}"
         if debug and norm:
-            print("[orcid-debug] nested string candidate rejected:", s)
-
-    # 3) fallback: if allowed, fetch the grant page and scan HTML
+            print("[orcid-debug] nested candidate rejected:", s)
+    # optional fetch fallback
     if fetch_fallback and grant_page_url:
         try:
             resp = requests.get(grant_page_url, headers=headers or {}, timeout=8)
@@ -171,35 +148,17 @@ def _get_orcid_url(person_data, fetch_fallback=False, grant_page_url=None, heade
         except Exception as e:
             if debug:
                 print("[orcid-debug] failed to fetch grant page for ORCID:", e)
-
-    return ""
-def _extract_orcid_from_html(html: str) -> str:
-    """Return canonical https://orcid.org/{id} if an ORCID is found in HTML, else ''."""
-    if not html:
-        return ""
-    # 1) Prefer explicit orcid.org URL
-    m = ORCID_HTML_RE.search(html)
-    if m:
-        return f"https://orcid.org/{m.group(1)}"
-    # 2) Look for plain ORCID-like patterns (hyphenated)
-    m2 = ORCID_DIGIT_RE.search(html)
-    if m2:
-        return f"https://orcid.org/{m2.group(1)}"
-    # 3) Fallback: look for "ORCID: 00000000..." style
-    m3 = re.search(r'ORCID[:\s]*([0-9Xx\-\s]{12,})', html, re.I)
-    if m3:
-        cand = re.sub(r'\s+', '', m3.group(1))
-        digits = re.sub(r'\D', '', cand)
-        if len(digits) == 16:
-            hyph = f"{digits[0:4]}-{digits[4:8]}-{digits[8:12]}-{digits[12:16]}"
-            return f"https://orcid.org/{hyph}"
     return ""
 
+def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
+    if not orcid_url:
+        return pi_name
+    return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
+
+# Cleaning helpers
 def _clean_abstract(abstract_node) -> str:
-    """Extracts raw text strings from GRIST abstract lists or dictionary nodes."""
     if not abstract_node:
         return ""
-    
     if isinstance(abstract_node, list):
         parts = []
         for item in abstract_node:
@@ -210,23 +169,18 @@ def _clean_abstract(abstract_node) -> str:
             elif isinstance(item, str):
                 parts.append(item)
         return " ".join(parts).strip()
-    
     if isinstance(abstract_node, dict):
         return str(
-            abstract_node.get("value") 
-            or abstract_node.get("content") 
-            or abstract_node.get("text") 
+            abstract_node.get("value")
+            or abstract_node.get("content")
+            or abstract_node.get("text")
             or ""
         ).strip()
-        
     return str(abstract_node).strip()
-    
+
 def _clean_affiliation(aff_node) -> str:
-    """Extracts plain text institution/university names from GRIST affiliation data."""
     if not aff_node:
         return ""
-    
-    # Handle list of affiliations
     if isinstance(aff_node, list):
         names = []
         for item in aff_node:
@@ -234,42 +188,35 @@ def _clean_affiliation(aff_node) -> str:
             if cleaned and cleaned != "N/A" and cleaned not in names:
                 names.append(cleaned)
         return "; ".join(names).strip()
-    
-    # Handle dictionary node
     if isinstance(aff_node, dict):
-        return str(
-            aff_node.get("name")
-            or aff_node.get("Name")
-            or aff_node.get("institutionName")
-            or aff_node.get("title")
-            or aff_node.get("Title")
-            or aff_node.get("value")
-            or aff_node.get("text")
-            or ""
-        )
-        if isinstance(val, (dict, list)):
-            return _clean_affiliation(val)
-        return str(val).strip()
-        
+        # try likely keys, fall back to searching nested values for meaningful text
+        for key in ("name", "Name", "institutionName", "institution", "title", "Title", "value", "text"):
+            val = aff_node.get(key)
+            if val and not isinstance(val, (dict, list)):
+                return str(val).strip()
+            if val and isinstance(val, (dict, list)):
+                # recurse into nested structure
+                nested = _clean_affiliation(val)
+                if nested:
+                    return nested
+        # if still nothing, try concatenating string leaves
+        leaves = [s for s in _find_strings(aff_node)]
+        if leaves:
+            return "; ".join({l.strip() for l in leaves if l and l.strip() != "N/A"})
+        return ""
     return str(aff_node).strip()
 
 def _clean_amount(amount_node, currency: str = "") -> str:
-    """Extracts and formats grant amount and currency from GRIST response nodes."""
     if amount_node is None:
         return "N/A"
-
-    # Handle list of amount objects
     if isinstance(amount_node, list):
         for item in amount_node:
             cleaned = _clean_amount(item, currency)
             if cleaned != "N/A":
                 return cleaned
         return "N/A"
-
     raw_val = None
     extracted_curr = currency
-
-    # Extract value and currency from dictionary
     if isinstance(amount_node, dict):
         extracted_curr = (
             amount_node.get("currency")
@@ -288,13 +235,9 @@ def _clean_amount(amount_node, currency: str = "") -> str:
         )
     else:
         raw_val = amount_node
-
     if raw_val is None or str(raw_val).strip().upper() in ("", "N/A", "NONE", "NULL"):
         return "N/A"
-
     raw_str = str(raw_val).strip()
-
-    # Format numeric values (e.g., 100000 -> 100,000)
     try:
         num_val = float(raw_str.replace(",", ""))
         if num_val.is_integer():
@@ -303,328 +246,172 @@ def _clean_amount(amount_node, currency: str = "") -> str:
             raw_str = f"{num_val:,.2f}"
     except (ValueError, TypeError):
         pass
-
     curr_symbols = {"GBP": "£", "USD": "$", "EUR": "€"}
     curr_str = str(extracted_curr).strip()
     curr_display = curr_symbols.get(curr_str.upper(), curr_str)
-
-    # Avoid duplicating symbol if raw string already contains one
     if curr_display and not any(symbol in raw_str for symbol in ["£", "$", "€", "EUR", "USD", "GBP"]):
         return f"{curr_display} {raw_str}".strip()
-
     return raw_str
 
 def _extract_pi_info(item: dict, grant_data: dict) -> tuple[str, dict]:
-    """Safely extracts PI name and person dictionary across multiple possible GRIST schema keys."""
     person_node = (
-        item.get("person") 
-        or item.get("Person") 
-        or grant_data.get("person") 
+        item.get("person")
+        or item.get("Person")
+        or grant_data.get("person")
         or grant_data.get("Person")
         or item.get("investigator")
         or grant_data.get("investigator")
         or {}
     )
-
     person = {}
     if isinstance(person_node, list) and len(person_node) > 0:
         person = person_node[0] if isinstance(person_node[0], dict) else {}
     elif isinstance(person_node, dict):
         person = person_node
-
     given_name = (
-        person.get("givenName") 
-        or person.get("GivenName") 
-        or person.get("firstName") 
-        or person.get("FirstName") 
+        person.get("givenName")
+        or person.get("GivenName")
+        or person.get("firstName")
+        or person.get("FirstName")
         or ""
     )
     family_name = (
-        person.get("familyName") 
-        or person.get("FamilyName") 
-        or person.get("lastName") 
-        or person.get("LastName") 
-        or person.get("surname") 
-        or person.get("Surname") 
+        person.get("familyName")
+        or person.get("FamilyName")
+        or person.get("lastName")
+        or person.get("LastName")
+        or person.get("surname")
+        or person.get("Surname")
         or ""
     )
-
     pi_name = f"{given_name} {family_name}".strip()
     if not pi_name and isinstance(person, dict):
         pi_name = person.get("fullName") or person.get("name") or person.get("Name") or ""
-
     pi_raw = str(pi_name).strip() if pi_name else "N/A"
     return pi_raw, person
 
-def _get_orcid_url(person_data) -> str:
-    """Extracts ORCID ID from GRIST person metadata and returns a full ORCID URL."""
-    if not isinstance(person_data, dict):
-        return ""
-
-    orcid = (
-        person_data.get("orcid") 
-        or person_data.get("orcidId") 
-        or person_data.get("Orcid") 
-        or person_data.get("ORCID")
-    )
-
-    if not orcid and "authorId" in person_data:
-        aid = person_data["authorId"]
-        if isinstance(aid, dict) and str(aid.get("type")).upper() == "ORCID":
-            orcid = aid.get("value")
-        elif isinstance(aid, str):
-            orcid = aid
-
-    if not orcid:
-        return ""
-
-    orcid_str = str(orcid).strip()
-    if orcid_str.startswith("http"):
-        return orcid_str
-    return f"https://orcid.org/{orcid_str}"
-
-
-def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
-    """Formats the PI name into an HTML anchor link that opens in a new tab."""
-    if not orcid_url:
-        return pi_name
-    return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
-    
-#def fetch(keyword: str, lookback_days: int, domain: str) -> list:
-#    """Fetches standard research papers from Europe PMC, limited to top 10."""
-#    raw_items = []
-#    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
-#    
-#    headers = {
-#        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
-#        "Accept": "application/json"
-#    }
-#    
-#    params = {
-#        "query": f'"{keyword}" HAS_ABSTRACT:y',
-#        "format": "json",
-#        "pageSize": 1,  # Capped at top 10 per keyword
-#        "resultType": "core"
-#    }
-#
-#    try:
-#        response = requests.get(url, params=params, headers=headers, timeout=12)
-#        if response.status_code == 200:
-#            data = response.json()
-#            results = data.get("resultList", {}).get("result", [])
-#            for item in results[:10]:
-#                raw_items.append({
-#                    "title": item.get("title", "Untitled Research"),
-#                    "abstract": item.get("abstractText", "No abstract available."),
-#                    "source": item.get("journalTitle", "Europe PMC"),
-#                    "keyword": keyword,
-#                    "domain": domain,
-#                    "link": f"https://europepmc.org/article/{item.get('source', 'MED')}/{item.get('id')}" if item.get("id") else "#"
-#                })
-#    except Exception as e:
-#        print(f"[europepmc] Connection error during paper fetch for '{keyword}': {e}")
-#
-#    return raw_items
-
 def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
-    """
-    Fetches actual grant records using the official Europe PMC GRIST REST API,
-    limited to the top 10 per keyword.
-    """
+    """Fetch grants from Europe PMC GRIST API (top 10)."""
     raw_items = []
-    
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
-    
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
         "Accept": "application/json"
     }
-
     clean_kw = keyword.strip()
     encoded_query = urllib.parse.quote(clean_kw)
     url = f"{base_url}{encoded_query}&format=json&resultType=core"
-
     try:
         response = requests.get(url, headers=headers, timeout=12)
-        if response.status_code == 200:
-            data = response.json()
-            
-            record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
-            records = (
-                record_list.get("Record", [])
-                or record_list.get("grant", [])
-                or data.get("Record", [])
+        if response.status_code != 200:
+            return raw_items
+        data = response.json()
+        record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
+        records = (
+            record_list.get("Record", [])
+            or record_list.get("grant", [])
+            or data.get("Record", [])
+        )
+        if isinstance(records, dict):
+            records = [records]
+        for item in records[:10]:
+            grant_data = item.get("grant", item.get("Grant", item))
+            grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
+            title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
+            abstract_raw = (
+                grant_data.get("abstractText")
+                or grant_data.get("abstract")
+                or grant_data.get("ab")
+                or grant_data.get("abstr")
+                or grant_data.get("Ab")
+                or grant_data.get("Abstr")
+                or grant_data.get("Abstract")
+                or grant_data.get("projectSummary")
+                or grant_data.get("description")
+                or item.get("abstractText")
+                or item.get("abstract")
+                or item.get("abs")
+                or item.get("abstr")
+                or item.get("description")
+                or "No abstract description provided."
             )
-
-            if isinstance(records, dict):
-                records = [records]
-                
-            # Slice to only take the top 10 records per keyword
-            for item in records[:10]:
-                grant_data = item.get("grant", item.get("Grant", item))
-                
-                grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
-
-                title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
-                
-                abstract_raw = (
-                    grant_data.get("abstractText") 
-                    or grant_data.get("abstract")
-                    or grant_data.get("ab")
-                    or grant_data.get("abstr")
-                    or grant_data.get("Ab")
-                    or grant_data.get("Abstr") 
-                    or grant_data.get("Abstract")
-                    or grant_data.get("projectSummary")
-                    or grant_data.get("description")
-                    or item.get("abstractText")
-                    or item.get("abstract")
-                    or item.get("abs")
-                    or item.get("abstr")
-                    or item.get("description")
-                    or "No abstract description provided."
-                )
-                # Unwraps list/dict structures into clean plain text
-                abstract = _clean_abstract(abstract_raw) or "No abstract description provided."
-                
-                funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
-                if isinstance(funder_dict, dict):
-                    funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
-                else:
-                    funder = str(funder_dict)
-
-                #extract PI info
-                pi_raw, person = _extract_pi_info(item, grant_data)
-                orcid_url = _get_orcid_url(person)
-                pi_display = _make_clickable_pi(pi_raw, orcid_url)
-                
-                # --- TEMPORARY DEBUG ---
-                #import json
-                #print("=== RAW ITEM ===")
-                #if records.index(item) == 0:
-                #    import copy
-                #    grant_debug = copy.deepcopy(grant_data)
-                #    if "Abstract" in grant_debug:
-                #        grant_debug["Abstract"] = "<<TRUNCATED>>"
-                #    print("=== GRANT KEYS ===", list(grant_data.keys()))
-                #    print("=== GRANT (no abstract) ===")
-                #    print(json.dumps(grant_debug, indent=2))
-                #    print("=== PERSON KEYS ===", list(person.keys()) if isinstance(person, dict) else person)
-                #    print("=== PERSON (full) ===")
-                #    print(json.dumps(person, indent=2))
-                #    print("=== END RAW ITEM ===")
-                # --- END TEMPORARY DEBUG ---
-                
-                aff_raw = (
-                    person.get("affiliation")
-                    or person.get("Affiliation")
-                    or person.get("institution")
-                    or person.get("Institution")
-                    or grant_data.get("institution")
-                    or grant_data.get("Institution")
-                    or grant_data.get("affiliation")
-                    or grant_data.get("Affiliation")
-                    or grant_data.get("grantee")
-                    or item.get("institution")
-                    or item.get("Institution")
-                )
-                
-                aff = _clean_affiliation(aff_raw) or "N/A"
-
-                # Extract grant amount and currency cleanly
-                amount_node = (
-                    grant_data.get("amount") 
-                    or grant_data.get("awardAmount") 
-                    or grant_data.get("AwardAmount") 
-                    or grant_data.get("grantAmount") 
-                    or grant_data.get("totalAwardAmount") 
-                    or grant_data.get("fundAmount")
-                    or grant_data.get("Amount")
-                    or item.get("amount")
-                    or item.get("Amount")
-                    or item.get("awardAmount")
-                )
-                
-                currency = (
-                    grant_data.get("currency") 
-                    or grant_data.get("Currency") 
-                    or item.get("currency") 
-                    or ""
-                )
-                
-                amount = _clean_amount(amount_node, currency)
-                    
-                # Date Duration mapping using active dates, start/end dates, or period keys
-                start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
-                end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""
-                
-                if start_date and end_date:
-                    duration = f"{start_date} to {end_date}"
-                else:
-                    duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
-
-                grant_doi = grant_data.get("doi") or grant_data.get("Doi")
-                if grant_doi:
-                    grant_link = f"https://doi.org/{grant_doi}"
-                elif grant_id != "N/A":
-                    grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
-                else:
-                    grant_link = "https://europepmc.org/grantfinder"
-
-                # if orcid_url is empty, try to fetch the grant page and scrape an ORCID
-                if not orcid_url and grant_link and grant_link.startswith("http"):
-                    try:
-                        # reuse headers you already have; keep a short timeout
-                        html_resp = requests.get(grant_link, headers=headers, timeout=8)
-                        if html_resp.status_code == 200 and html_resp.text:
-                            orcid_from_page = _extract_orcid_from_html(html_resp.text)
-                            if orcid_from_page:
-                                orcid_url = orcid_from_page
-                                # update pi_display to include the discovered ORCID link
-                                pi_display = _make_clickable_pi(pi_raw, orcid_url)
-                                # optional debug:
-                                print(f"[debug] Found ORCID on grant page for '{pi_raw}': {orcid_url}")
-                    except Exception as e:
-                        # non-fatal: don't raise, but log so you can see failures
-                        print(f"[debug] Failed to fetch/parse grant page for ORCID: {e}")
-
-                orcid_url = _get_orcid_url(person, fetch_fallback=True, grant_page_url=grant_link, headers=headers, debug=True)
-                pi_display = _make_clickable_pi(pi_raw, orcid_url)
-
-                print("PI:", pi_raw, "ORCID:", orcid_url, "pi_display:", pi_display)
-
-                # Make a Markdown variant (safe for renderers that accept Markdown)
-                pi_md = f"[{pi_raw}]({orcid_url})" if orcid_url else pi_raw
-                
-                raw_items.append({
-                    "title": title,
-                    "project_contact_name": pi_raw,         # plain PI name
-                    "project_contact_orcid": orcid_url,     # plain ORCID URL (safe to render as <a href=...>)
-                    "project_contact_html": pi_display,     # HTML anchor string (requires unescaped HTML rendering)
-                    "project_contact_md": pi_md,            # Markdown link (useful for notebooks / markdown renderers)
-                    "affiliation": aff,
-                    "grant amount": amount,
-                    "grant duration": duration,
-                    "abstract": abstract,
-                    "source": funder,
-                    "keyword": keyword,
-                    "domain": domain,
-                    "link": grant_link
-                })
-
-                # --- TEMPORARY DEBUG ---
-                #import re
-                #if amount != "N/A" and not re.search(r'[\d]', str(amount)):
-                #    print(f"=== SUSPECT RECORD (keyword={keyword}) ===")
-                #    print("affiliation:", repr(aff))
-                #    print("amount:", repr(amount))
-                #    print("amount_node (raw):", repr(amount_node))
-                #    print("aff_raw (raw):", repr(aff_raw))
-                #    print("grant_data keys:", list(grant_data.keys()))
-                #    print("item keys:", list(item.keys()))
-                # --- END TEMPORARY DEBUG ---
-    
+            abstract = _clean_abstract(abstract_raw) or "No abstract description provided."
+            funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
+            if isinstance(funder_dict, dict):
+                funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
+            else:
+                funder = str(funder_dict)
+            # PI info
+            pi_raw, person = _extract_pi_info(item, grant_data)
+            # Affiliation
+            aff_raw = (
+                person.get("affiliation")
+                or person.get("Affiliation")
+                or person.get("institution")
+                or person.get("Institution")
+                or grant_data.get("institution")
+                or grant_data.get("Institution")
+                or grant_data.get("affiliation")
+                or grant_data.get("Affiliation")
+                or grant_data.get("grantee")
+                or item.get("institution")
+                or item.get("Institution")
+            )
+            aff = _clean_affiliation(aff_raw) or "N/A"
+            # Amount and currency
+            amount_node = (
+                grant_data.get("amount")
+                or grant_data.get("awardAmount")
+                or grant_data.get("AwardAmount")
+                or grant_data.get("grantAmount")
+                or grant_data.get("totalAwardAmount")
+                or grant_data.get("fundAmount")
+                or grant_data.get("Amount")
+                or item.get("amount")
+                or item.get("Amount")
+                or item.get("awardAmount")
+            )
+            currency = (
+                grant_data.get("currency")
+                or grant_data.get("Currency")
+                or item.get("currency")
+                or ""
+            )
+            amount = _clean_amount(amount_node, currency)
+            # Duration
+            start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
+            end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""
+            if start_date and end_date:
+                duration = f"{start_date} to {end_date}"
+            else:
+                duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
+            # Link
+            grant_doi = grant_data.get("doi") or grant_data.get("Doi")
+            if grant_doi:
+                grant_link = f"https://doi.org/{grant_doi}"
+            elif grant_id != "N/A":
+                grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
+            else:
+                grant_link = "https://europepmc.org/grantfinder"
+            # ORCID extraction with fallback to page scraping
+            orcid_url = _get_orcid_url(person, fetch_fallback=True, grant_page_url=grant_link, headers=headers, debug=False)
+            pi_display = _make_clickable_pi(pi_raw, orcid_url)
+            pi_md = f"[{pi_raw}]({orcid_url})" if orcid_url else pi_raw
+            raw_items.append({
+                "title": title,
+                "project_contact_name": pi_raw,
+                "project_contact_orcid": orcid_url,
+                "project_contact_html": pi_display,
+                "project_contact_md": pi_md,
+                "affiliation": aff,
+                "grant amount": amount,
+                "grant duration": duration,
+                "abstract": abstract,
+                "source": funder,
+                "keyword": keyword,
+                "domain": domain,
+                "link": grant_link
+            })
     except Exception as e:
         print(f"[europepmc] Connection error during GRIST grant fetch for '{keyword}': {e}")
-
     return raw_items

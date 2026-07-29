@@ -43,6 +43,7 @@ Currently:
 - Conference abstracts, industry white papers (no general API/feed exists
   for either — these will likely need a separate targeted-search-agent
   approach rather than a scheduled harvester)
+- grey literature
 
 ## Setup — running it locally (for testing)
 

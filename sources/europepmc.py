@@ -399,6 +399,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             pi_md = f"[{pi_raw}]({orcid_url})" if orcid_url else pi_raw
             raw_items.append({
                 "title": title,
+                "project contact": pi_display,
                 "project_contact_name": pi_raw,
                 "project_contact_orcid": orcid_url,
                 "project_contact_html": pi_display,

@@ -17,44 +17,8 @@ For Future:
 
 **Sources — working now, no setup needed:**
 Currently:
-- Europe PMC
-          The Academy of Medical Sciences
-          Alzheimer's Society - United Against Dementia
-          FWF Austrian Science Fund
-          barts CHARITY
-          UKRI Biotechnology and Biological Sciences Research Council
-          Blood Cancer UK
-          Breast Cancer NOW - The research & care charity
-          British Heart Foundation
-          Cancer Research UK
-          Chief Scientist Office
-          India Alliance - DBT wellcome
-          DiABEtES UK - Know Diabetes. Fight Diabetes.
-          NWO
-          EDCTP
-          erc
-          Ymchwil lechyd a Gofal Cymru - Health and Care Research Wales
-          Marie Curie
-          URKI - Medical Research Council
-          Medical Research Foundation
-          mnda - motor neurone disease association
-          MQ - Transforming mental health through research
-          MS Society
-          NC3Rs - National Centre for the Replacement Refinement & Reduction of Animals in Research
-          NIHR - National Institute for Health and Care Research
-          Pancreatic Cancer UK
-          Parkinson's UK - Change attitudes. Find a cure. Join us.
-          RN I:D
-          Swiss National Science Foundation
-          Fondazione Telethon
-          Versus Arthritis
-          VIVENSA FOUNDATION - Funding for the future of ageing well
-          W - wellcome
-          World Health Organization
-          worldwide cancer research
-          Yorkshire Cancer Research
-          ZonMw
-          EMBL
+- Europe PMC: The Academy of Medical Sciences, Alzheimer's Society - United Against Dementia, FWF Austrian Science Fund, barts CHARITY, UKRI Biotechnology and Biological Sciences Research Council, Blood Cancer UK, Breast Cancer NOW - The research & care charity, British Heart Foundation, Cancer Research UK, Chief Scientist Office, India Alliance - DBT wellcome, DiABEtES UK - Know Diabetes. Fight Diabetes., NWO, EDCTP, erc, Ymchwil lechyd a Gofal Cymru - Health and Care Research Wales, Marie Curie, URKI - Medical Research Council, Medical Research Foundation, mnda - motor neurone disease association, MQ - Transforming mental health through research, MS Society, NC3Rs - National Centre for the Replacement Refinement & Reduction of Animals in Research, NIHR - National Institute for Health and Care Research, Pancreatic Cancer UK, Parkinson's UK - Change attitudes. Find a cure. Join us., RN I:D, Swiss National Science Foundation, Fondazione Telethon, Versus Arthritis, VIVENSA FOUNDATION - Funding for the future of ageing well, W - wellcome, World Health Organization, worldwide cancer research, Yorkshire Cancer Research, ZonMw, EMBL
+  
 In progress:
 - CORDIS (EU Horizon projects) — grab the current bulk CSV export URL from
   https://cordis.europa.eu/projects and paste it into `HORIZON_CSV_URL` in

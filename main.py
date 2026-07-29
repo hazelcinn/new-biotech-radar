@@ -1,6 +1,3 @@
-import europepmc
-print("👉 LOADING EUROPEPMC FROM:", europepmc.__file__)
-
 import sys
 from config import DOMAINS, LOOKBACK_DAYS, STATE_FILE, OUTPUT_DIR, DOCS_DIR
 

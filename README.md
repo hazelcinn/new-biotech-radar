@@ -111,17 +111,17 @@ machine doesn't need to be on. It also keeps your API keys out of the code
    git push -u origin main
    ```
 
-2. **Add your API keys as repo secrets** (not committed to code):
+2.**Setup with Ollama for now so can only run locally ( you must install Ollama): BUT Add your API keys as repo secrets** (not committed to code):
    Repo page → Settings → Secrets and variables → Actions → New repository secret
    - `ANTHROPIC_API_KEY`
    - `FWF_API_KEY` (optional)
 
-3. **Enable Actions write permissions** so the workflow can commit the
+4. **Enable Actions write permissions** so the workflow can commit the
    digest back to the repo each week:
    Repo page → Settings → Actions → General → Workflow permissions →
    "Read and write permissions"
 
-4. **That's it.** The workflow in `.github/workflows/weekly-digest.yml`
+5. **That's it.** The workflow in `.github/workflows/weekly-digest.yml`
    is already configured to run every Monday at 08:00 UTC. It will:
    - Install dependencies
    - Run `main.py`
@@ -131,7 +131,7 @@ machine doesn't need to be on. It also keeps your API keys out of the code
    To test it immediately without waiting for Monday: go to the repo's
    **Actions** tab → "Weekly Pharma Tech Radar" → **Run workflow**.
 
-5. **Reading the digest**: after each run, the new markdown/CSV files
+6. **Reading the digest**: after each run, the new markdown/CSV files
    appear in the `output/` folder of your repo — GitHub renders markdown
    directly in the browser, so you can just click the file to read it.
 

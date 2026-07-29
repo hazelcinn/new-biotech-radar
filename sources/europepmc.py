@@ -372,7 +372,14 @@ def _extract_pi_info(item: dict, grant_data: dict) -> tuple[str, dict]:
     pi_raw = str(pi_name).strip() if pi_name else "N/A"
     return pi_raw, person
 
-def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
+def fetch_grants(keyword: str, lookback_days: int, domain: str) 
+                 summary_mode: str = "truncate",
+                 truncate_chars: int = 200,
+                 use_ollama: bool = False,
+                 ollama_url: str = "http://localhost:11434",
+                 ollama_model: str = "llama2",
+                 summary_sentences: int = 5,
+                 debug: bool = False) -> list:
     """Fetch grants from Europe PMC GRIST API (top 10)."""
     raw_items = []
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
@@ -400,23 +407,29 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             grant_data = item.get("grant", item.get("Grant", item))
             grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
             title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
-            abstract_raw = (
-                grant_data.get("abstractText")
-                or grant_data.get("abstract")
-                or grant_data.get("ab")
-                or grant_data.get("abstr")
-                or grant_data.get("Ab")
-                or grant_data.get("Abstr")
-                or grant_data.get("Abstract")
-                or grant_data.get("projectSummary")
-                or grant_data.get("description")
-                or item.get("abstractText")
-                or item.get("abstract")
-                or item.get("abs")
-                or item.get("abstr")
-                or item.get("description")
-                or "No abstract description provided."
-            )
+            abstract_raw = None
+            for k in ["abstractText","abstract","ab","abstr","Abstract","projectSummary","description","abs","description"]:
+                v = grant_data.get(k) or item.get(k)
+                if v:
+                    abstract_raw = v
+                    break
+            abstract = _clean_abstract(abstract_raw) if abstract_raw is not None else ""
+        #        grant_data.get("abstractText")
+        #        or grant_data.get("abstract")
+        #        or grant_data.get("ab")
+        #        or grant_data.get("abstr")
+        #        or grant_data.get("Ab")
+        #        or grant_data.get("Abstr")
+        #        or grant_data.get("Abstract")
+        #        or grant_data.get("projectSummary")
+        #        or grant_data.get("description")
+        #        or item.get("abstractText")
+        #        or item.get("abstract")
+        #        or item.get("abs")
+        #        or item.get("abstr")
+        #        or item.get("description")
+        #        or "No abstract description provided."
+        #    )
             abstract = _clean_abstract(abstract_raw) or "No abstract description provided."
             funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
             if isinstance(funder_dict, dict):
@@ -535,8 +548,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 "affiliation": aff,
                 "grant amount": amount,
                 "grant duration": duration,
-                #"abstract": abstract,
-                "abstract_display": abstract_display,
+                "abstract_full": abstract,
+                "abstract": abstract_display,
                 "source": funder,
                 "keyword": keyword,
                 "domain": domain,

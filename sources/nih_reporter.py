@@ -404,5 +404,3 @@ def fetch_nih_reporter(
         })
 
     return results_out
-    def fetch(keyword: str, lookback_days: int, domain: str, **kwargs):
-        return fetch_nih_reporter(keyword, lookback_days, domain, **kwargs)

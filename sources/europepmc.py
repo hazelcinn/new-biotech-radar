@@ -375,7 +375,7 @@ def _extract_pi_info(item: dict, grant_data: dict) -> tuple[str, dict]:
 def fetch_grants(
     keyword: str, 
     lookback_days: int, 
-    domain: str 
+    domain: str,
     summary_mode: str = "truncate",
     truncate_chars: int = 200,
     use_ollama: bool = False,

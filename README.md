@@ -1,4 +1,4 @@
-# Pharma Technology Radar — v1
+# Biotech Radar — v1
 
 Weekly digest of emerging pharma/biotech-relevant technologies from labs and
 companies worldwide, built on free public sources.

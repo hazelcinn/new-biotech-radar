@@ -120,6 +120,48 @@ def _clean_amount(amount_node, currency: str = "") -> str:
 
     return raw_str
 
+def _extract_pi_info(item: dict, grant_data: dict) -> tuple[str, dict]:
+    """Safely extracts PI name and person dictionary across multiple possible GRIST schema keys."""
+    person_node = (
+        item.get("person") 
+        or item.get("Person") 
+        or grant_data.get("person") 
+        or grant_data.get("Person")
+        or item.get("investigator")
+        or grant_data.get("investigator")
+        or {}
+    )
+
+    person = {}
+    if isinstance(person_node, list) and len(person_node) > 0:
+        person = person_node[0] if isinstance(person_node[0], dict) else {}
+    elif isinstance(person_node, dict):
+        person = person_node
+
+    given_name = (
+        person.get("givenName") 
+        or person.get("GivenName") 
+        or person.get("firstName") 
+        or person.get("FirstName") 
+        or ""
+    )
+    family_name = (
+        person.get("familyName") 
+        or person.get("FamilyName") 
+        or person.get("lastName") 
+        or person.get("LastName") 
+        or person.get("surname") 
+        or person.get("Surname") 
+        or ""
+    )
+
+    pi_name = f"{given_name} {family_name}".strip()
+    if not pi_name and isinstance(person, dict):
+        pi_name = person.get("fullName") or person.get("name") or person.get("Name") or ""
+
+    pi_raw = str(pi_name).strip() if pi_name else "N/A"
+    return pi_raw, person
+
 def _get_orcid_url(person_data) -> str:
     """Extracts ORCID ID from GRIST person metadata and returns a full ORCID URL."""
     if not isinstance(person_data, dict):

@@ -120,53 +120,39 @@ def _clean_amount(amount_node, currency: str = "") -> str:
 
     return raw_str
 
-def get_orcid_url(person_data):
-    """
-    Extracts ORCID ID from a person/investigator dictionary 
-    and returns a full ORCID URL.
-    """
+def _get_orcid_url(person_data) -> str:
+    """Extracts ORCID ID from GRIST person metadata and returns a full ORCID URL."""
     if not isinstance(person_data, dict):
-        return None
+        return ""
 
-    orcid = None
-    # Check common ORCID field keys in Europe PMC/GRIST responses
-    if person_data.get('orcid'):
-        orcid = person_data['orcid']
-    elif person_data.get('orcidId'):
-        orcid = person_data['orcidId']
-    elif 'authorId' in person_data:
-        aid = person_data['authorId']
-        if isinstance(aid, dict) and aid.get('type', '').upper() == 'ORCID':
-            orcid = aid.get('value')
+    orcid = (
+        person_data.get("orcid") 
+        or person_data.get("orcidId") 
+        or person_data.get("Orcid") 
+        or person_data.get("ORCID")
+    )
+
+    if not orcid and "authorId" in person_data:
+        aid = person_data["authorId"]
+        if isinstance(aid, dict) and str(aid.get("type")).upper() == "ORCID":
+            orcid = aid.get("value")
         elif isinstance(aid, str):
             orcid = aid
 
     if not orcid:
-        return None
+        return ""
 
-    orcid = str(orcid).strip()
-    if orcid.startswith('http'):
-        return orcid
-    return f"https://orcid.org/{orcid}"
+    orcid_str = str(orcid).strip()
+    if orcid_str.startswith("http"):
+        return orcid_str
+    return f"https://orcid.org/{orcid_str}"
 
 
-def make_clickable_pi(pi_name, orcid_url, mode="html"):
-    """
-    Formats the PI name into a clickable link opening in a new tab.
-    
-    Modes:
-      - 'html': Creates an HTML anchor tag (<a target="_blank">).
-      - 'markdown': Creates a standard Markdown link ([PI Name](URL)).
-    """
+def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
+    """Formats the PI name into an HTML anchor link that opens in a new tab."""
     if not orcid_url:
         return pi_name
-
-    if mode == "html":
-        return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
-    elif mode == "markdown":
-        return f"[{pi_name}]({orcid_url})"
-    
-    return pi_name
+    return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
     
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""

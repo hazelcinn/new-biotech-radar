@@ -21,6 +21,8 @@ Currently:
   
 ## In progress:
 - NIH RePORTER (US federal grants) - has an API
+          To Do: fix affiliation, link orcid to name
+- Overall: fix keywords, add search by, pull only relevant in time, new digest per keyword, make entries from NIH and PMC the same name format, change source to funding body, pull API designated keywords
 
 ## For Future:
 - NSF Award Search (US federal grants)

@@ -81,6 +81,8 @@ In progress:
 
 ## Setup — running it locally (for testing)
 
+Currently running Ollama which must be installed locally. But you can revise as necessary for the following:
+
 ```bash
 pip install -r requirements.txt
 export ANTHROPIC_API_KEY="your-key-here"

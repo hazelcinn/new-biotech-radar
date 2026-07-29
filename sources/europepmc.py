@@ -2,6 +2,88 @@ import urllib.parse
 import requests
 import re
 import json
+import time
+
+def _truncate_text(text: str, length: int = 200) -> str:
+    if not text:
+        return ""
+    t = text.strip()
+    if len(t) <= length:
+        return t
+    # avoid cutting mid-word if possible
+    cut = t[:length].rsplit(" ", 1)[0]
+    return cut + "…"
+
+def _simple_sentence_summary(text: str, max_sentences: int = 5) -> str:
+    if not text:
+        return ""
+    # Very small sentence splitter that works without external deps
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+    # remove empty items
+    sentences = [s.strip() for s in sentences if s and len(s.strip()) > 0]
+    if not sentences:
+        return _truncate_text(text, 200)
+    return " ".join(sentences[:max_sentences])
+
+def _ollama_summarize(text: str, n_sentences: int = 5,
+                      ollama_url: str = "http://localhost:11434",
+                      model: str = "llama2",
+                      max_tokens: int = 256,
+                      temperature: float = 0.2,
+                      timeout: int = 15) -> str | None:
+    """
+    Try to call Ollama to summarize text into n_sentences.
+    Returns the generated summary string, or None on failure.
+    NOTE: Adjust ollama_url and model to your environment.
+    """
+    if not text:
+        return ""
+    prompt = (
+        f"Summarize the following abstract into {n_sentences} concise sentences. "
+        "Keep it factual and omit speculative claims.\n\n"
+        f"Abstract:\n{text.strip()}\n\nSummary:"
+    )
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "max_tokens": max_tokens,
+        "temperature": temperature
+    }
+    try:
+        resp = requests.post(f"{ollama_url}/api/generate", json=payload, timeout=timeout)
+        # Try to parse likely response formats robustly
+        try:
+            j = resp.json()
+        except Exception:
+            j = None
+        # Common possibilities:
+        #  - streaming/text body: resp.text contains the text
+        #  - JSON with 'text' or 'result' or 'choices'
+        if j:
+            # choices -> content/text
+            if isinstance(j, dict):
+                if "text" in j and isinstance(j["text"], str):
+                    return j["text"].strip()
+                if "result" in j and isinstance(j["result"], str):
+                    return j["result"].strip()
+                if "choices" in j and isinstance(j["choices"], list):
+                    c = j["choices"][0]
+                    # Some servers put content/text inside 'message'/'content'
+                    if isinstance(c, dict):
+                        for key in ("text", "content", "message"):
+                            if key in c and isinstance(c[key], str):
+                                return c[key].strip()
+                        # nested message.content?
+                        if "message" in c and isinstance(c["message"], dict) and "content" in c["message"]:
+                            return str(c["message"]["content"]).strip()
+            # if it's a simple list or other, fall back to resp.text below
+        # fallback: plain text body
+        if resp.status_code == 200 and resp.text:
+            return resp.text.strip()
+    except Exception:
+        # do not raise — return None so caller falls back
+        return None
+    return None
 
 # ORCID helpers and validators
 _ORCID_HYPHEN_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-[\dXx]{4})')
@@ -341,6 +423,28 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
             else:
                 funder = str(funder_dict)
+                
+            # Parameters you may want to expose to the caller of fetch_grants
+            # (I show inline defaults; you can pass these as args to fetch_grants)
+            use_ollama = False           # set True to attempt Ollama summarization
+            ollama_url = "http://localhost:11434"
+            ollama_model = "llama2"      # change to your model name in Ollama
+            summary_sentences = 5
+            summarize = True             # if False, will use truncation to 200 chars instead
+
+            if summarize:
+                abstract_display = None
+                if use_ollama:
+                    # try Ollama first (gracefully fall back)
+                    abstract_display = _ollama_summarize(abstract, n_sentences=summary_sentences,
+                                                         ollama_url=ollama_url, model=ollama_model)
+                if not abstract_display:
+                    # Ollama unavailable or failed -> local sentence-based summary
+                    abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+            else:
+                # don't summarize — show the first 200 chars
+                abstract_display = _truncate_text(abstract, 200)
+            
             # PI info
             pi_raw, person = _extract_pi_info(item, grant_data)
             # Affiliation
@@ -407,7 +511,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 "affiliation": aff,
                 "grant amount": amount,
                 "grant duration": duration,
-                "abstract": abstract,
+                #"abstract": abstract,
+                "abstract_display": abstract_display,
                 "source": funder,
                 "keyword": keyword,
                 "domain": domain,

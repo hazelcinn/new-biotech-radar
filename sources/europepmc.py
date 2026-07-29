@@ -1,5 +1,31 @@
 import urllib.parse
 import requests
+import re
+
+ORCID_HTML_RE = re.compile(r'https?://orcid\.org/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])', re.I)
+ORCID_DIGIT_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])', re.I)
+
+def _extract_orcid_from_html(html: str) -> str:
+    """Return canonical https://orcid.org/{id} if an ORCID is found in HTML, else ''."""
+    if not html:
+        return ""
+    # 1) Prefer explicit orcid.org URL
+    m = ORCID_HTML_RE.search(html)
+    if m:
+        return f"https://orcid.org/{m.group(1)}"
+    # 2) Look for plain ORCID-like patterns (hyphenated)
+    m2 = ORCID_DIGIT_RE.search(html)
+    if m2:
+        return f"https://orcid.org/{m2.group(1)}"
+    # 3) Fallback: look for "ORCID: 00000000..." style
+    m3 = re.search(r'ORCID[:\s]*([0-9Xx\-\s]{12,})', html, re.I)
+    if m3:
+        cand = re.sub(r'\s+', '', m3.group(1))
+        digits = re.sub(r'\D', '', cand)
+        if len(digits) == 16:
+            hyph = f"{digits[0:4]}-{digits[4:8]}-{digits[8:12]}-{digits[12:16]}"
+            return f"https://orcid.org/{hyph}"
+    return ""
 
 def _clean_abstract(abstract_node) -> str:
     """Extracts raw text strings from GRIST abstract lists or dictionary nodes."""
@@ -376,6 +402,23 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
                 else:
                     grant_link = "https://europepmc.org/grantfinder"
+
+                # if orcid_url is empty, try to fetch the grant page and scrape an ORCID
+                if not orcid_url and grant_link and grant_link.startswith("http"):
+                    try:
+                        # reuse headers you already have; keep a short timeout
+                        html_resp = requests.get(grant_link, headers=headers, timeout=8)
+                        if html_resp.status_code == 200 and html_resp.text:
+                            orcid_from_page = _extract_orcid_from_html(html_resp.text)
+                            if orcid_from_page:
+                                orcid_url = orcid_from_page
+                                # update pi_display to include the discovered ORCID link
+                                pi_display = _make_clickable_pi(pi_raw, orcid_url)
+                                # optional debug:
+                                print(f"[debug] Found ORCID on grant page for '{pi_raw}': {orcid_url}")
+                    except Exception as e:
+                        # non-fatal: don't raise, but log so you can see failures
+                        print(f"[debug] Failed to fetch/parse grant page for ORCID: {e}")
 
                 print("PI:", pi_raw, "ORCID:", orcid_url, "pi_display:", pi_display)
                 

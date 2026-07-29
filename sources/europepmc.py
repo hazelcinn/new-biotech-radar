@@ -379,7 +379,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str)
                  ollama_url: str = "http://localhost:11434",
                  ollama_model: str = "llama2",
                  summary_sentences: int = 5,
-                 debug: bool = False) -> list:
+                 debug: bool = False,
+    ) -> list:
     """Fetch grants from Europe PMC GRIST API (top 10)."""
     raw_items = []
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="

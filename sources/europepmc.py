@@ -195,6 +195,10 @@ def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
     if not orcid_url:
         return pi_name
     return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
+
+def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
+    print("--- RUNNING UPDATED EUROPEPMC FILE ---")  # Temporary test line
+    raw_items = []
     
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""

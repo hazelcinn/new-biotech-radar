@@ -380,10 +380,35 @@ def fetch_nih_reporter(
         else:
             duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or "N/A"
 
-        if project_num:
-            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(str(project_num))}"
+        # prefer explicit project number fields (these are what reporter expects)
+        proj_num = (
+            proj.get("projectNumber")
+            or proj.get("project_number")
+            or proj.get("projectNum")
+            or proj.get("project_num")
+        )
+
+        # If API already includes a details/link field, prefer it
+        direct_link = proj.get("projectUrl") or proj.get("url") or proj.get("link")
+
+        if direct_link:
+            grant_link = str(direct_link)
+        elif proj_num:
+            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(str(proj_num))}"
         else:
-            grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(title or keyword)}"
+            # If only a numeric internal id exists (e.g., proj.get("id")) we avoid assuming reporter accepts it.
+            # Instead, build a search URL so the user can still find the project reliably.
+            internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
+            if internal_id and str(internal_id).strip().isdigit():
+                # numeric fallback: use the search page (safer than assuming ID works in project-details)
+                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(str(internal_id))}"
+            else:
+                # final fallback: search by title/keyword
+                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(title or keyword)}"
+
+        # Optional debug log
+        if debug:
+            print("[nih] link chosen:", grant_link, " (proj_num:", proj_num, "internal_id:", internal_id if 'internal_id' in locals() else None, "direct:", bool(direct_link)) )
 
         results_out.append({
             "title": title or "Untitled Project",

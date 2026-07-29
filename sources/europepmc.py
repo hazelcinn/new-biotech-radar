@@ -195,10 +195,6 @@ def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
     if not orcid_url:
         return pi_name
     return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
-
-def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
-    print("--- RUNNING UPDATED EUROPEPMC FILE ---")  # Temporary test line
-    raw_items = []
     
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""
@@ -241,6 +237,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
     Fetches actual grant records using the official Europe PMC GRIST REST API,
     limited to the top 10 per keyword.
     """
+    print("--- RUNNING UPDATED EUROPEPMC FILE ---")  # Temporary test line
     raw_items = []
     
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="

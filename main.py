@@ -18,7 +18,7 @@ def harvest_all(lookback_days: int):
 #        all_items.extend(europepmc.fetch(kw, lookback_days, domain))
         all_items.extend(europepmc.fetch_grants(kw, lookback_days, domain))
 #        all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))
-        all_items.extend(nih_reporter.fetch(kw, lookback_days, domain))
+        all_items.extend(nih_reporter.fetch_nih_reporter(kw, lookback_days, domain))
 #        all_items.extend(nsf.fetch(kw, lookback_days, domain))
 #        all_items.extend(ukri_gtr.fetch(kw, lookback_days, domain))
 #        all_items.extend(cordis.fetch(kw, lookback_days, domain))

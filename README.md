@@ -19,21 +19,20 @@ For Future:
 Currently:
 - Europe PMC: The Academy of Medical Sciences, Alzheimer's Society - United Against Dementia, FWF Austrian Science Fund, barts CHARITY, UKRI Biotechnology and Biological Sciences Research Council, Blood Cancer UK, Breast Cancer NOW - The research & care charity, British Heart Foundation, Cancer Research UK, Chief Scientist Office, India Alliance - DBT wellcome, DiABEtES UK - Know Diabetes. Fight Diabetes., NWO, EDCTP, erc, Ymchwil lechyd a Gofal Cymru - Health and Care Research Wales, Marie Curie, URKI - Medical Research Council, Medical Research Foundation, mnda - motor neurone disease association, MQ - Transforming mental health through research, MS Society, NC3Rs - National Centre for the Replacement Refinement & Reduction of Animals in Research, NIHR - National Institute for Health and Care Research, Pancreatic Cancer UK, Parkinson's UK - Change attitudes. Find a cure. Join us., RN I:D, Swiss National Science Foundation, Fondazione Telethon, Versus Arthritis, VIVENSA FOUNDATION - Funding for the future of ageing well, W - wellcome, World Health Organization, worldwide cancer research, Yorkshire Cancer Research, ZonMw, EMBL
   
-In progress:
+## In progress:
+- NIH RePORTER (US federal grants) - has an API
+
+## For Future:
+- NSF Award Search (US federal grants)
+- UKRI Gateway to Research (UK grants - cross reference some)
+- FWF Austria Open API — request a free key at https://openapi.fwf.ac.at/fwfkey,
+  set it as `FWF_API_KEY`. This is the source that catches things like
+  SpinCell before they're publicly announced.
 - CORDIS (EU Horizon projects) — grab the current bulk CSV export URL from
   https://cordis.europa.eu/projects and paste it into `HORIZON_CSV_URL` in
   `sources/cordis.py`. CORDIS doesn't offer a stable live-query API for
   third parties, so this uses their official monthly bulk export instead.
 
-## For Future:
-- NIH RePORTER (US federal grants)
-- NSF Award Search (US federal grants)
-- UKRI Gateway to Research (UK grants - cross reference some)
-
-**Sources — need a one-time setup step:**
-- FWF Austria Open API — request a free key at https://openapi.fwf.ac.at/fwfkey,
-  set it as `FWF_API_KEY`. This is the source that catches things like
-  SpinCell before they're publicly announced.
 
 **Not yet built** (Tier 2/3 from our discussion — added once v1 is running):
 - National agencies requiring scraping: Germany (DFG), France (ANR),

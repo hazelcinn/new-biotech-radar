@@ -119,6 +119,54 @@ def _clean_amount(amount_node, currency: str = "") -> str:
         return f"{curr_display} {raw_str}".strip()
 
     return raw_str
+
+def get_orcid_url(person_data):
+    """
+    Extracts ORCID ID from a person/investigator dictionary 
+    and returns a full ORCID URL.
+    """
+    if not isinstance(person_data, dict):
+        return None
+
+    orcid = None
+    # Check common ORCID field keys in Europe PMC/GRIST responses
+    if person_data.get('orcid'):
+        orcid = person_data['orcid']
+    elif person_data.get('orcidId'):
+        orcid = person_data['orcidId']
+    elif 'authorId' in person_data:
+        aid = person_data['authorId']
+        if isinstance(aid, dict) and aid.get('type', '').upper() == 'ORCID':
+            orcid = aid.get('value')
+        elif isinstance(aid, str):
+            orcid = aid
+
+    if not orcid:
+        return None
+
+    orcid = str(orcid).strip()
+    if orcid.startswith('http'):
+        return orcid
+    return f"https://orcid.org/{orcid}"
+
+
+def make_clickable_pi(pi_name, orcid_url, mode="html"):
+    """
+    Formats the PI name into a clickable link opening in a new tab.
+    
+    Modes:
+      - 'html': Creates an HTML anchor tag (<a target="_blank">).
+      - 'markdown': Creates a standard Markdown link ([PI Name](URL)).
+    """
+    if not orcid_url:
+        return pi_name
+
+    if mode == "html":
+        return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
+    elif mode == "markdown":
+        return f"[{pi_name}]({orcid_url})"
+    
+    return pi_name
     
 #def fetch(keyword: str, lookback_days: int, domain: str) -> list:
 #    """Fetches standard research papers from Europe PMC, limited to top 10."""

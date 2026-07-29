@@ -94,6 +94,57 @@ def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
         return pi_name
     return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
 
+# Ollama summarization helper (defensive)
+def _ollama_summarize(
+    text: str,
+    n_sentences: int = 5,
+    ollama_url: str = "http://localhost:11434",
+    model: str = "llama2",
+    max_tokens: int = 256,
+    temperature: float = 0.2,
+    timeout: int = 15,
+) -> Optional[str]:
+    if not text:
+        return ""
+    prompt = (
+        f"Summarize the following abstract into {n_sentences} concise sentences. "
+        "Keep it factual and omit speculative claims.\n\n"
+        f"Abstract:\n{text.strip()}\n\nSummary:"
+    )
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "max_tokens": max_tokens,
+        "temperature": temperature
+    }
+    try:
+        resp = requests.post(f"{ollama_url}/api/generate", json=payload, timeout=timeout)
+    except Exception:
+        return None
+    # Try to parse likely response formats robustly
+    try:
+        j = resp.json()
+    except Exception:
+        j = None
+    if j:
+        if isinstance(j, dict):
+            if "text" in j and isinstance(j["text"], str):
+                return j["text"].strip()
+            if "result" in j and isinstance(j["result"], str):
+                return j["result"].strip()
+            if "choices" in j and isinstance(j["choices"], list) and j["choices"]:
+                c = j["choices"][0]
+                if isinstance(c, dict):
+                    for key in ("text", "content", "message"):
+                        if key in c and isinstance(c[key], str):
+                            return c[key].strip()
+                    if "message" in c and isinstance(c["message"], dict) and "content" in c["message"]:
+                        return str(c["message"]["content"]).strip()
+    # fallback to raw text body if present
+    if resp.status_code == 200 and resp.text:
+        return resp.text.strip()
+    return None
+
 def fetch_nih_reporter(
     keyword: str,
     lookback_days: int,
@@ -102,6 +153,12 @@ def fetch_nih_reporter(
     summary_mode: str = "truncate",   # "truncate" | "sentences" | "ollama" (ollama not implemented here)
     truncate_chars: int = 200,
     summary_sentences: int = 5,
+    use_ollama: bool = False,
+    ollama_url: str = "http://localhost:11434",
+    ollama_model: str = "llama2",
+    ollama_max_tokens: int = 256,
+    ollama_temperature: float = 0.2,
+    ollama_timeout: int = 15,
     debug: bool = False,
 ) -> List[Dict[str, Any]]:
     """
@@ -115,6 +172,7 @@ def fetch_nih_reporter(
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
+    
 
     # Build a conservative search body - this may be adjusted later if you want different behavior.
     # The RePORTER API accepts a "criteria" object; we try a simple keyword search.
@@ -203,11 +261,28 @@ def fetch_nih_reporter(
         if not abstract:
             abstract_display = "No abstract available."
         else:
-            if summary_mode == "sentences":
+            if summary_mode == "ollama" and use_ollama:
+                summary = _ollama_summarize(
+                    abstract,
+                    n_sentences=summary_sentences,
+                    ollama_url=ollama_url,
+                    model=ollama_model,
+                    max_tokens=ollama_max_tokens,
+                    temperature=ollama_temperature,
+                    timeout=ollama_timeout,
+                )
+                if summary:
+                    abstract_display = summary
+            else:
+                    # fallback chain
+                    abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+                    if not abstract_display:
+                        abstract_display = _truncate_text(abstract, truncate_chars)
+            elif summary_mode == "sentences":
                 abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
-            else:  # default truncate
+            else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
-
+                
         # PI extraction (varied shapes)
         # Try a few likely fields in NIH project result
         pi_name = ""

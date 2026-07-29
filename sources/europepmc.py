@@ -1,10 +1,178 @@
 import urllib.parse
 import requests
 import re
+import json
 
-ORCID_HTML_RE = re.compile(r'https?://orcid\.org/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])', re.I)
-ORCID_DIGIT_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])', re.I)
+# Strict ORCID pattern (hyphenated form)
+_ORCID_HYPHEN_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-[\dXx]{4})')
+# ORCID URL
+_ORCID_URL_RE = re.compile(r'https?://orcid\.org/(\d{4}-\d{4}-\d{4}-[\dXx]{4})', re.I)
+# ORCID-like digits (no hyphens) - exactly 16 chars (digits)
+_ORCID_DIGITS_RE = re.compile(r'(\d{16})')
 
+def _orcid_normalize(candidate: str) -> str | None:
+    """Return hyphenated ORCID (0000-0000-0000-0000 or with X) or None."""
+    if not candidate:
+        return None
+    s = candidate.strip()
+    # If it's a full URL with orcid.org
+    m = _ORCID_URL_RE.search(s)
+    if m:
+        return m.group(1)
+    # If it's already hyphenated
+    m2 = _ORCID_HYPHEN_RE.search(s)
+    if m2:
+        return m2.group(1)
+    # If it's 16 digits in a row, hyphenate
+    m3 = _ORCID_DIGITS_RE.search(re.sub(r'\D', '', s))
+    if m3:
+        d = m3.group(1)
+        return f"{d[0:4]}-{d[4:8]}-{d[8:12]}-{d[12:16]}"
+    return None
+
+def _orcid_checksum_is_valid(orcid_hyphenated: str) -> bool:
+    """
+    Validate ORCID using ISO 7064 mod 11-2 algorithm.
+    Input should be hyphenated orcid string like '0000-0002-1825-0097' or ending with 'X'.
+    """
+    if not orcid_hyphenated:
+        return False
+    digits = re.sub(r'[^0-9Xx]', '', orcid_hyphenated)
+    if len(digits) != 16:
+        return False
+    total = 0
+    # all but last char must be digits
+    for ch in digits[:-1]:
+        if not ch.isdigit():
+            return False
+        total = (total + int(ch)) * 2
+    remainder = total % 11
+    result = (12 - remainder) % 11
+    check_char = 'X' if result == 10 else str(result)
+    return check_char == digits[-1].upper()
+
+def _find_strings(obj):
+    """Yield all string leaves from nested dict/list/tuple structures."""
+    if isinstance(obj, str):
+        yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _find_strings(v)
+    elif isinstance(obj, (list, tuple, set)):
+        for v in obj:
+            yield from _find_strings(v)
+
+def _extract_orcid_from_html(html_text: str, debug=False) -> str:
+    """
+    Try several approaches on the HTML to find a valid ORCID.
+    Returns the hyphenated ORCID (without URL prefix) or empty string.
+    """
+    if not html_text:
+        return ""
+    # 1) explicit orcid.org URL in page
+    for m in _ORCID_URL_RE.finditer(html_text):
+        cand = m.group(1)
+        if _orcid_checksum_is_valid(cand):
+            return cand
+        if debug:
+            print("[orcid-debug] rejected orcid.org URL (checksum fail):", cand)
+
+    # 2) meta tags like <meta name="citation_author_orcid" content="...">
+    meta_matches = re.findall(r'<meta[^>]+name=["\']?([^"\'>]+)["\']?[^>]+content=["\']?([^"\'>]+)["\']?[^>]*>', html_text, flags=re.I)
+    for name, content in meta_matches:
+        if 'orcid' in name.lower() or 'orcid' in content.lower():
+            norm = _orcid_normalize(content)
+            if norm and _orcid_checksum_is_valid(norm):
+                return norm
+
+    # 3) JSON-LD blocks
+    for script in re.findall(r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html_text, flags=re.I|re.S):
+        try:
+            data = json.loads(script)
+        except Exception:
+            continue
+        # scan for URLs or identifiers
+        for leaf in _find_strings(data):
+            norm = _orcid_normalize(leaf)
+            if norm and _orcid_checksum_is_valid(norm):
+                return norm
+
+    # 4) look for "ORCID" within nearby text + hyphenated pattern
+    # e.g. "ORCID: 0000-0001-2345-6789" or "ORCID iD 0000000123456789"
+    for m in re.finditer(r'ORCID(?:\s*iD)?[:\s]*([0-9Xx\-\s]{12,})', html_text, flags=re.I):
+        norm = _orcid_normalize(m.group(1))
+        if norm and _orcid_checksum_is_valid(norm):
+            return norm
+        if debug:
+            print("[orcid-debug] found ORCID-labelled candidate but rejected:", m.group(1))
+
+    # 5) last resort: any hyphenated ORCID-like pattern (validate checksum)
+    for m in _ORCID_HYPHEN_RE.finditer(html_text):
+        cand = m.group(1)
+        if _orcid_checksum_is_valid(cand):
+            return cand
+        if debug:
+            print("[orcid-debug] found hyphenated candidate but rejected:", cand)
+
+    return ""
+
+def _get_orcid_url(person_data, fetch_fallback=False, grant_page_url=None, headers=None, debug=False) -> str:
+    """
+    Robust ORCID extractor:
+     - looks in person_data top-level and nested values
+     - accepts authorId objects
+     - optionally (fetch_fallback=True) will fetch grant_page_url and scan HTML for orcid if not found in person_data
+    Returns canonical https://orcid.org/{id} or empty string.
+    """
+    # 1) Search known top-level keys
+    if isinstance(person_data, dict):
+        for key in ("orcid", "orcidId", "Orcid", "ORCID", "orcid-id", "orcid_id"):
+            val = person_data.get(key)
+            if val:
+                norm = _orcid_normalize(str(val))
+                if norm and _orcid_checksum_is_valid(norm):
+                    return f"https://orcid.org/{norm}"
+                if debug:
+                    print("[orcid-debug] top-level candidate rejected:", val)
+
+        # authorId structure (sometimes {"type":"ORCID","value":"0000-..."} )
+        if "authorId" in person_data:
+            aid = person_data["authorId"]
+            if isinstance(aid, dict) and str(aid.get("type","")).upper() == "ORCID":
+                cand = aid.get("value") or aid.get("id") or ""
+                norm = _orcid_normalize(str(cand))
+                if norm and _orcid_checksum_is_valid(norm):
+                    return f"https://orcid.org/{norm}"
+                if debug:
+                    print("[orcid-debug] authorId candidate rejected:", cand)
+            elif isinstance(aid, str):
+                norm = _orcid_normalize(aid)
+                if norm and _orcid_checksum_is_valid(norm):
+                    return f"https://orcid.org/{norm}"
+                if debug:
+                    print("[orcid-debug] authorId-string candidate rejected:", aid)
+
+    # 2) search nested string leaves for ORCID-like values
+    for s in _find_strings(person_data):
+        norm = _orcid_normalize(s)
+        if norm and _orcid_checksum_is_valid(norm):
+            return f"https://orcid.org/{norm}"
+        if debug and norm:
+            print("[orcid-debug] nested string candidate rejected:", s)
+
+    # 3) fallback: if allowed, fetch the grant page and scan HTML
+    if fetch_fallback and grant_page_url:
+        try:
+            resp = requests.get(grant_page_url, headers=headers or {}, timeout=8)
+            if resp.status_code == 200:
+                found = _extract_orcid_from_html(resp.text, debug=debug)
+                if found:
+                    return f"https://orcid.org/{found}"
+        except Exception as e:
+            if debug:
+                print("[orcid-debug] failed to fetch grant page for ORCID:", e)
+
+    return ""
 def _extract_orcid_from_html(html: str) -> str:
     """Return canonical https://orcid.org/{id} if an ORCID is found in HTML, else ''."""
     if not html:
@@ -420,11 +588,20 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                         # non-fatal: don't raise, but log so you can see failures
                         print(f"[debug] Failed to fetch/parse grant page for ORCID: {e}")
 
+                orcid_url = _get_orcid_url(person, fetch_fallback=True, grant_page_url=grant_link, headers=headers, debug=True)
+                pi_display = _make_clickable_pi(pi_raw, orcid_url)
+
                 print("PI:", pi_raw, "ORCID:", orcid_url, "pi_display:", pi_display)
+
+                # Make a Markdown variant (safe for renderers that accept Markdown)
+                pi_md = f"[{pi_raw}]({orcid_url})" if orcid_url else pi_raw
                 
                 raw_items.append({
                     "title": title,
-                    "project contact": pi_display,
+                    "project_contact_name": pi_raw,         # plain PI name
+                    "project_contact_orcid": orcid_url,     # plain ORCID URL (safe to render as <a href=...>)
+                    "project_contact_html": pi_display,     # HTML anchor string (requires unescaped HTML rendering)
+                    "project_contact_md": pi_md,            # Markdown link (useful for notebooks / markdown renderers)
                     "affiliation": aff,
                     "grant amount": amount,
                     "grant duration": duration,
@@ -434,6 +611,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                     "domain": domain,
                     "link": grant_link
                 })
+
                 # --- TEMPORARY DEBUG ---
                 #import re
                 #if amount != "N/A" and not re.search(r'[\d]', str(amount)):

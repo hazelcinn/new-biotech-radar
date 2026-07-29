@@ -372,14 +372,17 @@ def _extract_pi_info(item: dict, grant_data: dict) -> tuple[str, dict]:
     pi_raw = str(pi_name).strip() if pi_name else "N/A"
     return pi_raw, person
 
-def fetch_grants(keyword: str, lookback_days: int, domain: str) 
-                 summary_mode: str = "truncate",
-                 truncate_chars: int = 200,
-                 use_ollama: bool = False,
-                 ollama_url: str = "http://localhost:11434",
-                 ollama_model: str = "llama2",
-                 summary_sentences: int = 5,
-                 debug: bool = False,
+def fetch_grants(
+    keyword: str, 
+    lookback_days: int, 
+    domain: str 
+    summary_mode: str = "truncate",
+    truncate_chars: int = 200,
+    use_ollama: bool = False,
+    ollama_url: str = "http://localhost:11434",
+    ollama_model: str = "llama2",
+    summary_sentences: int = 5,
+    debug: bool = False,
     ) -> list:
     """Fetch grants from Europe PMC GRIST API (top 10)."""
     raw_items = []

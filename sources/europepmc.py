@@ -444,6 +444,9 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             else:
                 # don't summarize — show the first 200 chars
                 abstract_display = _truncate_text(abstract, 200)
+
+            # Debugging: print lengths so you can see whether abstract exists and what display will be
+            print(f"[debug] title={title!r} abstract_len={len(abstract)} display_len={len(abstract_display or '')}")
             
             # PI info
             pi_raw, person = _extract_pi_info(item, grant_data)
@@ -511,7 +514,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 "affiliation": aff,
                 "grant amount": amount,
                 "grant duration": duration,
-                #"abstract": abstract,
+                "abstract": abstract,
                 "abstract_display": abstract_display,
                 "source": funder,
                 "keyword": keyword,

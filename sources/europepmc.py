@@ -271,10 +271,21 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 else:
                     funder = str(funder_dict)
 
-                person = item.get("person", item.get("Person", {}))
+                person_node = item.get("person", item.get("Person", {}))
+                if isinstance(person_node, list) and len(person_node) > 0:
+                    person = person_node[0] if isinstance(person_node[0], dict) else {}
+                elif isinstance(person_node, dict):
+                    person = person_node
+                else:
+                    person = {}
+                    
                 given_name = person.get("givenName") or person.get("GivenName") or ""
                 family_name = person.get("familyName") or person.get("FamilyName") or ""
                 pi = f"{given_name} {family_name}".strip() or "N/A"
+
+                # Extract ORCID and format the PI name as a clickable HTML link
+                orcid_url = _get_orcid_url(person)
+                pi_display = _make_clickable_pi(pi_raw, orcid_url)
                 
                 # --- TEMPORARY DEBUG ---
                 #import json
@@ -308,7 +319,21 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 )
                 
                 aff = _clean_affiliation(aff_raw) or "N/A"
-                
+
+                # Attach pi_display to the output dictionary:
+                raw_items.append({
+                    "title": title,
+                    "project contact": pi_display,  # <-- Clicking this in HTML renders the clickable link
+                    "affiliation": aff,
+                    "grant amount": amount,
+                    "grant duration": duration,
+                    "abstract": abstract,
+                    "source": funder,
+                    "keyword": keyword,
+                    "domain": domain,
+                    "link": grant_link        
+                })
+
                 # Extract grant amount and currency cleanly
                 amount_node = (
                     grant_data.get("amount") 

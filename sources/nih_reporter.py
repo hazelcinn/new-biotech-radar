@@ -408,7 +408,7 @@ def fetch_nih_reporter(
 
         # Optional debug log
         if debug:
-            print("[nih] link chosen:", grant_link, " (proj_num:", proj_num, "internal_id:", internal_id if 'internal_id' in locals() else None, "direct:", bool(direct_link)) )
+            print("[nih] link chosen:", grant_link, " (proj_num:", proj_num, "internal_id:", internal_id if 'internal_id' in locals() else None, "direct:", bool(direct_link))
 
         results_out.append({
             "title": title or "Untitled Project",

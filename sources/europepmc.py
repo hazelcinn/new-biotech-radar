@@ -424,29 +424,50 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
             else:
                 funder = str(funder_dict)
                 
-            # Parameters you may want to expose to the caller of fetch_grants
-            # (I show inline defaults; you can pass these as args to fetch_grants)
-            use_ollama = False           # set True to attempt Ollama summarization
+            # Choose one of: 'ollama' | 'sentences' | 'truncate'
+            # - 'ollama' : try Ollama for a 5-sentence summary (falls back to 'sentences' then 'truncate')
+            # - 'sentences' : simple local sentence split, up to 5 sentences (may be >200 chars)
+            # - 'truncate' : strictly first N characters (default 200)
+            summary_mode = "truncate"     # change to "ollama" or "sentences" as desired
+            truncate_chars = 200
+            use_ollama = False            # only used when summary_mode == "ollama"
             ollama_url = "http://localhost:11434"
-            ollama_model = "llama2"      # change to your model name in Ollama
+            ollama_model = "llama2"
             summary_sentences = 5
-            summarize = True             # if False, will use truncation to 200 chars instead
 
-            if summarize:
-                abstract_display = None
+            # Ensure we always have an abstract string
+            if not abstract:
+                abstract = "No abstract description provided."
+
+            abstract_display = None
+
+            if summary_mode == "ollama":
                 if use_ollama:
-                    # try Ollama first (gracefully fall back)
                     abstract_display = _ollama_summarize(abstract, n_sentences=summary_sentences,
-                                                         ollama_url=ollama_url, model=ollama_model)
+                                             ollama_url=ollama_url, model=ollama_model)
+                # fallback to local sentence summarizer
                 if not abstract_display:
-                    # Ollama unavailable or failed -> local sentence-based summary
                     abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+                # final fallback: truncate if still somehow empty
+                if not abstract_display:
+                    abstract_display = _truncate_text(abstract, truncate_chars)
+
+            elif summary_mode == "sentences":
+                abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+
+            elif summary_mode == "truncate":
+                abstract_display = _truncate_text(abstract, truncate_chars)
+
             else:
-                # don't summarize — show the first 200 chars
-                abstract_display = _truncate_text(abstract, 200)
+                # safe default
+                abstract_display = _truncate_text(abstract, truncate_chars)
+
+            # optional: if you want sentences mode but want a hard upper char-limit, uncomment:
+            # if summary_mode == "sentences" and len(abstract_display) > truncate_chars:
+            #     abstract_display = _truncate_text(abstract_display, truncate_chars)
 
             # Debugging: print lengths so you can see whether abstract exists and what display will be
-            print(f"[debug] title={title!r} abstract_len={len(abstract)} display_len={len(abstract_display or '')}")
+            #print(f"[debug] title={title!r} abstract_len={len(abstract)} display_len={len(abstract_display or '')}")
             
             # PI info
             pi_raw, person = _extract_pi_info(item, grant_data)

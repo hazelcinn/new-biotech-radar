@@ -514,7 +514,7 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 "affiliation": aff,
                 "grant amount": amount,
                 "grant duration": duration,
-                "abstract": abstract,
+                #"abstract": abstract,
                 "abstract_display": abstract_display,
                 "source": funder,
                 "keyword": keyword,

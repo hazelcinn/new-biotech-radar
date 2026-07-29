@@ -377,6 +377,8 @@ def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:
                 else:
                     grant_link = "https://europepmc.org/grantfinder"
 
+                print("PI:", pi_raw, "ORCID:", orcid_url, "pi_display:", pi_display)
+                
                 raw_items.append({
                     "title": title,
                     "project contact": pi_display,

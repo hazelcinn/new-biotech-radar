@@ -167,6 +167,65 @@ def _format_nih_affiliation(aff_node: dict, title_case: bool = False) -> dict:
         "primary_uei": primary_uei,
     }
 
+_NIH_INSTITUTE_MAP = {
+    "NCI": "National Cancer Institute",
+    "NIAID": "National Institute of Allergy and Infectious Diseases",
+    "NIMH": "National Institute of Mental Health",
+    "NINDS": "National Institute of Neurological Disorders and Stroke",
+    "NIEHS": "National Institute of Environmental Health Sciences",
+    "NIDDK": "National Institute of Diabetes and Digestive and Kidney Diseases",
+    "NICHD": "Eunice Kennedy Shriver National Institute of Child Health and Human Development",
+    "NIGMS": "National Institute of General Medical Sciences",
+    "NIA": "National Institute on Aging",
+    "NIDA": "National Institute on Drug Abuse",
+    # add more mappings as needed
+}
+
+def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
+    """Return the best funder/awarding IC name for a RePORTER project dict."""
+    if not isinstance(proj, dict):
+        return "NIH RePORTER"
+
+    # 1) Look for explicit fields often returned by RePORTER
+    for key in (
+        "fundingAgency", "funding_agency", "funder", "awardOrg", "award_organization",
+        "agency", "agencyName", "agency_name", "awardingIC", "awarding_ic", "awardingICName",
+        "fundingIC", "funding_ic", "fundingICName", "org", "orgName", "org_name"
+    ):
+        val = proj.get(key)
+        if not val:
+            continue
+        if isinstance(val, dict):
+            # prefer common name fields inside dicts
+            for sub in ("name", "displayName", "agency", "agencyName", "funder"):
+                name = val.get(sub)
+                if name:
+                    return str(name).strip()
+        elif isinstance(val, str) and val.strip():
+            s = val.strip()
+            # if it's an acronym, expand it when possible
+            if s.upper() in _NIH_INSTITUTE_MAP:
+                return _NIH_INSTITUTE_MAP[s.upper()]
+            return s
+
+    # 2) Check award/institute-specific fields
+    # e.g., 'awardingIC' can be a code or dict; 'award' may contain nested agency info
+    awarding = proj.get("awardingIC") or proj.get("awardIC") or proj.get("award_ics") or proj.get("awardICs")
+    if awarding:
+        if isinstance(awarding, str):
+            if awarding.upper() in _NIH_INSTITUTE_MAP:
+                return _NIH_INSTITUTE_MAP[awarding.upper()]
+            return awarding
+        if isinstance(awarding, dict):
+            code = awarding.get("code") or awarding.get("acronym") or awarding.get("id")
+            name = awarding.get("name") or awarding.get("displayName")
+            if name:
+                return name
+            if code and str(code).upper() in _NIH_INSTITUTE_MAP:
+                return _NIH_INSTITUTE_MAP[str(code).upper()]
+            if code:
+
+
 def _find_strings(obj):
     if isinstance(obj, str):
         yield obj

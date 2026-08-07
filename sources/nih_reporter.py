@@ -86,6 +86,25 @@ def _clean_simple_text(node) -> str:
         _g(node)
         return " ".join([l for l in leaves if l]).strip()
     return str(node).strip()
+
+def _normalize_person_name(name: str) -> str:
+    """
+    Convert "Last, First [Middle]" to "First [Middle] Last".
+    Leaves names already in "First Last" form unchanged.
+    Returns empty string for falsy input.
+    """
+    if not name:
+        return ""
+    s = name.strip()
+    # If name contains a comma, assume "Last, First ..." and swap
+    if ',' in s:
+        parts = [p.strip() for p in s.split(',') if p.strip()]
+        if len(parts) >= 2:
+            last = parts[0]
+            rest = " ".join(parts[1:])
+            return f"{rest} {last}"
+    return s
+
 def _date_only(dt) -> str:
     """
     Return only the date portion of a datetime-like string or object.
@@ -528,7 +547,11 @@ def fetch_nih_reporter(
                     pi_name = v.get("fullName") or v.get("name") or ""
                     person_obj = v
                     break
-        pi_raw = (pi_name or "").strip() or "N/A"
+        pi_raw = (pi_name or "").strip()
+        if not pi_raw:
+            pi_raw = "N/A"
+        else:
+            pi_raw = _normalize_person_name(pi_raw)
 
         # ORCID detection
         orcid_url = ""

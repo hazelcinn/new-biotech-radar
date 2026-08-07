@@ -87,6 +87,86 @@ def _clean_simple_text(node) -> str:
         return " ".join([l for l in leaves if l]).strip()
     return str(node).strip()
 
+def _format_nih_affiliation(aff_node: dict, title_case: bool = False) -> dict:
+    if not aff_node or not isinstance(aff_node, dict):
+        return {
+            "affiliation": "",
+            "org_name": "",
+            "city": "",
+            "state": "",
+            "country": "",
+            "zipcode": "",
+            "duns": [],
+            "ueis": [],
+            "primary_duns": None,
+            "primary_uei": None,
+        }
+    org_name = (
+        aff_node.get("org_name")
+        or aff_node.get("orgName")
+        or aff_node.get("organization")
+        or aff_node.get("name")
+        or ""
+    ) or ""
+    city = (aff_node.get("org_city") or aff_node.get("city") or "").strip()
+    state = (aff_node.get("org_state") or aff_node.get("org_state_name") or aff_node.get("state") or "").strip()
+    country = (aff_node.get("org_country") or aff_node.get("country") or aff_node.get("org_fips") or "").strip()
+    zipcode = (aff_node.get("org_zipcode") or aff_node.get("zipcode") or "").strip()
+
+    duns = aff_node.get("org_duns") or aff_node.get("org_duns_list") or []
+    if isinstance(duns, str):
+        duns = [duns]
+    ueis = aff_node.get("org_ueis") or aff_node.get("org_uei") or []
+    if isinstance(ueis, str):
+        ueis = [ueis]
+
+    primary_duns = aff_node.get("primary_duns") or aff_node.get("primary_duns") or aff_node.get("primary_duns", None)
+    primary_uei = aff_node.get("primary_uei") or aff_node.get("primary_uei") or aff_node.get("primary_uei", None)
+
+    if country and len(country) == 2 and country.isalpha():
+        if country.upper() in ("US", "USA"):
+            country_display = "United States"
+        else:
+            country_display = country.upper()
+    else:
+        country_display = country
+
+    def _maybe_title(s: str) -> str:
+        return s.title() if title_case and s else s
+
+    org_name_display = _maybe_title(org_name)
+    city_display = _maybe_title(city)
+    state_display = state
+    country_display = _maybe_title(country_display)
+
+    parts = []
+    if org_name_display:
+        parts.append(org_name_display)
+    loc_parts = []
+    if city_display:
+        loc_parts.append(city_display)
+    if state_display:
+        loc_parts.append(state_display)
+    if country_display:
+        loc_parts.append(country_display)
+    if loc_parts:
+        parts.append(", ".join(loc_parts))
+
+    affiliation = ", ".join(parts) if parts else org_name_display or ""
+
+    return {
+        "affiliation": affiliation,
+        "org_name": org_name,
+        "city": city,
+        "state": state,
+        "country": country_display or "",
+        "zipcode": zipcode,
+        "duns": duns if isinstance(duns, list) else list(duns),
+        "ueis": ueis if isinstance(ueis, list) else list(ueis),
+        "primary_duns": primary_duns,
+        "primary_uei": primary_uei,
+    }
+
 def _find_strings(obj):
     if isinstance(obj, str):
         yield obj
@@ -354,15 +434,12 @@ def fetch_nih_reporter(
 
         pi_display = _make_clickable_pi(pi_raw, orcid_url)
 
-        org = (
-            proj.get("orgName")
-            or proj.get("org_name")
-            or proj.get("organization")
-            or proj.get("applicantOrganization")
-            or proj.get("org")
-            or ""
+        # Try common places for NIHR affiliation dict
+        aff_node = (
+            proj.get("org") or proj.get("affiliation") or proj.get("organization") or proj.get("org_info") or proj.get("org_name") or {}
         )
-        affiliation = org or "N/A"
+        aff_info = _format_nih_affiliation(aff_node if isinstance(aff_node, dict) else {}, title_case=True)
+        affiliation = aff_info["affiliation"] or "N/A"
 
         amount_val = proj.get("awardAmount") or proj.get("award_amount") or proj.get("award") or proj.get("total_cost") or None
         amount = "N/A"

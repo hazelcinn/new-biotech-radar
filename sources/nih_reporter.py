@@ -86,7 +86,26 @@ def _clean_simple_text(node) -> str:
         _g(node)
         return " ".join([l for l in leaves if l]).strip()
     return str(node).strip()
-
+def _date_only(dt) -> str:
+    """
+    Return only the date portion of a datetime-like string or object.
+    Keeps YYYY-MM-DD when possible and strips times like 'T00:00:00' and trailing 'Z'.
+    """
+    if not dt:
+        return ""
+    s = str(dt).strip()
+    # remove trailing separator characters often seen in dumped fields
+    s = s.rstrip(" |;,-")
+    # remove ISO time portion and timezone Z if present
+    if "T" in s:
+        s = s.split("T", 1)[0]
+    elif " " in s and re.match(r'^\d{4}-\d{2}-\d{2}\s', s):
+        s = s.split(" ", 1)[0]
+    # If it still looks long, take the first 10 chars (covers many formats)
+    if len(s) > 10 and re.match(r'^\d{4}', s):
+        s = s[:10]
+    return s
+    
 def _format_nih_affiliation(aff_node: dict, title_case: bool = False) -> dict:
     if not aff_node or not isinstance(aff_node, dict):
         return {
@@ -580,8 +599,10 @@ def fetch_nih_reporter(
             except Exception:
                 amount = str(amount_val)
 
-        start_date = proj.get("projectStartDate") or proj.get("project_start_date") or proj.get("startDate") or proj.get("start")
-        end_date = proj.get("projectEndDate") or proj.get("project_end_date") or proj.get("endDate") or proj.get("end")
+        raw_start = proj.get("projectStartDate") or proj.get("project_start_date") or proj.get("startDate") or proj.get("start") or ""
+        raw_end = proj.get("projectEndDate") or proj.get("project_end_date") or proj.get("endDate") or proj.get("end") or ""
+        start_date = _date_only(raw_start)
+        end_date = _date_only(raw_end)
         if start_date and end_date:
             duration = f"{start_date} to {end_date}"
         else:

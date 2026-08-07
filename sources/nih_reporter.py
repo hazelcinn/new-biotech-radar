@@ -436,6 +436,7 @@ def fetch_nih_reporter(
                 abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
+    funder_name = _extract_funder_from_proj(proj, debug=debug)
     # debug: print candidate funder-ish fields when debug=True and fallback would be used
     if debug:
         candidate_keys = [
@@ -468,7 +469,6 @@ def fetch_nih_reporter(
                     print(f"  {k}: {v[0]} {v[1]}")
             print("Top-level keys sample:", list(proj.keys())[:60])
             print("=== end debug ===")
-        funder_name = _extract_funder_from_proj(proj, debug=debug)
 
         # PI extraction (varied shapes)
         pi_name = ""
@@ -625,7 +625,7 @@ def fetch_nih_reporter(
             "grant duration": duration,
             "abstract": abstract_display,
             "abstract_full": abstract,
-            "source": "NIH RePORTER",
+            "source": funder_name,
             "keyword": keyword,
             "domain": domain,
             "link": grant_link

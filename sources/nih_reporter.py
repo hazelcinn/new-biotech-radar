@@ -436,39 +436,42 @@ def fetch_nih_reporter(
                 abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
-    funder_name = _extract_funder_from_proj(proj, debug=debug)
-    # debug: print candidate funder-ish fields when debug=True and fallback would be used
-    if debug:
-        candidate_keys = [
-            "fundingAgency","funding_agency","funder","awardOrg","award_organization",
-            "agency","agencyName","agency_name","awardingIC","awarding_ic","awardingICName",
-            "fundingIC","funding_ic","fundingICName","award","awards","funding","org","orgName","org_name",
-            "awardOrg","award_org","award_organization","leadOrg","awardee_org","awardOrgName",
-            "investigator","pi","project_org","projectOrganization","awardeeOrganization"
-        ]
-        found = {}
-        for k in candidate_keys:
-            if k in proj:
-                found[k] = proj[k]
-        # Also show a small sample of nested structures that often hold funder info
-        nested_snippets = {}
-        for k in ("funding","award","awards","projectDetails","projectOrganization","org","organization"):
-            v = proj.get(k)
-            if v:
-                nested_snippets[k] = (type(v).__name__, repr(v)[:800])
-        if found or nested_snippets:
-            print("=== NIH funder debug ===")
-            print("projectNumber:", proj.get("projectNumber") or proj.get("project_number") or proj.get("id"))
-            if found:
-                print("Top-level candidate keys present:")
-                for k, v in found.items():
-                    print(f"  {k}: ({type(v).__name__}) {repr(v)[:400]}")
-            if nested_snippets:
-                print("Nested snippets:")
-                for k, v in nested_snippets.items():
-                    print(f"  {k}: {v[0]} {v[1]}")
-            print("Top-level keys sample:", list(proj.keys())[:60])
-            print("=== end debug ===")
+                
+        # determine funder/source (always run; debug prints are controlled by debug flag)
+        funder_name = _extract_funder_from_proj(proj, debug=debug)
+
+        # optional debug: print candidate funder-ish fields when debug=True
+        if debug:
+            candidate_keys = [
+                "fundingAgency","funding_agency","funder","awardOrg","award_organization",
+                "agency","agencyName","agency_name","awardingIC","awarding_ic","awardingICName",
+                "fundingIC","funding_ic","fundingICName","award","awards","funding",
+                "org","orgName","org_name","awardOrg","award_org","award_organization",
+                "leadOrg","awardee_org","awardOrgName","investigator","pi","project_org",
+                "projectOrganization","awardeeOrganization","projectFunder"
+            ]
+            found = {}
+            for k in candidate_keys:
+                if k in proj:
+                    found[k] = proj[k]
+            nested_snippets = {}
+            for k in ("funding","award","awards","projectDetails","projectOrganization","org","organization","projectFunder"):
+                v = proj.get(k)
+                if v:
+                    nested_snippets[k] = (type(v).__name__, repr(v)[:800])
+            if found or nested_snippets:
+                print("=== NIH funder debug ===")
+                print("projectNumber:", proj.get("projectNumber") or proj.get("project_number") or proj.get("id"))
+                if found:
+                    print("Top-level candidate keys present:")
+                    for kk, vv in found.items():
+                        print(f"  {kk}: ({type(vv).__name__}) {repr(vv)[:400]}")
+                if nested_snippets:
+                    print("Nested snippets:")
+                    for kk, vv in nested_snippets.items():
+                        print(f"  {kk}: {vv[0]} {vv[1]}")
+                print("Top-level keys sample:", list(proj.keys())[:60])
+                print("=== end debug ===")
 
         # PI extraction (varied shapes)
         pi_name = ""
@@ -528,29 +531,29 @@ def fetch_nih_reporter(
                             orcid_url = f"https://orcid.org/{cand}"
                             break
                     elif isinstance(val, list):
-                        found = False
+                        found_orcid = False
                         for entry in val:
                             if isinstance(entry, dict):
                                 if str(entry.get("type", "")).upper() == "ORCID":
                                     cand = _orcid_normalize(str(entry.get("value") or entry.get("id") or ""))
                                     if cand and _orcid_checksum_is_valid(cand):
                                         orcid_url = f"https://orcid.org/{cand}"
-                                        found = True
+                                        found_orcid = True
                                         break
                                 else:
                                     for s in _find_strings(entry):
                                         cand = _orcid_normalize(s)
                                         if cand and _orcid_checksum_is_valid(cand):
                                             orcid_url = f"https://orcid.org/{cand}"
-                                            found = True
+                                            found_orcid = True
                                             break
                             elif isinstance(entry, str):
                                 cand = _orcid_normalize(entry)
                                 if cand and _orcid_checksum_is_valid(cand):
                                     orcid_url = f"https://orcid.org/{cand}"
-                                    found = True
+                                    found_orcid = True
                                     break
-                        if found:
+                        if found_orcid:
                             break
         if not orcid_url:
             dump = json.dumps(proj) if isinstance(proj, dict) else str(proj)
@@ -560,13 +563,14 @@ def fetch_nih_reporter(
 
         pi_display = _make_clickable_pi(pi_raw, orcid_url)
 
-        # Try common places for NIHR affiliation dict
+        # affiliation
         aff_node = (
             proj.get("org") or proj.get("affiliation") or proj.get("organization") or proj.get("org_info") or proj.get("org_name") or {}
         )
         aff_info = _format_nih_affiliation(aff_node if isinstance(aff_node, dict) else {}, title_case=True)
         affiliation = aff_info["affiliation"] or "N/A"
 
+        # amount, duration, link (same as you already have)
         amount_val = proj.get("awardAmount") or proj.get("award_amount") or proj.get("award") or proj.get("total_cost") or None
         amount = "N/A"
         if amount_val is not None:
@@ -583,33 +587,24 @@ def fetch_nih_reporter(
         else:
             duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or "N/A"
 
-        # prefer explicit project number fields (these are what reporter expects)
         proj_num = (
             proj.get("projectNumber")
             or proj.get("project_number")
             or proj.get("projectNum")
             or proj.get("project_num")
         )
-
-        # If API already includes a details/link field, prefer it
         direct_link = proj.get("projectUrl") or proj.get("url") or proj.get("link")
-
         if direct_link:
             grant_link = str(direct_link)
         elif proj_num:
             grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(str(proj_num))}"
         else:
-            # If only a numeric internal id exists (e.g., proj.get("id")) we avoid assuming reporter accepts it.
-            # Instead, build a search URL so the user can still find the project reliably.
             internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
             if internal_id and str(internal_id).strip().isdigit():
-                # numeric fallback: use the search page (safer than assuming ID works in project-details)
                 grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(str(internal_id))}"
             else:
-                # final fallback: search by title/keyword
                 grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(title or keyword)}"
 
-        # Optional debug log
         if debug:
             print("[nih] link chosen:", grant_link, " (proj_num:", proj_num, "internal_id:", internal_id if 'internal_id' in locals() else None, "direct:", bool(direct_link))
 
@@ -630,5 +625,4 @@ def fetch_nih_reporter(
             "domain": domain,
             "link": grant_link
         })
-
     return results_out

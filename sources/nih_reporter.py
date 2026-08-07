@@ -224,7 +224,41 @@ def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
             if code and str(code).upper() in _NIH_INSTITUTE_MAP:
                 return _NIH_INSTITUTE_MAP[str(code).upper()]
             if code:
-
+                return str(code)
+
+    # 3) Look inside 'funding' or nested structures
+    funding = proj.get("funding") or proj.get("award") or proj.get("awards")
+    if isinstance(funding, dict):
+        # try common nested fields
+        for sub in ("agency", "funder", "org", "awardOrg", "awardingIC", "awardingICName"):
+            v = funding.get(sub)
+            if isinstance(v, str) and v.strip():
+                return v.strip()
+            if isinstance(v, dict):
+                name = v.get("name") or v.get("displayName")
+                if name:
+                    return name
+
+    # 4) Heuristic scan: look for any top-level key that contains funder/award/agency/ic
+    for k, v in proj.items():
+        if isinstance(k, str) and any(tok in k.lower() for tok in ("funder", "funding", "award", "agency", "institute", "ic")):
+            if isinstance(v, str) and v.strip():
+                s = v.strip()
+                if s.upper() in _NIH_INSTITUTE_MAP:
+                    return _NIH_INSTITUTE_MAP[s.upper()]
+                return s
+            if isinstance(v, dict):
+                n = v.get("name") or v.get("displayName")
+                if n:
+                    return n
+
+    # debug assistance: show candidate keys if nothing matched
+    if debug:
+        sample_keys = {k: type(v).__name__ for k, v in list(proj.items())[:40]}
+        print("[nih debug] no funder found; top-level keys (sample):", sample_keys)
+
+    # final fallback
+    return "NIH RePORTER"
 
 def _find_strings(obj):
     if isinstance(obj, str):

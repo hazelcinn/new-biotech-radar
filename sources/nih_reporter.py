@@ -436,6 +436,39 @@ def fetch_nih_reporter(
                 abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
+    # debug: print candidate funder-ish fields when debug=True and fallback would be used
+    if debug:
+        candidate_keys = [
+            "fundingAgency","funding_agency","funder","awardOrg","award_organization",
+            "agency","agencyName","agency_name","awardingIC","awarding_ic","awardingICName",
+            "fundingIC","funding_ic","fundingICName","award","awards","funding","org","orgName","org_name",
+            "awardOrg","award_org","award_organization","leadOrg","awardee_org","awardOrgName",
+            "investigator","pi","project_org","projectOrganization","awardeeOrganization"
+        ]
+        found = {}
+        for k in candidate_keys:
+            if k in proj:
+                found[k] = proj[k]
+        # Also show a small sample of nested structures that often hold funder info
+        nested_snippets = {}
+        for k in ("funding","award","awards","projectDetails","projectOrganization","org","organization"):
+            v = proj.get(k)
+            if v:
+                nested_snippets[k] = (type(v).__name__, repr(v)[:800])
+        if found or nested_snippets:
+            print("=== NIH funder debug ===")
+            print("projectNumber:", proj.get("projectNumber") or proj.get("project_number") or proj.get("id"))
+            if found:
+                print("Top-level candidate keys present:")
+                for k, v in found.items():
+                    print(f"  {k}: ({type(v).__name__}) {repr(v)[:400]}")
+            if nested_snippets:
+                print("Nested snippets:")
+                for k, v in nested_snippets.items():
+                    print(f"  {k}: {v[0]} {v[1]}")
+            print("Top-level keys sample:", list(proj.keys())[:60])
+            print("=== end debug ===")
+        funder_name = _extract_funder_from_proj(proj, debug=debug)
 
         # PI extraction (varied shapes)
         pi_name = ""

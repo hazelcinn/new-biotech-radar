@@ -435,7 +435,7 @@ def fetch_nih_reporter(
 
         # canonical source id (prefer project number, else project id)
         internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
-        # prefer project_num if present and non-empty
+        # prefer proj_num if present and non-empty
         source_id = None
         if proj_num:
             source_id = str(proj_num).strip()
@@ -525,7 +525,7 @@ def fetch_nih_reporter(
                     nested_snippets[k] = (type(v).__name__, repr(v)[:800])
             if found or nested_snippets:
                 print("=== NIH funder debug ===")
-                print("projectNumber:", proj.get("projectNumber") or proj.get("project_number") or proj.get("id"))
+                print("projectNumber:", proj.get("projectNumber") or proj.get("proj_number") or proj.get("id"))
                 if found:
                     print("Top-level candidate keys present:")
                     for kk, vv in found.items():
@@ -663,9 +663,9 @@ def fetch_nih_reporter(
         # Candidate project numbers may be in different keys
         proj_num_candidates = [
             proj.get("projectNumber"),
-            proj.get("project_number"),
+            proj.get("proj_number"),
             proj.get("projectNum"),
-            proj.get("project_num"),
+            proj.get("proj_num"),
             proj.get("projectId"),   # sometimes projectId is a stable string
             proj.get("project_id"),
             proj.get("id")

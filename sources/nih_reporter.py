@@ -379,6 +379,7 @@ def fetch_nih_reporter(
     debug: bool = False,
 ) -> List[Dict[str, Any]]:
     results_out: List[Dict[str, Any]] = []
+    seen_ids = set() #local dedupe for this fetch call
     endpoint = "https://api.reporter.nih.gov/v2/projects/search"
     headers = {
         "User-Agent": "GrantHarvester/1.0 (+https://your.project/)",
@@ -431,6 +432,30 @@ def fetch_nih_reporter(
             or proj.get("id")
             or ""
         )
+                # canonical source id (prefer project number, else project id)
+        internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
+        # prefer project_num if present and non-empty
+        source_id = None
+        if proj_num:
+            source_id = str(proj_num).strip()
+        elif internal_id:
+            source_id = str(internal_id).strip()
+        else:
+            # fallback: use normalized title+org as last resort (not ideal but stable for this run)
+            org_name_for_id = ""
+            try:
+                org_name_for_id = (proj.get("org", {}) or {}).get("org_name") or (proj.get("orgName") or proj.get("organization") or "")
+            except Exception:
+                org_name_for_id = ""
+            source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
+
+        # skip if we've already yielded this source_id in this fetch
+        if source_id in seen_ids:
+            if debug:
+                print("[nih] skipping duplicate source_id:", source_id)
+            continue
+        seen_ids.add(source_id)
+        
         abstract_raw = (
             proj.get("abstractText")
             or proj.get("abstract")
@@ -631,27 +656,46 @@ def fetch_nih_reporter(
         else:
             duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or "N/A"
 
-        proj_num = (
-            proj.get("projectNumber")
-            or proj.get("project_number")
-            or proj.get("projectNum")
-            or proj.get("project_num")
-        )
-        direct_link = proj.get("projectUrl") or proj.get("url") or proj.get("link")
-        if direct_link:
-            grant_link = str(direct_link)
-        elif proj_num:
-            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(str(proj_num))}"
+        # Build a robust grant_link
+        # Prefer explicit detail link from the API if provided
+        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link")
+        # Candidate project numbers may be in different keys
+        proj_num_candidates = [
+            proj.get("projectNumber"),
+            proj.get("project_number"),
+            proj.get("projectNum"),
+            proj.get("project_num"),
+            proj.get("projectId"),   # sometimes projectId is a stable string
+            proj.get("project_id"),
+            proj.get("id")
+        ]
+        # pick first non-empty candidate
+        proj_num_candidate = next((str(x).strip() for x in proj_num_candidates if x), None)
+
+        def _looks_like_reporter_projnum(s: str) -> bool:
+            # typical NIH project numbers include letters, digits, dashes; avoid pure integers as these may be internal ids
+            if not s:
+                return False
+            s = s.strip()
+            # Accept if it contains a letter and digit (e.g., R01CA123456-01)
+            if re.search(r'[A-Za-z]', s) and re.search(r'\d', s):
+                return True
+            # Some valid project numbers are like '1R01CA123456-01A1' or 'R01CA123456'
+            if re.match(r'^[A-Za-z0-9\-\_]+$', s) and '-' in s:
+                return True
+            return False
+
+        if detail_url:
+            grant_link = str(detail_url)
+        elif proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
+            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
         else:
-            internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
-            if internal_id and str(internal_id).strip().isdigit():
-                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(str(internal_id))}"
-            else:
-                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(title or keyword)}"
+            # final fallback: search by project number or title + org to make it easy to find
+            search_term = proj_num_candidate or title or keyword
+            grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
 
         if debug:
-            print("[nih] link chosen:", grant_link, " (proj_num:", proj_num, "internal_id:", internal_id if 'internal_id' in locals() else None, "direct:", bool(direct_link))
-
+            print("[nih] link chosen:", grant_link, "proj_num_candidate:", proj_num_candidate, "detail_url:", bool(detail_url))
         results_out.append({
             "title": title or "Untitled Project",
             "project contact": pi_display,
@@ -665,6 +709,7 @@ def fetch_nih_reporter(
             "abstract": abstract_display,
             "abstract_full": abstract,
             "source": funder_name,
+            "source_id": source_id,
             "keyword": keyword,
             "domain": domain,
             "link": grant_link

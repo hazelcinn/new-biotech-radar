@@ -87,6 +87,17 @@ def _clean_simple_text(node) -> str:
         return " ".join([l for l in leaves if l]).strip()
     return str(node).strip()
 
+def _looks_like_reporter_projnum(s: str) -> bool:
+    if not s:
+        return False
+    s = str(s).strip()
+    # valid project numbers usually include letters and digits (e.g., R01CA123456-01A1)
+    if re.search(r'[A-Za-z]', s) and re.search(r'\d', s):
+        return True
+    if '-' in s and re.match(r'^[A-Za-z0-9\-\_]+$', s):
+        return True
+    return False
+
 def _normalize_person_name(name: str) -> str:
     """
     Convert "Last, First [Middle]" to "First [Middle] Last".
@@ -432,9 +443,30 @@ def fetch_nih_reporter(
             or proj.get("id")
             or ""
         )
+        proj_num = str(proj_num).strip() if proj_num else ""
+        internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
 
-        # canonical source id (prefer project number, else project id)
-        internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
+        # canonical source id (prefer projectNumber if it looks like a reporter project number)
+        if proj_num and _looks_like_reporter_projnum(proj_num):
+            source_id = proj_num
+        elif internal_id:
+            source_id = internal_id
+        else:
+            # last resort: title + org snippet (not ideal but stable for this run)
+            org_name_for_id = ""
+            try:
+                org_name_for_id = (proj.get("org") or {}).get("org_name") or proj.get("orgName") or proj.get("organization") or ""
+            except Exception:
+                org_name_for_id = ""
+            source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
+
+        # Skip duplicates within this single fetch call
+        if source_id in seen_ids:
+            if debug:
+                print("[nih] skipping duplicate source_id:", source_id)
+            continue
+        seen_ids.add(source_id)
+        
         # prefer proj_num if present and non-empty
         source_id = None
         if proj_num:
@@ -657,22 +689,35 @@ def fetch_nih_reporter(
         else:
             duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or "N/A"
 
-        # Build a robust grant_link
-        # Prefer explicit detail link from the API if provided
-        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link")
-        # Candidate project numbers may be in different keys
-        proj_num_candidates = [
-            proj.get("projectNumber"),
-            proj.get("proj_number"),
-            proj.get("projectNum"),
-            proj.get("proj_num"),
-            proj.get("projectId"),   # sometimes projectId is a stable string
-            proj.get("project_id"),
-            proj.get("id")
-        ]
-        # pick first non-empty candidate
-        proj_num_candidate = next((str(x).strip() for x in proj_num_candidates if x), None)
+                # Build robust grant_link. Prefer explicit detail link, otherwise use valid project number,
+        # otherwise search by project number/title.
+        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
+        detail_url = str(detail_url).strip() if detail_url else ""
 
+        proj_num_candidate = proj_num or None
+
+        # Use detail_url only if it appears to be a real project detail URL (or a non-root reporter link)
+        use_detail = False
+        if detail_url:
+            try:
+                parsed = urllib.parse.urlparse(detail_url)
+                host_ok = "reporter.nih.gov" in parsed.netloc
+                path_ok = parsed.path and parsed.path.strip() != "/"
+                use_detail = host_ok and path_ok
+            except Exception:
+                use_detail = False
+
+        if use_detail:
+            grant_link = detail_url
+        elif proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
+            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
+        else:
+            # fallback: search by project number (if any) else title
+            search_term = proj_num_candidate or title or keyword
+            grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
+
+        if debug:
+            print("[nih] link chosen:", grant_link, "proj_num_candidate:", proj_num_candidate, "detail_url:", detail_url or None)
         def _looks_like_reporter_projnum(s: str) -> bool:
             # typical NIH project numbers include letters, digits, dashes; avoid pure integers as these may be internal ids
             if not s:

@@ -424,15 +424,16 @@ def fetch_nih_reporter(
             or proj.get("projectTitleDisplay")
             or ""
         ).strip()
-        project_num = (
+        proj_num = (
             proj.get("projectNumber")
-            or proj.get("project_number")
+            or proj.get("proj_number")
             or proj.get("projectId")
             or proj.get("project_id")
             or proj.get("id")
             or ""
         )
-                # canonical source id (prefer project number, else project id)
+
+        # canonical source id (prefer project number, else project id)
         internal_id = proj.get("projectId") or proj.get("project_id") or proj.get("id")
         # prefer project_num if present and non-empty
         source_id = None

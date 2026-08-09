@@ -78,7 +78,11 @@ def harvest_all(lookback_days: int):
 #        all_items.extend(europepmc.fetch(kw, lookback_days, domain))
         all_items.extend(europepmc.fetch_grants(kw, lookback_days, domain))
 #        all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))
-        all_items.extend(nih_reporter.fetch_nih_reporter(kw, lookback_days, domain))
+        # REPLACE the old extend call in harvest_all with this merge loop
+        new_items = nih_reporter.fetch_nih_reporter(kw, lookback_days, domain)
+        for ni in new_items:
+            # pass debug=True to get merge diagnostic prints if you need them
+            merge_into_all_items(all_items, ni, debug=False)
 #        all_items.extend(nsf.fetch(kw, lookback_days, domain))
 #        all_items.extend(ukri_gtr.fetch(kw, lookback_days, domain))
 #        all_items.extend(cordis.fetch(kw, lookback_days, domain))

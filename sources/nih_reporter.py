@@ -589,12 +589,39 @@ def fetch_nih_reporter(
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
+
+    # REPLACE the simple keyword body with a fielded search + local fallback
+    # Put this where 'body = { "criteria": {"keyword":[keyword]}, ... }' currently is.
+    # Build a few normalized variants of the keyword to improve matching (handles hyphens/underscores)
+    def _keyword_variants(k: str):
+        if not k:
+            return []
+        k = k.strip()
+        variants = {k}
+        # remove common punctuation variants
+        variants.add(re.sub(r'[-_]+', ' ', k))
+        variants.add(re.sub(r'[^0-9A-Za-z ]+', '', k))
+        # collapse multiple spaces
+        new = set()
+        for v in variants:
+            new.add(re.sub(r'\s+', ' ', v).strip())
+        return sorted([v for v in new if v])
+
+    kw_variants = _keyword_variants(keyword)
+
+    # Prefer a fielded criteria payload so RePORTER searches title, abstract, terms specifically.
+    # If RePORTER ignores unknown field names, this still falls back to client-side checking below.
     body = {
         "criteria": {
-            "keyword": [keyword]
+            # ask the API to match in these fields explicitly
+            "projectTitle": kw_variants,
+            "abstractText": kw_variants,
+            "terms": kw_variants,
         },
         "offset": 0,
         "limit": limit
+    }
+    
     }
     try:
         resp = requests.post(endpoint, json=body, headers=headers, timeout=15)

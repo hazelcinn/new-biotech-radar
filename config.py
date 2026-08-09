@@ -13,7 +13,7 @@ DOMAINS = {
     ]
   #  "Basic Search": [
   #      "delivery system", "diagnostic", "biosensor", "noninvasive", "assay", "automation", "setup", "platform", "tool", "technology", "high throughput", "technique"
-    ],
+  #  ],
 }
 LOOKBACK_DAYS = 30
 STATE_FILE = "./state.json"

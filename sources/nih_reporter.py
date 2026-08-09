@@ -372,13 +372,16 @@ def _extract_numeric_id_from_url(url):
         return None
     return None
 
+# REPLACE your existing build_source_and_link helper with this version (module scope)
 def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug: bool = False):
     """
-    Given a single RePORTER project dict `proj`, compute a stable source_id and a canonical grant_link.
-    Returns tuple: (source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj)
-    Paste this helper at module scope (only once) and call it inside your per-project loop.
+    Compute stable source_id and grant_link for one RePORTER project dict.
+    Behavior change: if the API returned 'project_detail_url' (snake_case) or 'projectDetailUrl'
+    (camelCase), use that value exactly as the grant_link (no canonicalization) and return it.
+    Always return 8 values:
+      (source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj)
     """
-    # normalized getters
+    # --- normalized getters (handles camelCase and snake_case) ---
     proj_num = (
         proj.get("projectNumber")
         or proj.get("project_number")
@@ -396,7 +399,7 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
     )
     sub_proj = str(sub_proj).strip() if sub_proj else None
 
-    # Prefer explicit numeric id fields
+    # --- Prefer explicit numeric id fields ---
     numeric_id = None
     for key in ("projectDetailId", "projectDetailID", "projectId", "project_id", "id", "appl_id"):
         val = proj.get(key)
@@ -406,11 +409,12 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
                 numeric_id = s
                 break
 
-    # Prefer explicit RePORTER project_detail_url field (snake_case) or camelCase
+    # --- Prefer exact RePORTER project_detail_url field (snake_case) or camelCase ---
     primary_detail = proj.get("project_detail_url") or proj.get("projectDetailUrl")
-    primary_detail = str(primary_detail).strip() if primary_detail else None
+    # keep exactly as returned (no canonicalization) if present
+    primary_detail = primary_detail if primary_detail else None
 
-    # fallback detail_url (other URL-like fields)
+    # --- fallback detail_url (other URL-like fields) ---
     detail_url = (
         primary_detail
         or proj.get("projectUrl")
@@ -421,7 +425,7 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
     )
     detail_url = str(detail_url).strip() if detail_url else ""
 
-    # Extract numeric id from URLs if not already found
+    # --- helper: extract numeric id from a URL path ---
     def _extract_numeric_id_from_url_local(url):
         if not url:
             return None
@@ -437,15 +441,16 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
             return None
         return None
 
+    # --- Extract numeric id from URLs if not already found ---
     if not numeric_id and primary_detail:
         numeric_id = _extract_numeric_id_from_url_local(primary_detail)
     if not numeric_id and detail_url:
         numeric_id = _extract_numeric_id_from_url_local(detail_url)
 
-    # internal id fallback
+    # --- internal id fallback ---
     internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
 
-    # Build proj_num_candidate (project-number-based link candidate)
+    # --- Build proj_num_candidate (project-number-based link candidate) ---
     proj_num_candidate = None
     if proj_num:
         if "-" in proj_num:
@@ -456,7 +461,7 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
             else:
                 proj_num_candidate = proj_num
 
-    # Build stable source_id (keep subprojects distinct)
+    # --- Build stable source_id (keep subprojects distinct) ---
     if proj_num and sub_proj:
         source_id = f"{proj_num}::{sub_proj}"
     elif proj_num:
@@ -469,36 +474,33 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
         org = proj.get("organization") or proj.get("organizationName") or proj.get("orgName") or ""
         source_id = (title or "")[:120] + "|" + str(org)[:60]
 
-    # Build canonical grant_link: priority described in docstring
+    # --- Build grant_link: USE EXACT project_detail_url WHEN PROVIDED ---
+    # 1) If the API provided primary_detail (project_detail_url or projectDetailUrl),
+    #    use that value verbatim as the grant_link (do NOT modify/canonicalize).
     grant_link = None
+    if primary_detail:
+        # Use exactly what the API returned
+        grant_link = str(primary_detail)
 
-    # 1) Prefer explicit project_detail_url if it's a reporter.nih.gov URL with a non-root path
-    if primary_detail and "reporter.nih.gov" in primary_detail:
-        try:
-            p = urlparse(primary_detail)
-            if p.path and p.path.strip() not in ("/", ""):
-                grant_link = urlunparse((p.scheme or "https", p.netloc, p.path, "", "", ""))
-        except Exception:
-            grant_link = primary_detail
-
-    # 2) numeric_id authoritative
+    # 2) If no primary_detail, numeric_id is authoritative -> build /project-details/<numeric_id>
     if not grant_link and numeric_id:
         grant_link = f"https://reporter.nih.gov/project-details/{quote(numeric_id)}"
 
-    # 3) fallback: any other reporter URL returned by the API (canonicalized)
+    # 3) fallback: any other reporter URL returned by the API (canonicalize if needed)
     if not grant_link and detail_url and "reporter.nih.gov" in detail_url:
         try:
             p = urlparse(detail_url)
             if p.path and p.path.strip() not in ("/", ""):
                 grant_link = urlunparse((p.scheme or "https", p.netloc, p.path, "", "", ""))
+            else:
+                grant_link = detail_url
         except Exception:
             grant_link = detail_url
 
-    # 4) proj_num_candidate -> project-details/<proj_num_candidate> 
+    # 4) proj_num_candidate -> project-details/<proj_num_candidate> when it looks like a reporter project number
     if not grant_link and proj_num_candidate:
-        # If a module-level helper _looks_like_reporter_projnum exists, prefer it; else do a lightweight check.
         try:
-            looks_ok = _looks_like_reporter_projnum(proj_num_candidate)  # uses your existing helper if present
+            looks_ok = _looks_like_reporter_projnum(proj_num_candidate)
         except NameError:
             looks_ok = bool(re.search(r'[A-Za-z]', proj_num_candidate) and re.search(r'\d', proj_num_candidate)) or ("-" in proj_num_candidate)
         if looks_ok:
@@ -509,22 +511,23 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
         search_term = proj_num_candidate or title or keyword or ""
         grant_link = f"https://reporter.nih.gov/search/results?query={quote(search_term)}"
 
+    # --- debug prints if requested ---
     if debug:
         print("[NIH DEBUG] title:", title)
         print("[NIH DEBUG] source_id:", source_id)
         print("[NIH DEBUG] numeric_id:", numeric_id)
-        print("[NIH DEBUG] primary_detail:", primary_detail)
-        print("[NIH DEBUG] detail_url:", detail_url)
+        print("[NIH DEBUG] primary_detail (exact API value):", primary_detail)
+        print("[NIH DEBUG] detail_url (fallback):", detail_url)
         print("[NIH DEBUG] proj_num_candidate:", proj_num_candidate)
         print("[NIH DEBUG] internal_id:", internal_id)
+        print("[NIH DEBUG] proj_num:", proj_num)
+        print("[NIH DEBUG] sub_proj:", sub_proj)
         print("[NIH DEBUG] grant_link:", grant_link)
 
+    # --- ALWAYS return 8 values so caller can unpack consistently ---
     return source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj
-
-# Usage example (inside your per-project loop):
-# source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id = build_source_and_link(proj, title, keyword, debug)
-
-def fetch_nih_reporter(
+    
+    def fetch_nih_reporter(
     keyword: str,
     lookback_days: int,
     domain: str,

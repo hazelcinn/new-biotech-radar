@@ -9,6 +9,7 @@ from typing import List, Dict, Any, Optional
 _ORCID_HYPHEN_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-[\dXx]{4})')
 _ORCID_URL_RE = re.compile(r'https?://orcid\.org/(\d{4}-\d{4}-\d{4}-[\dXx]{4})', re.I)
 
+
 def _orcid_normalize(candidate: str) -> Optional[str]:
     if not candidate:
         return None
@@ -23,6 +24,7 @@ def _orcid_normalize(candidate: str) -> Optional[str]:
     if len(digits) == 16:
         return f"{digits[0:4]}-{digits[4:8]}-{digits[8:12]}-{digits[12:16]}"
     return None
+
 
 def _orcid_checksum_is_valid(orcid_hyphenated: str) -> bool:
     if not orcid_hyphenated:
@@ -40,6 +42,7 @@ def _orcid_checksum_is_valid(orcid_hyphenated: str) -> bool:
     check_char = 'X' if result == 10 else str(result)
     return check_char == digits[-1].upper()
 
+
 # Simple text helpers
 def _truncate_text(text: str, length: int = 200) -> str:
     if not text:
@@ -50,6 +53,7 @@ def _truncate_text(text: str, length: int = 200) -> str:
     cut = t[:length].rsplit(" ", 1)[0]
     return cut + "…"
 
+
 def _simple_sentence_summary(text: str, max_sentences: int = 5) -> str:
     if not text:
         return ""
@@ -58,6 +62,7 @@ def _simple_sentence_summary(text: str, max_sentences: int = 5) -> str:
     if not sentences:
         return _truncate_text(text, 200)
     return " ".join(sentences[:max_sentences])
+
 
 def _clean_simple_text(node) -> str:
     if not node:
@@ -74,6 +79,7 @@ def _clean_simple_text(node) -> str:
             if k in node and node[k]:
                 return _clean_simple_text(node[k])
         leaves = []
+
         def _g(o):
             if isinstance(o, str):
                 leaves.append(o.strip())
@@ -83,31 +89,32 @@ def _clean_simple_text(node) -> str:
             elif isinstance(o, list):
                 for vv in o:
                     _g(vv)
+
         _g(node)
         return " ".join([l for l in leaves if l]).strip()
     return str(node).strip()
+
 
 def _looks_like_reporter_projnum(s: str) -> bool:
     if not s:
         return False
     s = str(s).strip()
-    # valid project numbers usually include letters and digits (e.g., R01CA123456-01A1)
+    # typical NIH project numbers include letters and digits (e.g., R01CA123456-01A1)
     if re.search(r'[A-Za-z]', s) and re.search(r'\d', s):
         return True
     if '-' in s and re.match(r'^[A-Za-z0-9\-\_]+$', s):
         return True
     return False
 
+
 def _normalize_person_name(name: str) -> str:
     """
     Convert "Last, First [Middle]" to "First [Middle] Last".
     Leaves names already in "First Last" form unchanged.
-    Returns empty string for falsy input.
     """
     if not name:
         return ""
     s = name.strip()
-    # If name contains a comma, assume "Last, First ..." and swap
     if ',' in s:
         parts = [p.strip() for p in s.split(',') if p.strip()]
         if len(parts) >= 2:
@@ -116,26 +123,21 @@ def _normalize_person_name(name: str) -> str:
             return f"{rest} {last}"
     return s
 
+
 def _date_only(dt) -> str:
-    """
-    Return only the date portion of a datetime-like string or object.
-    Keeps YYYY-MM-DD when possible and strips times like 'T00:00:00' and trailing 'Z'.
-    """
     if not dt:
         return ""
     s = str(dt).strip()
-    # remove trailing separator characters often seen in dumped fields
     s = s.rstrip(" |;,-")
-    # remove ISO time portion and timezone Z if present
     if "T" in s:
         s = s.split("T", 1)[0]
     elif " " in s and re.match(r'^\d{4}-\d{2}-\d{2}\s', s):
         s = s.split(" ", 1)[0]
-    # If it still looks long, take the first 10 chars (covers many formats)
     if len(s) > 10 and re.match(r'^\d{4}', s):
         s = s[:10]
     return s
-    
+
+
 def _format_nih_affiliation(aff_node: dict, title_case: bool = False) -> dict:
     if not aff_node or not isinstance(aff_node, dict):
         return {
@@ -216,6 +218,7 @@ def _format_nih_affiliation(aff_node: dict, title_case: bool = False) -> dict:
         "primary_uei": primary_uei,
     }
 
+
 _NIH_INSTITUTE_MAP = {
     "NCI": "National Cancer Institute",
     "NIAID": "National Institute of Allergy and Infectious Diseases",
@@ -227,15 +230,13 @@ _NIH_INSTITUTE_MAP = {
     "NIGMS": "National Institute of General Medical Sciences",
     "NIA": "National Institute on Aging",
     "NIDA": "National Institute on Drug Abuse",
-    # add more mappings as needed
 }
 
+
 def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
-    """Return the best funder/awarding IC name for a RePORTER project dict."""
     if not isinstance(proj, dict):
         return "NIH RePORTER"
 
-    # 1) Look for explicit fields often returned by RePORTER
     for key in (
         "fundingAgency", "funding_agency", "funder", "awardOrg", "award_organization",
         "agency", "agencyName", "agency_name", "awardingIC", "awarding_ic", "awardingICName",
@@ -245,20 +246,16 @@ def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
         if not val:
             continue
         if isinstance(val, dict):
-            # prefer common name fields inside dicts
             for sub in ("name", "displayName", "agency", "agencyName", "funder"):
                 name = val.get(sub)
                 if name:
                     return str(name).strip()
         elif isinstance(val, str) and val.strip():
             s = val.strip()
-            # if it's an acronym, expand it when possible
             if s.upper() in _NIH_INSTITUTE_MAP:
                 return _NIH_INSTITUTE_MAP[s.upper()]
             return s
 
-    # 2) Check award/institute-specific fields
-    # e.g., 'awardingIC' can be a code or dict; 'award' may contain nested agency info
     awarding = proj.get("awardingIC") or proj.get("awardIC") or proj.get("award_ics") or proj.get("awardICs")
     if awarding:
         if isinstance(awarding, str):
@@ -275,10 +272,8 @@ def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
             if code:
                 return str(code)
 
-    # 3) Look inside 'funding' or nested structures
     funding = proj.get("funding") or proj.get("award") or proj.get("awards")
     if isinstance(funding, dict):
-        # try common nested fields
         for sub in ("agency", "funder", "org", "awardOrg", "awardingIC", "awardingICName"):
             v = funding.get(sub)
             if isinstance(v, str) and v.strip():
@@ -288,7 +283,6 @@ def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
                 if name:
                     return name
 
-    # 4) Heuristic scan: look for any top-level key that contains funder/award/agency/ic
     for k, v in proj.items():
         if isinstance(k, str) and any(tok in k.lower() for tok in ("funder", "funding", "award", "agency", "institute", "ic")):
             if isinstance(v, str) and v.strip():
@@ -301,13 +295,12 @@ def _extract_funder_from_proj(proj: dict, debug: bool = False) -> str:
                 if n:
                     return n
 
-    # debug assistance: show candidate keys if nothing matched
     if debug:
         sample_keys = {k: type(v).__name__ for k, v in list(proj.items())[:40]}
         print("[nih debug] no funder found; top-level keys (sample):", sample_keys)
 
-    # final fallback
     return "NIH RePORTER"
+
 
 def _find_strings(obj):
     if isinstance(obj, str):
@@ -319,12 +312,13 @@ def _find_strings(obj):
         for v in obj:
             yield from _find_strings(v)
 
+
 def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
     if not orcid_url:
         return pi_name
     return f'<a href="{orcid_url}" target="_blank" rel="noopener noreferrer">{pi_name}</a>'
 
-# Ollama summarization helper (defensive)
+
 def _ollama_summarize(
     text: str,
     n_sentences: int = 5,
@@ -373,12 +367,13 @@ def _ollama_summarize(
         return resp.text.strip()
     return None
 
+
 def fetch_nih_reporter(
     keyword: str,
     lookback_days: int,
     domain: str,
     limit: int = 10,
-    summary_mode: str = "truncate",   # "truncate" | "sentences" | "ollama"
+    summary_mode: str = "truncate",
     truncate_chars: int = 200,
     summary_sentences: int = 5,
     use_ollama: bool = False,
@@ -390,7 +385,7 @@ def fetch_nih_reporter(
     debug: bool = False,
 ) -> List[Dict[str, Any]]:
     results_out: List[Dict[str, Any]] = []
-    seen_ids = set() #local dedupe for this fetch call
+    seen_ids = set()
     endpoint = "https://api.reporter.nih.gov/v2/projects/search"
     headers = {
         "User-Agent": "GrantHarvester/1.0 (+https://your.project/)",
@@ -420,6 +415,7 @@ def fetch_nih_reporter(
         if debug:
             print("[nih] json decode failed:", e)
         return results_out
+
     candidates = data.get("results") or data.get("projects") or data.get("data") or data.get("items") or []
     if isinstance(candidates, dict):
         for v in candidates.values():
@@ -435,9 +431,12 @@ def fetch_nih_reporter(
             or proj.get("projectTitleDisplay")
             or ""
         ).strip()
+
         proj_num = (
             proj.get("projectNumber")
-            or proj.get("proj_number")
+            or proj.get("project_number")
+            or proj.get("projectNum")
+            or proj.get("project_num")
             or proj.get("projectId")
             or proj.get("project_id")
             or proj.get("id")
@@ -446,13 +445,12 @@ def fetch_nih_reporter(
         proj_num = str(proj_num).strip() if proj_num else ""
         internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
 
-        # canonical source id (prefer projectNumber if it looks like a reporter project number)
+        # canonical source id
         if proj_num and _looks_like_reporter_projnum(proj_num):
             source_id = proj_num
         elif internal_id:
             source_id = internal_id
         else:
-            # last resort: title + org snippet (not ideal but stable for this run)
             org_name_for_id = ""
             try:
                 org_name_for_id = (proj.get("org") or {}).get("org_name") or proj.get("orgName") or proj.get("organization") or ""
@@ -460,35 +458,14 @@ def fetch_nih_reporter(
                 org_name_for_id = ""
             source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
 
-        # Skip duplicates within this single fetch call
+        # local dedupe
         if source_id in seen_ids:
             if debug:
                 print("[nih] skipping duplicate source_id:", source_id)
             continue
         seen_ids.add(source_id)
-        
-        # prefer proj_num if present and non-empty
-        source_id = None
-        if proj_num:
-            source_id = str(proj_num).strip()
-        elif internal_id:
-            source_id = str(internal_id).strip()
-        else:
-            # fallback: use normalized title+org as last resort (not ideal but stable for this run)
-            org_name_for_id = ""
-            try:
-                org_name_for_id = (proj.get("org", {}) or {}).get("org_name") or (proj.get("orgName") or proj.get("organization") or "")
-            except Exception:
-                org_name_for_id = ""
-            source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
 
-        # skip if we've already yielded this source_id in this fetch
-        if source_id in seen_ids:
-            if debug:
-                print("[nih] skipping duplicate source_id:", source_id)
-            continue
-        seen_ids.add(source_id)
-        
+        # abstract
         abstract_raw = (
             proj.get("abstractText")
             or proj.get("abstract")
@@ -507,7 +484,7 @@ def fetch_nih_reporter(
                     break
         abstract = _clean_simple_text(abstract_raw) if abstract_raw is not None else ""
 
-        # build abstract_display using summary_mode and Ollama option
+        # abstract display
         if not abstract:
             abstract_display = "No abstract available."
         else:
@@ -524,7 +501,6 @@ def fetch_nih_reporter(
                 if summary:
                     abstract_display = summary
                 else:
-                    # fallback chain
                     abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
                     if not abstract_display:
                         abstract_display = _truncate_text(abstract, truncate_chars)
@@ -532,44 +508,11 @@ def fetch_nih_reporter(
                 abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
-                
-        # determine funder/source (always run; debug prints are controlled by debug flag)
+
+        # funder
         funder_name = _extract_funder_from_proj(proj, debug=debug)
 
-        # optional debug: print candidate funder-ish fields when debug=True
-        if debug:
-            candidate_keys = [
-                "fundingAgency","funding_agency","funder","awardOrg","award_organization",
-                "agency","agencyName","agency_name","awardingIC","awarding_ic","awardingICName",
-                "fundingIC","funding_ic","fundingICName","award","awards","funding",
-                "org","orgName","org_name","awardOrg","award_org","award_organization",
-                "leadOrg","awardee_org","awardOrgName","investigator","pi","project_org",
-                "projectOrganization","awardeeOrganization","projectFunder"
-            ]
-            found = {}
-            for k in candidate_keys:
-                if k in proj:
-                    found[k] = proj[k]
-            nested_snippets = {}
-            for k in ("funding","award","awards","projectDetails","projectOrganization","org","organization","projectFunder"):
-                v = proj.get(k)
-                if v:
-                    nested_snippets[k] = (type(v).__name__, repr(v)[:800])
-            if found or nested_snippets:
-                print("=== NIH funder debug ===")
-                print("projectNumber:", proj.get("projectNumber") or proj.get("proj_number") or proj.get("id"))
-                if found:
-                    print("Top-level candidate keys present:")
-                    for kk, vv in found.items():
-                        print(f"  {kk}: ({type(vv).__name__}) {repr(vv)[:400]}")
-                if nested_snippets:
-                    print("Nested snippets:")
-                    for kk, vv in nested_snippets.items():
-                        print(f"  {kk}: {vv[0]} {vv[1]}")
-                print("Top-level keys sample:", list(proj.keys())[:60])
-                print("=== end debug ===")
-
-        # PI extraction (varied shapes)
+        # PI
         pi_name = ""
         person_obj = {}
         if proj.get("contact_pi_name"):
@@ -670,7 +613,7 @@ def fetch_nih_reporter(
         aff_info = _format_nih_affiliation(aff_node if isinstance(aff_node, dict) else {}, title_case=True)
         affiliation = aff_info["affiliation"] or "N/A"
 
-        # amount, duration, link (same as you already have)
+        # amount
         amount_val = proj.get("awardAmount") or proj.get("award_amount") or proj.get("award") or proj.get("total_cost") or None
         amount = "N/A"
         if amount_val is not None:
@@ -680,6 +623,7 @@ def fetch_nih_reporter(
             except Exception:
                 amount = str(amount_val)
 
+        # duration (date-only)
         raw_start = proj.get("projectStartDate") or proj.get("project_start_date") or proj.get("startDate") or proj.get("start") or ""
         raw_end = proj.get("projectEndDate") or proj.get("project_end_date") or proj.get("endDate") or proj.get("end") or ""
         start_date = _date_only(raw_start)
@@ -689,96 +633,9 @@ def fetch_nih_reporter(
         else:
             duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or "N/A"
 
-                # Build robust grant_link. Prefer explicit detail link, otherwise use valid project number,
-        # otherwise search by project number/title.
+        # build robust grant link
         detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
         detail_url = str(detail_url).strip() if detail_url else ""
-
-        proj_num = (
-            proj.get("projectNumber")
-            or proj.get("project_number")
-            or proj.get("projectNum")
-            or proj.get("project_num")
-            or proj.get("projectId")
-            or proj.get("project_id")
-            or proj.get("id")
-            or ""
-        )
-        proj_num = str(proj_num).strip() if proj_num else ""
-        internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
-
-        # canonical source id (prefer valid projectNumber, else internal_id, else title+org)
-        if proj_num and _looks_like_reporter_projnum(proj_num):
-            source_id = proj_num
-        elif internal_id:
-            source_id = internal_id
-        else:
-            org_name_for_id = ""
-            try:
-                org_name_for_id = (proj.get("org") or {}).get("org_name") or proj.get("orgName") or proj.get("organization") or ""
-            except Exception:
-                org_name_for_id = ""
-            source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
-
-        # Skip duplicates within this single fetch call (local dedupe)
-        if source_id in seen_ids:
-            if debug:
-                print("[nih] skipping duplicate source_id:", source_id)
-            continue
-        seen_ids.add(source_id)
-
-        # abstract extraction (unchanged)
-        abstract_raw = (
-            proj.get("abstractText")
-            or proj.get("abstract")
-            or proj.get("projectAbstract")
-            or proj.get("abstract_text")
-            or proj.get("project_description")
-            or proj.get("description")
-            or proj.get("summary")
-            or proj.get("projectSummary")
-            or None
-        )
-        if abstract_raw is None and isinstance(proj, dict):
-            for k, v in proj.items():
-                if isinstance(k, str) and ("abstract" in k.lower() or "project" in k.lower() or "summary" in k.lower()):
-                    abstract_raw = v
-                    break
-        abstract = _clean_simple_text(abstract_raw) if abstract_raw is not None else ""
-
-        # build abstract_display using summary_mode and Ollama option
-        if not abstract:
-            abstract_display = "No abstract available."
-        else:
-            if summary_mode == "ollama" and use_ollama:
-                summary = _ollama_summarize(
-                    abstract,
-                    n_sentences=summary_sentences,
-                    ollama_url=ollama_url,
-                    model=ollama_model,
-                    max_tokens=ollama_max_tokens,
-                    temperature=ollama_temperature,
-                    timeout=ollama_timeout,
-                )
-                if summary:
-                    abstract_display = summary
-                else:
-                    abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
-                    if not abstract_display:
-                        abstract_display = _truncate_text(abstract, truncate_chars)
-            elif summary_mode == "sentences":
-                abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
-            else:
-                abstract_display = _truncate_text(abstract, truncate_chars)
-
-        # determine funder/source (always run; debug prints are controlled by debug flag)
-        funder_name = _extract_funder_from_proj(proj, debug=debug)
-
-        # Build robust grant_link. Prefer explicit detail link if it's a non-root reporter URL,
-        # else prefer valid project number, else search.
-        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
-        detail_url = str(detail_url).strip() if detail_url else ""
-
         proj_num_candidate = proj_num or None
 
         use_detail = False
@@ -799,7 +656,7 @@ def fetch_nih_reporter(
 
         if debug:
             print("[nih] link chosen:", grant_link, "proj_num_candidate:", proj_num_candidate, "detail_url:", detail_url or None)
-            
+
         results_out.append({
             "title": title or "Untitled Project",
             "project contact": pi_display,
@@ -818,4 +675,9 @@ def fetch_nih_reporter(
             "domain": domain,
             "link": grant_link
         })
+
     return results_out
+
+
+# Backwards-compatible alias expected by older code
+fetch = fetch_nih_reporter

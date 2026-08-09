@@ -105,6 +105,11 @@ def deduplicate(new_items: list, state_file: str):
         seen_urls.add(url)
         seen_titles.append(title)
 
+        if item.get("source_id"):
+                  key = f"{item.get('source') or ''}|{item.get('source_id')}"
+              else:
+                  key = item.get("link") or (item.get("title","") + "|" + item.get("project_contact_name",""))
+  
     updated_seen = seen + [
         {"url": i.get("url", ""), "title": i.get("title", ""), "source": i.get("source", "")}
         for i in fresh

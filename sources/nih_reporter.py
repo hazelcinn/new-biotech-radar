@@ -486,10 +486,6 @@ def fetch_nih_reporter(
             source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
         
         # --- local dedupe
-        if item.get("source_id"):
-            key = f"{item.get('source') or ''}|{item.get('source_id')}"
-        else:
-            key = item.get("link") or (item.get("title","") + "|" + item.get("project_contact_name",""))
 
         # --- abstract (single extraction)
         abstract_raw = (

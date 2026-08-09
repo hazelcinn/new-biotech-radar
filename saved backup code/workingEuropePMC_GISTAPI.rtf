@@ -1,0 +1,263 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww15520\viewh13820\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs24 \cf0 ###Working code for EuropePMC Gist API\
+###config.py
+\f1\b0 \
+DOMAINS = \{\
+  #  "Drug Delivery Platforms": [\
+  #      "lipid nanoparticles", "secretome", "lipid droplets", "nanocarrier", "hydrogel", "targeted delivery"\
+  #  ],\
+  #  "Diagnostics & Detection": [\
+  #      "molecular detection", "biosensor", "liquid biopsy", "point of care", "microfluidic assay", "precision medicine"\
+  #  ],\
+  #  "Organ & Tissue Preservation": [\
+  #      "organ preservation", "hypothermic machine perfusion", "normothermic perfusion", "tissue preservation"\
+  #  ],\
+  #  "Lab Automation & Culture Systems": [\
+  #      "lab automation", "organ on a chip", "organ-on-a-chip", "high throughput screening", "bioreactor culture", "automated liquid handling"\
+  #  ]\
+    "Basic Search": [\
+        "delivery system", "diagnostic", "biosensor", "noninvasive", "assay", "automation", "setup", "platform", "tool", "technology", "high throughput", "technique"\
+    ],\
+\}\
+LOOKBACK_DAYS = 30\
+STATE_FILE = "./state.json"\
+OUTPUT_DIR = "output"\
+DOCS_DIR = "docs"\
+
+\f0\b ###main.py\
+
+\f1\b0 import sys\
+from config import DOMAINS, LOOKBACK_DAYS, STATE_FILE, OUTPUT_DIR, DOCS_DIR\
+\
+from sources import europepmc, biorxiv, semantic_scholar, nih_reporter, nsf, ukri_gtr, cordis, fwf\
+from dedup import deduplicate, save_state, compute_lookback_days\
+from extract import extract_all\
+from digest import write_markdown, write_csv, write_html, write_pages_index\
+\
+\
+def harvest_all(lookback_days: int):\
+    all_items = []\
+    all_keywords = [(kw, domain) for domain, kws in DOMAINS.items() for kw in kws]\
+\
+    print(f"[main] Harvesting across \{len(all_keywords)\} keyword queries, "\
+          f"\{lookback_days\}-day lookback...")\
+\
+    for kw, domain in all_keywords:\
+        all_items.extend(europepmc.fetch(kw, lookback_days, domain))\
+        all_items.extend(europepmc.fetch_grants(kw, lookback_days, domain))\
+        all_items.extend(semantic_scholar.fetch(kw, lookback_days, domain))\
+        all_items.extend(nih_reporter.fetch(kw, lookback_days, domain))\
+        all_items.extend(nsf.fetch(kw, lookback_days, domain))\
+        all_items.extend(ukri_gtr.fetch(kw, lookback_days, domain))\
+        all_items.extend(cordis.fetch(kw, lookback_days, domain))\
+        all_items.extend(fwf.fetch(kw, lookback_days, domain))\
+\
+    # bioRxiv/medRxiv is date-range based, not per-keyword \'97 pull once\
+    flat_keywords = [kw for kw, _ in all_keywords]\
+    domain_hints = \{kw: domain for kw, domain in all_keywords\}\
+    all_items.extend(biorxiv.fetch(flat_keywords, lookback_days, domain_hints))\
+\
+    print(f"[main] Harvested \{len(all_items)\} raw items (pre-dedup).")\
+    return all_items\
+\
+\
+def main():\
+    lookback_days = compute_lookback_days(STATE_FILE, LOOKBACK_DAYS)\
+    raw_items = harvest_all(lookback_days)\
+\
+    fresh_items, updated_state = deduplicate(raw_items, STATE_FILE)\
+    print(f"[main] \{len(fresh_items)\} new items after deduplication.")\
+\
+    if not fresh_items:\
+        print("[main] Nothing new since last run. Saving state, no digest written.")\
+        save_state(STATE_FILE, updated_state)\
+        return\
+\
+    # Updated to pass output/docs paths matching your local Ollama pipeline structure\
+    extracted_items = extract_all(fresh_items, OUTPUT_DIR, DOCS_DIR)\
+\
+    if not extracted_items:\
+        print("[main] Extraction returned no items.")\
+        save_state(STATE_FILE, updated_state)\
+        return\
+\
+    md_path = write_markdown(extracted_items, OUTPUT_DIR)\
+    csv_path = write_csv(extracted_items, OUTPUT_DIR)\
+    html_path = write_html(extracted_items, DOCS_DIR)\
+    index_path = write_pages_index(DOCS_DIR)\
+\
+    save_state(STATE_FILE, updated_state)\
+\
+    print(\
+        "[main] Digest written:\\n"\
+        f"  \{md_path\}\\n"\
+        f"  \{csv_path\}\\n"\
+        f"  \{html_path\}  (published via GitHub Pages)\\n"\
+        f"  \{index_path\}  (archive index, also published)"\
+    )\
+\
+\
+if __name__ == "__main__":\
+    sys.exit(main())\
+
+\f0\b ###source europepmc.py\
+
+\f1\b0 import urllib.parse\
+import requests\
+\
+#def fetch(keyword: str, lookback_days: int, domain: str) -> list:\
+#    """Fetches standard research papers from Europe PMC, limited to top 10."""\
+#    raw_items = []\
+#    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"\
+#    \
+#    headers = \{\
+#        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",\
+#        "Accept": "application/json"\
+#    \}\
+#    \
+#    params = \{\
+#        "query": f'"\{keyword\}" HAS_ABSTRACT:y',\
+#        "format": "json",\
+#        "pageSize": 1,  # Capped at top 10 per keyword\
+#        "resultType": "core"\
+#    \}\
+#\
+#    try:\
+#        response = requests.get(url, params=params, headers=headers, timeout=12)\
+#        if response.status_code == 200:\
+#            data = response.json()\
+#            results = data.get("resultList", \{\}).get("result", [])\
+#            for item in results[:10]:\
+#                raw_items.append(\{\
+#                    "title": item.get("title", "Untitled Research"),\
+#                    "abstract": item.get("abstractText", "No abstract available."),\
+#                    "source": item.get("journalTitle", "Europe PMC"),\
+#                    "keyword": keyword,\
+#                    "domain": domain,\
+#                    "link": f"https://europepmc.org/article/\{item.get('source', 'MED')\}/\{item.get('id')\}" if item.get("id") else "#"\
+#                \})\
+#    except Exception as e:\
+#        print(f"[europepmc] Connection error during paper fetch for '\{keyword\}': \{e\}")\
+#\
+#    return raw_items\
+\
+def fetch_grants(keyword: str, lookback_days: int, domain: str) -> list:\
+    """\
+    Fetches actual grant records using the official Europe PMC GRIST REST API,\
+    limited to the top 10 per keyword.\
+    """\
+    raw_items = []\
+    \
+    base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="\
+    \
+    headers = \{\
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",\
+        "Accept": "application/json"\
+    \}\
+\
+    clean_kw = keyword.strip()\
+    encoded_query = urllib.parse.quote(clean_kw)\
+    url = f"\{base_url\}\{encoded_query\}&format=json"\
+\
+    try:\
+        response = requests.get(url, headers=headers, timeout=12)\
+        if response.status_code == 200:\
+            data = response.json()\
+            \
+            record_list = data.get("RecordList", \{\}) if isinstance(data, dict) else \{\}\
+            records = (\
+                record_list.get("Record", [])\
+                or record_list.get("grant", [])\
+                or data.get("Record", [])\
+            )\
+\
+            if isinstance(records, dict):\
+                records = [records]\
+                \
+            # Slice to only take the top 10 records per keyword\
+            for item in records[:10]:\
+                grant_data = item.get("grant", item.get("Grant", item))\
+                \
+                grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"\
+                title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"\
+                \
+                # Abstract is frequently keyed under 'abstractText' or 'abstract' in the Grist API\
+                abstract = grant_data.get("abstractText") or grant_data.get("abstract") or grant_data.get("Abstract") or "No abstract description provided."\
+                \
+                funder_dict = grant_data.get("funder", grant_data.get("Funder", \{\}))\
+                if isinstance(funder_dict, dict):\
+                    funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"\
+                else:\
+                    funder = str(funder_dict)\
+\
+                person = item.get("person", item.get("Person", \{\}))\
+                given_name = person.get("givenName") or person.get("GivenName") or ""\
+                family_name = person.get("familyName") or person.get("FamilyName") or ""\
+                pi = f"\{given_name\} \{family_name\}".strip() or "N/A"\
+                \
+                aff = person.get("affiliation") or person.get("Affiliation") or grant_data.get("affiliation") or "N/A"\
+                \
+                # Comprehensive extraction for grant amount and currency\
+                amount_node = (\
+                    grant_data.get("amount") \
+                    or grant_data.get("AwardAmount") \
+                    or grant_data.get("awardAmount") \
+                    or grant_data.get("totalAwardAmount") \
+                    or grant_data.get("fundAmount") \
+                    or grant_data.get("financial")\
+                )\
+                \
+                currency = grant_data.get("currency") or grant_data.get("Currency") or ""\
+                \
+                if isinstance(amount_node, dict):\
+                    currency = amount_node.get("currency", currency)\
+                    raw_val = amount_node.get("value") or amount_node.get("content") or amount_node.get("amount")\
+                else:\
+                    raw_val = amount_node\
+\
+                if raw_val is not None and str(raw_val).strip() and str(raw_val) != "N/A":\
+                    curr_symbols = \{"GBP": "\'a3", "USD": "$", "EUR": "\'80"\}\
+                    curr_display = curr_symbols.get(str(currency).upper(), str(currency))\
+                    amount = f"\{curr_display\} \{raw_val\}".strip() if curr_display else str(raw_val)\
+                else:\
+                    amount = "N/A"\
+                    \
+                # Date Duration mapping using active dates, start/end dates, or period keys\
+                start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""\
+                end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""\
+                \
+                if start_date and end_date:\
+                    duration = f"\{start_date\} to \{end_date\}"\
+                else:\
+                    duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"\
+\
+                grant_doi = grant_data.get("doi") or grant_data.get("Doi")\
+                if grant_doi:\
+                    grant_link = f"https://doi.org/\{grant_doi\}"\
+                elif grant_id != "N/A":\
+                    grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22\{urllib.parse.quote(str(grant_id))\}%22"\
+                else:\
+                    grant_link = "https://europepmc.org/grantfinder"\
+\
+                raw_items.append(\{\
+                    "title": title,\
+                    "project contact": pi,\
+                    "affiliation": aff,\
+                    "grant amount": amount,\
+                    "grant duration": duration,\
+                    "abstract": abstract,\
+                    "source": f"\{funder\} (Grant ID: \{grant_id\})",\
+                    "keyword": keyword,\
+                    "domain": domain,\
+                    "link": grant_link\
+                \})\
+    except Exception as e:\
+        print(f"[europepmc] Connection error during GRIST grant fetch for '\{keyword\}': \{e\}")\
+\
+    return raw_items}

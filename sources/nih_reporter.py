@@ -694,16 +694,98 @@ def fetch_nih_reporter(
         detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
         detail_url = str(detail_url).strip() if detail_url else ""
 
+        proj_num = (
+            proj.get("projectNumber")
+            or proj.get("project_number")
+            or proj.get("projectNum")
+            or proj.get("project_num")
+            or proj.get("projectId")
+            or proj.get("project_id")
+            or proj.get("id")
+            or ""
+        )
+        proj_num = str(proj_num).strip() if proj_num else ""
+        internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
+
+        # canonical source id (prefer valid projectNumber, else internal_id, else title+org)
+        if proj_num and _looks_like_reporter_projnum(proj_num):
+            source_id = proj_num
+        elif internal_id:
+            source_id = internal_id
+        else:
+            org_name_for_id = ""
+            try:
+                org_name_for_id = (proj.get("org") or {}).get("org_name") or proj.get("orgName") or proj.get("organization") or ""
+            except Exception:
+                org_name_for_id = ""
+            source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
+
+        # Skip duplicates within this single fetch call (local dedupe)
+        if source_id in seen_ids:
+            if debug:
+                print("[nih] skipping duplicate source_id:", source_id)
+            continue
+        seen_ids.add(source_id)
+
+        # abstract extraction (unchanged)
+        abstract_raw = (
+            proj.get("abstractText")
+            or proj.get("abstract")
+            or proj.get("projectAbstract")
+            or proj.get("abstract_text")
+            or proj.get("project_description")
+            or proj.get("description")
+            or proj.get("summary")
+            or proj.get("projectSummary")
+            or None
+        )
+        if abstract_raw is None and isinstance(proj, dict):
+            for k, v in proj.items():
+                if isinstance(k, str) and ("abstract" in k.lower() or "project" in k.lower() or "summary" in k.lower()):
+                    abstract_raw = v
+                    break
+        abstract = _clean_simple_text(abstract_raw) if abstract_raw is not None else ""
+
+        # build abstract_display using summary_mode and Ollama option
+        if not abstract:
+            abstract_display = "No abstract available."
+        else:
+            if summary_mode == "ollama" and use_ollama:
+                summary = _ollama_summarize(
+                    abstract,
+                    n_sentences=summary_sentences,
+                    ollama_url=ollama_url,
+                    model=ollama_model,
+                    max_tokens=ollama_max_tokens,
+                    temperature=ollama_temperature,
+                    timeout=ollama_timeout,
+                )
+                if summary:
+                    abstract_display = summary
+                else:
+                    abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+                    if not abstract_display:
+                        abstract_display = _truncate_text(abstract, truncate_chars)
+            elif summary_mode == "sentences":
+                abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+            else:
+                abstract_display = _truncate_text(abstract, truncate_chars)
+
+        # determine funder/source (always run; debug prints are controlled by debug flag)
+        funder_name = _extract_funder_from_proj(proj, debug=debug)
+
+        # Build robust grant_link. Prefer explicit detail link if it's a non-root reporter URL,
+        # else prefer valid project number, else search.
+        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
+        detail_url = str(detail_url).strip() if detail_url else ""
+
         proj_num_candidate = proj_num or None
 
-        # Use detail_url only if it appears to be a real project detail URL (or a non-root reporter link)
         use_detail = False
         if detail_url:
             try:
                 parsed = urllib.parse.urlparse(detail_url)
-                host_ok = "reporter.nih.gov" in parsed.netloc
-                path_ok = parsed.path and parsed.path.strip() != "/"
-                use_detail = host_ok and path_ok
+                use_detail = ("reporter.nih.gov" in (parsed.netloc or "")) and parsed.path and parsed.path.strip() != "/"
             except Exception:
                 use_detail = False
 
@@ -712,36 +794,12 @@ def fetch_nih_reporter(
         elif proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
             grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
         else:
-            # fallback: search by project number (if any) else title
             search_term = proj_num_candidate or title or keyword
             grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
 
         if debug:
             print("[nih] link chosen:", grant_link, "proj_num_candidate:", proj_num_candidate, "detail_url:", detail_url or None)
-        def _looks_like_reporter_projnum(s: str) -> bool:
-            # typical NIH project numbers include letters, digits, dashes; avoid pure integers as these may be internal ids
-            if not s:
-                return False
-            s = s.strip()
-            # Accept if it contains a letter and digit (e.g., R01CA123456-01)
-            if re.search(r'[A-Za-z]', s) and re.search(r'\d', s):
-                return True
-            # Some valid project numbers are like '1R01CA123456-01A1' or 'R01CA123456'
-            if re.match(r'^[A-Za-z0-9\-\_]+$', s) and '-' in s:
-                return True
-            return False
-
-        if detail_url:
-            grant_link = str(detail_url)
-        elif proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
-            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
-        else:
-            # final fallback: search by project number or title + org to make it easy to find
-            search_term = proj_num_candidate or title or keyword
-            grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
-
-        if debug:
-            print("[nih] link chosen:", grant_link, "proj_num_candidate:", proj_num_candidate, "detail_url:", bool(detail_url))
+            
         results_out.append({
             "title": title or "Untitled Project",
             "project contact": pi_display,

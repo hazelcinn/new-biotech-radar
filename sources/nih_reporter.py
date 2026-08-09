@@ -432,7 +432,7 @@ def fetch_nih_reporter(
             or ""
         ).strip()
 
-        # --- canonical project identifiers (one place only)
+        # canonical project identifiers (one place only)
         proj_num = (
             proj.get("projectNumber")
             or proj.get("project_number")
@@ -448,27 +448,48 @@ def fetch_nih_reporter(
             or ""
         )
         proj_num = str(proj_num).strip() if proj_num else ""
+
+        # Sub-project identifier (different APIs use different keys)
+        sub_proj = (
+            proj.get("subProjectId")
+            or proj.get("sub_project_id")
+            or proj.get("subProjectNumber")
+            or proj.get("sub_project_number")
+            or proj.get("subId")
+            or proj.get("subprojectId")
+            or None
+        )
+        sub_proj = str(sub_proj).strip() if sub_proj else None
+
         internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
 
-        # --- canonical source_id (prefer validated project number otherwise fallback to internal_id or stable title/org)
+        # Build a stable source_id that distinguishes subprojects:
+        # Prefer a validated reporter project number + sub-id when available.
         if proj_num and _looks_like_reporter_projnum(proj_num):
-            source_id = proj_num
+            if sub_proj:
+                # combine project number and subproject id to guarantee uniqueness
+                source_id = f"{proj_num}::{sub_proj}"
+            else:
+                source_id = proj_num
+        elif sub_proj:
+            # no valid projectNumber, but sub-id exists — use internal id + sub-id
+            source_id = f"{internal_id}::{sub_proj}" if internal_id else f"sub::{sub_proj}"
         elif internal_id:
             source_id = internal_id
         else:
+            # last resort: title + org snippet (stable for this run)
             org_name_for_id = ""
             try:
                 org_name_for_id = (proj.get("org") or {}).get("org_name") or proj.get("orgName") or proj.get("organization") or ""
             except Exception:
                 org_name_for_id = ""
             source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
-
-        # --- local dedupe: skip if we've already yielded this source_id in this fetch
-        if source_id in seen_ids:
-            if debug:
-                print("[nih] skipping duplicate source_id:", source_id, "title:", title)
-            continue
-        seen_ids.add(source_id)
+        
+        # --- local dedupe
+        if item.get("source_id"):
+            key = f"{item.get('source') or ''}|{item.get('source_id')}"
+        else:
+            key = item.get("link") or (item.get("title","") + "|" + item.get("project_contact_name",""))
 
         # --- abstract (single extraction)
         abstract_raw = (

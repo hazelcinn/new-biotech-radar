@@ -527,7 +527,7 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
     # --- ALWAYS return 8 values so caller can unpack consistently ---
     return source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj
     
-    def fetch_nih_reporter(
+def fetch_nih_reporter(
     keyword: str,
     lookback_days: int,
     domain: str,

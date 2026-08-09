@@ -740,7 +740,7 @@ def fetch_nih_reporter(
             combined_norm = _normalize_for_match(combined)
 
             # Matching policy: require ALL keyword tokens present (change to any() if you prefer looser match)
-            matched = all(tok in combined_norm.split(" ") or tok in combined_norm for tok in kw_tokens)
+            matched = all(tok in combined_norm for tok in kw_tokens) #.split(" ") or tok in combined_norm for tok in kw_tokens)
 
             if debug:
                 print("[nih debug] KEYWORD MATCH CHECK")

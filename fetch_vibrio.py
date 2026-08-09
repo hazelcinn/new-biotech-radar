@@ -1,13 +1,13 @@
 import requests
 import json
 
-q = "VIBRIO SPECIES IN MARKET LEVEL SEAFOOD AND COASTAL WATERS IN PUERTO RICO"
-
+q = "VIBRIO"
 resp = requests.post(
     "https://api.reporter.nih.gov/v2/projects/search",
-    json={"criteria": {"keyword": q}, "offset": 0, "limit": 200},
+    json={"criteria": {"keyword": q}, "offset": 0, "limit": 500},
     timeout=30,
 )
+resp.raise_for_status()
 data = resp.json()
 
 candidates = data.get("results") or data.get("projects") or data.get("data") or data.get("items") or []
@@ -17,32 +17,18 @@ if isinstance(candidates, dict):
             candidates = v
             break
 
-matches = [
-    p
-    for p in candidates
-    if "VIBRIO" in (p.get("projectTitle") or p.get("title") or "").upper()
-]
-
-keys = [
-    "projectNumber",
-    "project_number",
-    "subProjectId",
-    "sub_project_id",
-    "projectId",
-    "project_id",
-    "id",
-    "projectDetailId",
-    "projectUrl",
-    "title",
-    "contactPiName",
-    "contact_pi_name",
-    "contactPIs",
-]
-
 out = []
-for p in matches:
-    d = {k: p.get(k) for k in keys}
-    d["_raw_sample_keys"] = list(p.keys())[:80]
-    out.append(d)
+for p in candidates:
+    title = (p.get("projectTitle") or p.get("title") or "")
+    if "VIBRIO" not in title.upper() and "VIBRIO" not in str(p.get("projectNumber") or "").upper():
+        continue
+    out.append({
+        "title": title,
+        "projectNumber": p.get("projectNumber"),
+        "subProjectId": p.get("subProjectId") or p.get("sub_project_id"),
+        "projectDetailId": p.get("projectDetailId"),
+        "projectId_or_id": p.get("projectId") or p.get("project_id") or p.get("id"),
+        "projectUrl": p.get("projectUrl"),
+    })
 
 print(json.dumps(out, indent=2))

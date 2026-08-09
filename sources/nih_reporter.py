@@ -4,6 +4,7 @@ import requests
 import re
 import json
 from typing import List, Dict, Any, Optional
+from urllib.parse import urlparse, urlunparse, quote
 
 # ORCID helpers
 _ORCID_HYPHEN_RE = re.compile(r'(\d{4}-\d{4}-\d{4}-[\dXx]{4})')
@@ -367,6 +368,20 @@ def _ollama_summarize(
         return resp.text.strip()
     return None
 
+def _extract_numeric_id_from_url(url):
+    if not url:
+        return None
+    try:
+        p = urlparse(str(url))
+        m = re.search(r"/project-details/(\d+)(?:/|$)", p.path or "")
+        if m:
+            return m.group(1)
+        last = (p.path or "").rstrip("/").split("/")[-1]
+        if last.isdigit():
+            return last
+    except Exception:
+        return None
+    return None
 
 def fetch_nih_reporter(
     keyword: str,
@@ -432,44 +447,50 @@ def fetch_nih_reporter(
             or ""
         ).strip()
 
-        # --- canonical ids: use numeric reporter detail id for links when present,
-        # and build a composite source_id that includes the subproject id for dedupe.
+        # --- normalized getters (handles camelCase and snake_case) ---
         proj_num = (
             proj.get("projectNumber")
             or proj.get("project_number")
-            or proj.get("projectNum")
             or proj.get("project_num")
-            or proj.get("awardNumber")
-            or proj.get("award_number")
-            or proj.get("awardId")
-            or proj.get("applicationNumber")
+            or proj.get("core_project_num")
             or ""
         )
         proj_num = str(proj_num).strip() if proj_num else ""
 
-        # subproject id candidates
         sub_proj = (
             proj.get("subProjectId")
             or proj.get("sub_project_id")
-            or proj.get("subProjectNumber")
-            or proj.get("sub_project_number")
-            or proj.get("subId")
-            or proj.get("subprojectId")
+            or proj.get("subproject_id")
             or None
         )
         sub_proj = str(sub_proj).strip() if sub_proj else None
 
-        # numeric reporter detail id (authoritative for exact project-details page)
+        # Prefer explicit numeric id fields
         numeric_id = None
-        for cand in ("projectDetailId", "projectId", "project_id", "id", "reporterProjectId", "projectDetailID"):
-            v = proj.get(cand)
-            if v:
-                s = str(v).strip()
+        for key in ("projectDetailId", "projectDetailID", "projectId", "project_id", "id", "appl_id"):
+            val = proj.get(key)
+            if val:
+                s = str(val).strip()
                 if s.isdigit():
                     numeric_id = s
                     break
 
-        # Build stable source_id for dedupe: prefer projectNumber + subproj if available
+        # Try extracting from returned URL fields
+        detail_url = (
+            proj.get("projectUrl")
+            or proj.get("project_url")
+            or proj.get("project_detail_url")
+            or proj.get("projectDetailUrl")
+            or proj.get("url")
+            or proj.get("link")
+            or ""
+        )
+        detail_url = str(detail_url).strip() if detail_url else ""
+
+        if not numeric_id and detail_url:
+            numeric_id = _extract_numeric_id_from_url(detail_url)
+
+        # Build stable source_id for dedupe (keep subproject distinct)
         if proj_num and sub_proj:
             source_id = f"{proj_num}::{sub_proj}"
         elif proj_num:
@@ -477,65 +498,34 @@ def fetch_nih_reporter(
         elif numeric_id:
             source_id = f"RID::{numeric_id}"
         else:
-            internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
-            if internal_id:
-                source_id = internal_id
+            internal = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
+            if internal:
+                source_id = internal
             else:
-                org_name_for_id = ""
-                try:
-                    org_name_for_id = (proj.get("org") or {}).get("org_name") or proj.get("orgName") or proj.get("organization") or ""
-                except Exception:
-                    org_name_for_id = ""
-                source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
+                org = proj.get("organization") or proj.get("organizationName") or proj.get("orgName") or ""
+                source_id = (title or "")[:120] + "|" + str(org)[:60]
 
-        # --- build canonical grant_link, priority 
-        # (1) explicit reporter URL with numeric id,
-        # (2) numeric_id -> reporter numeric detail URL,
-        # (3) projectNumber (append sub_proj if needed) when no numeric id,
-        # (4) fallback search link.
-        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
-        detail_url = str(detail_url).strip() if detail_url else ""
+        # Build canonical grant_link:
+        # 1) prefer numeric reporter id -> /project-details/<id>
+        # 2) else canonicalize reporter NIH URL if present
+        # 3) else fallback to reporter search URL using proj_num or title
         grant_link = None
-
-        # 1) If API provided a reporter detail URL and it includes a numeric id, canonicalize it and use it
-        if detail_url:
-            try:
-                parsed = urllib.parse.urlparse(detail_url)
-                path_parts = parsed.path.strip("/").split("/")
-                if ("reporter.nih.gov" in (parsed.netloc or "")) and len(path_parts) >= 2 and path_parts[-2] == "project-details" and path_parts[-1].isdigit():
-                    # canonicalize to remove query/fragment
-                    grant_link = urllib.parse.urlunparse((parsed.scheme or "https", parsed.netloc, parsed.path, "", "", ""))
-            except Exception:
-                grant_link = None
-
-        # 2) numeric id present -> use numeric reporter detail id
-        if not grant_link and numeric_id:
-            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(numeric_id)}"
-
-        # 3) use projectNumber (append sub_proj if needed) when no numeric id
-        if not grant_link:
-            proj_num_candidate = None
-            if proj_num:
-                if "-" in proj_num:
-                    proj_num_candidate = proj_num
-                elif sub_proj:
-                    proj_num_candidate = f"{proj_num}-{sub_proj}"
-                else:
-                    proj_num_candidate = proj_num
-            if proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
-                grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
+        if numeric_id:
+            grant_link = f"https://reporter.nih.gov/project-details/{quote(numeric_id)}"
+        else:
+            if detail_url and "reporter.nih.gov" in detail_url:
+                try:
+                    p = urlparse(detail_url)
+                    grant_link = urlunparse((p.scheme or "https", p.netloc, p.path, "", "", ""))
+                except Exception:
+                    grant_link = detail_url
             else:
-                search_term = proj_num_candidate or title or keyword
-                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
+                search_term = proj_num or title or ""
+                grant_link = f"https://reporter.nih.gov/search/results?query={quote(search_term)}"
 
-        # debug
-        internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip() 
-        if debug: 
-            print("[nih debug] title:", title) 
-            print("[nih debug] source_id:", source_id, "proj_num:", proj_num, "sub_proj:", sub_proj, "numeric_id:", numeric_id, "internal_id:", internal_id) 
-            print("[nih debug] link chosen:", grant_link)
-    
-        # --- abstract (single extraction)
+        # Optional debug print (if you have a debug flag)
+        # if debug:
+        #     print("[NIH DEBUG]", "title:", title, "source_id:", source_id, "numeric_id:", numeric_id, "grant_link:", grant_link)        # --- abstract (single extraction)
         abstract_raw = (
             proj.get("abstractText")
             or proj.get("abstract")

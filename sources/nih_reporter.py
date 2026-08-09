@@ -768,52 +768,18 @@ def fetch_nih_reporter(
             duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or proj.get("year") or proj.get("projectYear") or "N/A"
             duration = str(duration)
 
-        # --- build robust grant_link (single, canonical)
-        detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
-        detail_url = str(detail_url).strip() if detail_url else ""
-        # Prefer an explicit detail URL when available (canonical), otherwise
-        # build a precise project-number candidate. If proj_num looks like a
-        # parent (no '-NN' suffix) but a sub-project id is present, append it
-        # so we construct the specific subproject identifier RePORTER recognizes.
-        proj_num_candidate = None
-
-        if not proj_num_candidate and proj_num:
-            proj_num = str(proj_num).strip()
-            # If proj_num already looks like a full reporter number (contains '-'),
-            # use it as-is.
-            if "-" in proj_num:
-                proj_num_candidate = proj_num
-            else:
-                # If a sub-project identifier exists, append it as a suffix.
-                # Common reporter format: <projectBase>-<suffix> e.g. 2S06GM008159-13
-                if sub_proj:
-                    proj_num_candidate = f"{proj_num}-{sub_proj}"
-                else:
-                    proj_num_candidate = proj_num
-        
-        # prefer a non-root reporter detail URL (but strip fragment/query)
-        grant_link = None
-        if detail_url:
-            try:
-                parsed = urllib.parse.urlparse(detail_url)
-                if ("reporter.nih.gov" in (parsed.netloc or "")) and parsed.path and parsed.path.strip() not in ("/", ""):
-                    # canonicalize to remove fragment/query
-                    grant_link = urllib.parse.urlunparse((parsed.scheme or "https", parsed.netloc, parsed.path, "", "", ""))
-            except Exception:
-                grant_link = None
-
-        if not grant_link:
-            if proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
-                grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
-            else:
-                search_term = proj_num_candidate or title or keyword
-                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
-
+        # --- NOTE: grant_link and detail_url are computed by build_source_and_link above.
+        # Do NOT recompute them here — keep the exact project_detail_url provided by the API.
+        # (The helper returns: source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj)
+        # If you want extra local checks, enable debug prints below.
         if debug:
-            print("[nih debug] title:", title)
-            print("[nih debug] source_id:", source_id, "proj_num:", proj_num, "internal_id:", internal_id)
-            print("[nih debug] link chosen:", grant_link)
-
+            print("[nih debug] (from helper) title:", title)
+            print("[nih debug] (from helper) source_id:", source_id)
+            print("[nih debug] (from helper) numeric_id:", numeric_id)
+            print("[nih debug] (from helper) reporter_detail_url (as returned by API or fallback):", detail_url)
+            print("[nih debug] (from helper) proj_num_candidate:", proj_num_candidate)
+            print("[nih debug] (from helper) link chosen:", grant_link)
+        
         # REPLACE the existing results_out.append({...}) inside fetch_nih_reporter's per-project loop
         # (i.e. the block near the end of the for proj in candidates[:limit]: loop)
         results_out.append({

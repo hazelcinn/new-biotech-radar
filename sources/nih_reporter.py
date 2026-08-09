@@ -811,7 +811,8 @@ def fetch_nih_reporter(
             print("[nih debug] source_id:", source_id, "proj_num:", proj_num, "internal_id:", internal_id)
             print("[nih debug] link chosen:", grant_link)
 
-        # --- final append (single, consistent dict)
+        # REPLACE the existing results_out.append({...}) inside fetch_nih_reporter's per-project loop
+        # (i.e. the block near the end of the for proj in candidates[:limit]: loop)
         results_out.append({
             "title": title or "Untitled Project",
             "project contact": pi_display,
@@ -828,7 +829,11 @@ def fetch_nih_reporter(
             "source_id": source_id,
             "keyword": keyword,
             "domain": domain,
-            "link": grant_link
+            # Visible link used in the digest/UI
+            "link": grant_link,
+            # NEW: preserve RePORTER-provided canonical fields so merges can prefer them
+            "reporter_project_detail_url": detail_url or "",  # populated from project_detail_url / projectUrl etc.
+            "reporter_numeric_id": numeric_id or "",          # populated from projectDetailId / appl_id / url-extraction
         })
     return results_out
 

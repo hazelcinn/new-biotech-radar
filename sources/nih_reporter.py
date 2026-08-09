@@ -704,15 +704,17 @@ def fetch_nih_reporter(
             print("[nih debug] available top-level keys:", list(proj.keys())[:80])
             print("---- NIH CANDIDATE END ----")
 
+        # INSERT HERE (inside `for proj in candidates[:limit]:`), immediately AFTER title and abstract are computed
+        # and BEFORE the funder / PI extraction logic.
         _kw = (keyword or "").strip().lower()
         if _kw:
-            # 1) check normalized title and cleaned abstract first
+            # 1) Check normalized title and cleaned abstract first (these are already computed above)
             title_text = (title or "").lower()
             abstract_text = (abstract or "").lower()
             if _kw in title_text or _kw in abstract_text:
                 matched = True
             else:
-                # 2) check common project-term-like fields robustly (handles lists/dicts via _find_strings)
+                # 2) Check common project-term/keyword fields robustly (handles lists/dicts via _find_strings)
                 matched = False
                 term_keys = (
                     "projectTerms", "project_terms", "terms", "phr_text", "pref_terms",
@@ -748,36 +750,7 @@ def fetch_nih_reporter(
                             continue
                     print("[nih debug] sample occurrences (if any):", occs)
                 continue
-
-        # Require keyword to appear in title OR abstract OR project-term fields
-        nih_term_keys = [
-            "projectTitle", "project_title", "title", "projectTitleDisplay",
-            # abstract-like keys
-            "abstractText", "abstract", "projectAbstract", "abstract_text", "project_description", "description", "summary",
-            # project-term / keyword fields commonly returned by RePORTER
-            "terms", "pref_terms", "phr_text", "project_terms", "keywords", "project_keywords"
-        ]
-
-        # Check filter and show debugging info about which fields matched (quick checks)
-        if keyword:
-            found_in_fields = _keyword_in_fields(proj, keyword, nih_term_keys)
-            if debug:
-                print(f"[nih debug] keyword filter result: {found_in_fields} for keyword={keyword!r}, title={title!r}")
-            if not found_in_fields:
-                if debug:
-                    # show where the keyword appears if anywhere in the full object (for debugging only)
-                    s = keyword.strip().lower()
-                    # search all strings in project for any occurrence
-                    occurrences = []
-                    for sstr in _find_strings(proj):
-                        if s and s.lower().find(s) != -1:
-                            occurrences.append(sstr if len(sstr) < 200 else sstr[:200] + "...")
-                            if len(occurrences) >= 5:
-                                break
-                    print("[nih debug] sample occurrences (if any) in full proj object:", occurrences[:5])
-                    print("[nih debug] skipping project (keyword not in title/abstract/terms)")
-                continue
-
+        
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
         # guard: avoid returning pure numeric IDs as funder

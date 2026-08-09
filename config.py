@@ -10,7 +10,7 @@ DOMAINS = {
     ],
     "Lab Automation & Culture Systems": [
         "lab automation", "organ on a chip", "organ-on-a-chip", "high throughput screening", "bioreactor culture", "automated liquid handling"
-    ]
+    ],
     "Basic Search": [
         "delivery system", "diagnostic", "biosensor", "noninvasive", "assay", "automation", "setup", "platform", "tool", "technology", "high throughput", "technique"
     ],

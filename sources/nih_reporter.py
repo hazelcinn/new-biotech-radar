@@ -410,21 +410,6 @@ def _ollama_summarize(
         return resp.text.strip()
     return None
 
-def _extract_numeric_id_from_url(url):
-    if not url:
-        return None
-    try:
-        p = urlparse(str(url))
-        m = re.search(r"/project-details/(\d+)(?:/|$)", p.path or "")
-        if m:
-            return m.group(1)
-        last = (p.path or "").rstrip("/").split("/")[-1]
-        if last.isdigit():
-            return last
-    except Exception:
-        return None
-    return None
-
 # REPLACE your existing build_source_and_link helper with this version (module scope)
 def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug: bool = False):
     """
@@ -692,6 +677,22 @@ def fetch_nih_reporter(
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
 
+        # INSERT INTO fetch_nih_reporter inside `for proj in candidates[:limit]:` after title and/or after build_source_and_link
+        # Require keyword to appear in title OR abstract OR project-term fields
+        nih_term_keys = [
+            "projectTitle", "project_title", "title", "projectTitleDisplay",
+            # abstract-like keys
+            "abstractText", "abstract", "projectAbstract", "abstract_text", "project_description", "description", "summary",
+            # project-term / keyword fields commonly returned by RePORTER
+            "terms", "pref_terms", "phr_text", "project_terms", "keywords", "project_keywords"
+        ]
+
+# If you called build_source_and_link earlier, you may have 'detail_url' etc. available.
+if keyword and not _keyword_in_fields(proj, keyword, nih_term_keys):
+    if debug:
+        print(f"[nih debug] skipping project (keyword not in title/abstract/terms): title='{title}'")
+    continue
+        
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
         # guard: avoid returning pure numeric IDs as funder

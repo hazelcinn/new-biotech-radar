@@ -131,6 +131,18 @@ def deduplicate(new_items: list, state_file: str):
             seen_titles.append(title)
         seen_keys.add(key)
 
+  #subproject with the same title exists
+  import re
+    def _normalized_title_key(title: str) -> str: if not title: return "" s = title.lower().strip() s = re.sub(r'\s+', ' ', s) s = re.sub(r'[^a-z0-9 ]', '', s) return s
+    def _parse_suffix_number_from_source_id(source_id: str) -> int: if not source_id: return 0 m = re.search(r'-(\d+)(?:[A-Za-z0-9]*)?$', source_id) if m: try: return int(m.group(1)) except Exception: return 0 return 0
+    def _parse_year_from_duration(duration_field) -> int: if not duration_field: return 0 s = str(duration_field) m = re.search(r'(\d{4})(?:\D|$)', s) if m: try: return int(m.group(1)) except Exception: return 0 return 0
+    def _score_item(it: dict) -> int: sc = 0 sid = (it.get("source_id") or it.get("sourceId") or "") or "" # Strong preference for validated reporter project number if _looks_like_reporter_projnum(sid): sc += 100000 # Prefer larger trailing suffix (e.g., -14 > -13) sc += _parse_suffix_number_from_source_id(sid) * 1000 # Prefer later year found in duration string sc += _parse_year_from_duration(it.get("grant duration") or it.get("duration") or "") # Tiebreaker: larger monetary award amt = it.get("grant amount") or it.get("amount") or "" try: num = ( float(str(amt).replace("$", "").replace(",", "")) if isinstance(amt, (int, float)) or any(ch.isdigit() for ch in str(amt)) else 0.0 ) except Exception: num = 0.0 sc += int(num) return sc
+
+    #group by normalized title and choose best per group
+    grouped = {} for it in fresh: key = _normalized_title_key(it.get("title", "")) grouped.setdefault(key, []).append(it)
+    selected = [] for group in grouped.values(): if len(group) == 1: selected.append(group[0]) else: best = max(group, key=_score_item) # optional debug: show which was chosen if 'debug' in globals() and globals().get('debug'): print("[dedup] duplicate group titles:", group[0].get('title')) for g in group: print(" candidate:", g.get('source_id'), g.get('link'), "score:", _score_item(g)) print(" chosen:", best.get('source_id'), best.get('link')) selected.append(best)
+    fresh = selected
+
     updated_seen = seen + [
         {
             "url": i.get("url", ""),

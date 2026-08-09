@@ -373,8 +373,8 @@ def _extract_pi_info(item: dict, grant_data: dict) -> tuple[str, dict]:
     return pi_raw, person
 
 def fetch_grants(
-    keyword: str, 
-    lookback_days: int, 
+    keyword: str,
+    lookback_days: int,
     domain: str,
     summary_mode: str = "truncate",
     truncate_chars: int = 200,
@@ -383,182 +383,280 @@ def fetch_grants(
     ollama_model: str = "llama2",
     summary_sentences: int = 5,
     debug: bool = False,
-    ) -> list:
-    """Fetch grants from Europe PMC GRIST API (top 10)."""
+) -> list:
+    """Fetch grants from Europe PMC GRIST API (top `limit` results)."""
+
     raw_items = []
+
+    # helper: build normalized keyword variants (handles hyphens, underscores, punctuation)
+    def _keyword_variants_epmc(k: str):
+        if not k:
+            return []
+        k = k.strip()
+        variants = {k}
+        variants.add(re.sub(r"[-_]+", " ", k))
+        variants.add(re.sub(r"[^0-9A-Za-z ]+", "", k))
+        # collapse spaces
+        new = set()
+        for v in variants:
+            new.add(re.sub(r"\s+", " ", v).strip())
+        return sorted([v for v in new if v])
+
+    # helper: normalize strings for token matching
+    def _normalize_for_match(s: str) -> str:
+        if not s:
+            return ""
+        t = str(s).lower()
+        t = re.sub(r"[^0-9a-z]+", " ", t)
+        t = re.sub(r"\s+", " ", t).strip()
+        return t
+
+    # Build fielded query (TITLE/ABSTRACT/KW/SUBJECT/MESH) using variants
+    kw_variants = _keyword_variants_epmc(keyword)
+    field_list = ["TITLE", "ABSTRACT", "KW", "SUBJECT", "MESH"]
+    clauses = []
+    for v in kw_variants or [keyword]:
+        qv = v.replace('"', "")  # be safe
+        for fld in field_list:
+            clauses.append(f'{fld}:"{qv}"')
+    query_string = " OR ".join(clauses) if clauses else keyword
+
+    # Use your existing base_url style (GristAPI wrapper) but inject the fielded query.
     base_url = "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query="
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GrantHarvesterBot/1.0",
-        "Accept": "application/json"
+        "Accept": "application/json",
     }
-    clean_kw = keyword.strip()
-    encoded_query = urllib.parse.quote(clean_kw)
+
+    encoded_query = urllib.parse.quote(query_string)
+    # ask for core results in JSON as before
     url = f"{base_url}{encoded_query}&format=json&resultType=core"
+
+    if debug:
+        print("[epmc debug] fielded query string:", query_string)
+        print("[epmc debug] request url:", url[:1000])
+
     try:
         response = requests.get(url, headers=headers, timeout=12)
         if response.status_code != 200:
-            return raw_items
+            # fallback: try original simple keyword query if fielded query failed
+            if debug:
+                print("[epmc debug] fielded query returned non-200:", response.status_code)
+            # try simple encoded keyword fallback
+            simple_encoded = urllib.parse.quote(keyword.strip())
+            url2 = f"{base_url}{simple_encoded}&format=json&resultType=core"
+            try:
+                response = requests.get(url2, headers=headers, timeout=12)
+                if response.status_code != 200:
+                    if debug:
+                        print("[epmc debug] fallback simple query also failed:", response.status_code)
+                    return raw_items
+            except Exception as e:
+                if debug:
+                    print("[epmc] fallback request failed:", e)
+                return raw_items
         data = response.json()
-        record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
-        records = (
-            record_list.get("Record", [])
-            or record_list.get("grant", [])
-            or data.get("Record", [])
-        )
-        if isinstance(records, dict):
-            records = [records]
-        for item in records[:10]:
-            grant_data = item.get("grant", item.get("Grant", item))
-            grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
-            title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
-            abstract_raw = None
-            for k in ["abstractText","abstract","ab","abstr","Abstract","projectSummary","description","abs","description"]:
-                v = grant_data.get(k) or item.get(k)
-                if v:
-                    abstract_raw = v
-                    break
-            abstract = _clean_abstract(abstract_raw) if abstract_raw is not None else ""
-        #        grant_data.get("abstractText")
-        #        or grant_data.get("abstract")
-        #        or grant_data.get("ab")
-        #        or grant_data.get("abstr")
-        #        or grant_data.get("Ab")
-        #        or grant_data.get("Abstr")
-        #        or grant_data.get("Abstract")
-        #        or grant_data.get("projectSummary")
-        #        or grant_data.get("description")
-        #        or item.get("abstractText")
-        #        or item.get("abstract")
-        #        or item.get("abs")
-        #        or item.get("abstr")
-        #        or item.get("description")
-        #        or "No abstract description provided."
-        #    )
-            abstract = _clean_abstract(abstract_raw) or "No abstract description provided."
-            funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
-            if isinstance(funder_dict, dict):
-                funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
-            else:
-                funder = str(funder_dict)
-                
-            # Choose one of: 'ollama' | 'sentences' | 'truncate'
-            # - 'ollama' : try Ollama for a 5-sentence summary (falls back to 'sentences' then 'truncate')
-            # - 'sentences' : simple local sentence split, up to 5 sentences (may be >200 chars)
-            # - 'truncate' : strictly first N characters (default 200)
-            summary_mode = "truncate"     # change to "ollama" or "sentences" as desired
-            truncate_chars = 200
-            use_ollama = False            # only used when summary_mode == "ollama"
-            ollama_url = "http://localhost:11434"
-            ollama_model = "llama2"
-            summary_sentences = 5
-
-            # Ensure we always have an abstract string
-            if not abstract:
-                abstract = "No abstract description provided."
-
-            abstract_display = None
-
-            if summary_mode == "ollama":
-                if use_ollama:
-                    abstract_display = _ollama_summarize(abstract, n_sentences=summary_sentences,
-                                             ollama_url=ollama_url, model=ollama_model)
-                # fallback to local sentence summarizer
-                if not abstract_display:
-                    abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
-                # final fallback: truncate if still somehow empty
-                if not abstract_display:
-                    abstract_display = _truncate_text(abstract, truncate_chars)
-
-            elif summary_mode == "sentences":
-                abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
-
-            elif summary_mode == "truncate":
-                abstract_display = _truncate_text(abstract, truncate_chars)
-
-            else:
-                # safe default
-                abstract_display = _truncate_text(abstract, truncate_chars)
-
-            # optional: if you want sentences mode but want a hard upper char-limit, uncomment:
-            # if summary_mode == "sentences" and len(abstract_display) > truncate_chars:
-            #     abstract_display = _truncate_text(abstract_display, truncate_chars)
-
-            # Debugging: print lengths so you can see whether abstract exists and what display will be
-            #print(f"[debug] title={title!r} abstract_len={len(abstract)} display_len={len(abstract_display or '')}")
-            
-            # PI info
-            pi_raw, person = _extract_pi_info(item, grant_data)
-            # Affiliation
-            aff_raw = (
-                person.get("affiliation")
-                or person.get("Affiliation")
-                or person.get("institution")
-                or person.get("Institution")
-                or grant_data.get("institution")
-                or grant_data.get("Institution")
-                or grant_data.get("affiliation")
-                or grant_data.get("Affiliation")
-                or grant_data.get("grantee")
-                or item.get("institution")
-                or item.get("Institution")
-            )
-            aff = _clean_affiliation(aff_raw) or "N/A"
-            # Amount and currency
-            amount_node = (
-                grant_data.get("amount")
-                or grant_data.get("awardAmount")
-                or grant_data.get("AwardAmount")
-                or grant_data.get("grantAmount")
-                or grant_data.get("totalAwardAmount")
-                or grant_data.get("fundAmount")
-                or grant_data.get("Amount")
-                or item.get("amount")
-                or item.get("Amount")
-                or item.get("awardAmount")
-            )
-            currency = (
-                grant_data.get("currency")
-                or grant_data.get("Currency")
-                or item.get("currency")
-                or ""
-            )
-            amount = _clean_amount(amount_node, currency)
-            # Duration
-            start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
-            end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""
-            if start_date and end_date:
-                duration = f"{start_date} to {end_date}"
-            else:
-                duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
-            # Link
-            grant_doi = grant_data.get("doi") or grant_data.get("Doi")
-            if grant_doi:
-                grant_link = f"https://doi.org/{grant_doi}"
-            elif grant_id != "N/A":
-                grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
-            else:
-                grant_link = "https://europepmc.org/grantfinder"
-            # ORCID extraction with fallback to page scraping
-            orcid_url = _get_orcid_url(person, fetch_fallback=True, grant_page_url=grant_link, headers=headers, debug=False)
-            pi_display = _make_clickable_pi(pi_raw, orcid_url)
-            pi_md = f"[{pi_raw}]({orcid_url})" if orcid_url else pi_raw
-            raw_items.append({
-                "title": title,
-                "project contact": pi_display,
-                "project_contact_name": pi_raw,
-                "project_contact_orcid": orcid_url,
-                "project_contact_html": pi_display,
-                "project_contact_md": pi_md,
-                "affiliation": aff,
-                "grant amount": amount,
-                "grant duration": duration,
-                "abstract_full": abstract,
-                "abstract": abstract_display,
-                "source": funder,
-                "keyword": keyword,
-                "domain": domain,
-                "link": grant_link
-            })
     except Exception as e:
-        print(f"[europepmc] Connection error during GRIST grant fetch for '{keyword}': {e}")
+        if debug:
+            print(f"[europepmc] Connection or JSON error for fielded query '{keyword}': {e}")
+        # fall back to original simple query attempt (best-effort)
+        try:
+            simple_encoded = urllib.parse.quote(keyword.strip())
+            url2 = f"{base_url}{simple_encoded}&format=json&resultType=core"
+            response = requests.get(url2, headers=headers, timeout=12)
+            if response.status_code != 200:
+                if debug:
+                    print("[epmc debug] fallback simple query failed:", response.status_code)
+                return raw_items
+            data = response.json()
+        except Exception as e2:
+            if debug:
+                print("[europepmc] fallback connection failed:", e2)
+            return raw_items
+
+    # parse records in the shape your existing code expects (Grist API format)
+    record_list = data.get("RecordList", {}) if isinstance(data, dict) else {}
+    records = (
+        record_list.get("Record", [])
+        or record_list.get("grant", [])
+        or data.get("Record", [])
+    )
+    if isinstance(records, dict):
+        records = [records]
+
+    # iterate results (limit to 10 as original code did, or use passed limit if caller sets it)
+    max_results = 10
+
+    for item in records[:max_results]:
+        # grant_data shape same as original code (keep compatibility)
+        grant_data = item.get("grant", item.get("Grant", item))
+        grant_id = grant_data.get("id") or grant_data.get("Id") or grant_data.get("grantId") or "N/A"
+        title = grant_data.get("title") or grant_data.get("Title") or "Untitled Grant Project"
+
+        # extract abstract using existing logic
+        abstract_raw = None
+        for k in ["abstractText", "abstract", "ab", "abstr", "Abstract", "projectSummary", "description", "abs"]:
+            v = grant_data.get(k) or item.get(k)
+            if v:
+                abstract_raw = v
+                break
+        abstract = _clean_abstract(abstract_raw) if abstract_raw is not None else ""
+        abstract = abstract or "No abstract description provided."
+
+        # Build combined searchable text (title + abstract + relevant term fields)
+        parts = []
+        if title:
+            parts.append(title)
+        if abstract:
+            parts.append(abstract)
+        # include common GRIST/EPMC term fields
+        term_fields = ("terms", "pref_terms", "abstract_text", "spending_categories_desc", "project_title",
+                       "keywords", "project_keywords", "subject", "kw", "meshHeading", "meshHeadings")
+        for tk in term_fields:
+            if tk in grant_data and grant_data.get(tk):
+                for s in _find_strings(grant_data.get(tk)):
+                    if s:
+                        parts.append(s)
+            if tk in item and item.get(tk):
+                for s in _find_strings(item.get(tk)):
+                    if s:
+                        parts.append(s)
+
+        combined = " ".join(parts)
+        combined_norm = _normalize_for_match(combined)
+        kw_norm = _normalize_for_match(keyword or "")
+        kw_tokens = [tok for tok in kw_norm.split(" ") if tok]
+
+        # matching policy: require ALL tokens by default; use any(...) if you prefer looser matching
+        if kw_tokens:
+            matched = all(tok in combined_norm for tok in kw_tokens)
+        else:
+            matched = True
+
+        if debug:
+            print("[epmc debug] RECORD CHECK")
+            print("  grant_id:", grant_id)
+            print("  title:", (title or "")[:180])
+            print("  keyword tokens:", kw_tokens)
+            print("  combined_norm (start 300 chars):", combined_norm[:300])
+            print("  matched:", matched)
+
+        if not matched:
+            if debug:
+                # show up to 5 example occurrences for debugging
+                occs = []
+                for s in _find_strings(grant_data):
+                    try:
+                        sn = _normalize_for_match(s)
+                    except Exception:
+                        continue
+                    for tok in kw_tokens:
+                        if tok and tok in sn:
+                            occs.append(s if len(s) < 200 else s[:200] + "...")
+                            break
+                    if len(occs) >= 5:
+                        break
+                print("[epmc debug] skipping record - sample occurrences:", occs)
+            continue
+
+        # --- now reuse your original formatting/parsing code to build the output item ---
+        funder_dict = grant_data.get("funder", grant_data.get("Funder", {}))
+        if isinstance(funder_dict, dict):
+            funder = funder_dict.get("name") or funder_dict.get("Name") or grant_data.get("grantedAuthority") or "Europe PMC / GRIST"
+        else:
+            funder = str(funder_dict)
+
+        # summarization
+        if summary_mode == "ollama" and use_ollama:
+            abstract_display = _ollama_summarize(abstract, n_sentences=summary_sentences,
+                                                ollama_url=ollama_url, model=ollama_model)
+            if not abstract_display:
+                abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+            if not abstract_display:
+                abstract_display = _truncate_text(abstract, truncate_chars)
+        elif summary_mode == "sentences":
+            abstract_display = _simple_sentence_summary(abstract, max_sentences=summary_sentences)
+        else:
+            abstract_display = _truncate_text(abstract, truncate_chars)
+
+        # PI info
+        pi_raw, person = _extract_pi_info(item, grant_data)
+
+        # Affiliation
+        aff_raw = (
+            person.get("affiliation")
+            or person.get("Affiliation")
+            or person.get("institution")
+            or person.get("Institution")
+            or grant_data.get("institution")
+            or grant_data.get("Institution")
+            or grant_data.get("affiliation")
+            or grant_data.get("Affiliation")
+            or grant_data.get("grantee")
+            or item.get("institution")
+            or item.get("Institution")
+        )
+        aff = _clean_affiliation(aff_raw) or "N/A"
+
+        # Amount and currency
+        amount_node = (
+            grant_data.get("amount")
+            or grant_data.get("awardAmount")
+            or grant_data.get("AwardAmount")
+            or grant_data.get("grantAmount")
+            or grant_data.get("totalAwardAmount")
+            or grant_data.get("fundAmount")
+            or grant_data.get("Amount")
+            or item.get("amount")
+            or item.get("Amount")
+            or item.get("awardAmount")
+        )
+        currency = (
+            grant_data.get("currency")
+            or grant_data.get("Currency")
+            or item.get("currency")
+            or ""
+        )
+        amount = _clean_amount(amount_node, currency)
+
+        # Duration
+        start_date = grant_data.get("startDate") or grant_data.get("StartDate") or grant_data.get("from") or ""
+        end_date = grant_data.get("endDate") or grant_data.get("EndDate") or grant_data.get("to") or ""
+        if start_date and end_date:
+            duration = f"{start_date} to {end_date}"
+        else:
+            duration = grant_data.get("activeDate") or grant_data.get("date") or grant_data.get("duration") or grant_data.get("Duration") or grant_data.get("period") or "N/A"
+
+        # Link
+        grant_doi = grant_data.get("doi") or grant_data.get("Doi")
+        if grant_doi:
+            grant_link = f"https://doi.org/{urllib.parse.quote(str(grant_doi))}"
+        elif grant_id != "N/A":
+            grant_link = f"https://europepmc.org/grantfinder/grantdetails?query=gid%3A%22{urllib.parse.quote(str(grant_id))}%22"
+        else:
+            grant_link = "https://europepmc.org/grantfinder"
+
+        # ORCID extraction with fallback to page scraping
+        orcid_url = _get_orcid_url(person, fetch_fallback=True, grant_page_url=grant_link, headers=headers, debug=False)
+        pi_display = _make_clickable_pi(pi_raw, orcid_url)
+        pi_md = f"[{pi_raw}]({orcid_url})" if orcid_url else pi_raw
+
+        raw_items.append({
+            "title": title,
+            "project contact": pi_display,
+            "project_contact_name": pi_raw,
+            "project_contact_orcid": orcid_url,
+            "project_contact_html": pi_display,
+            "project_contact_md": pi_md,
+            "affiliation": aff,
+            "grant amount": amount,
+            "grant duration": duration,
+            "abstract_full": abstract,
+            "abstract": abstract_display,
+            "source": funder,
+            "keyword": keyword,
+            "domain": domain,
+            "link": grant_link
+        })
+
     return raw_items

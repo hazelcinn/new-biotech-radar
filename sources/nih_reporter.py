@@ -375,7 +375,7 @@ def _extract_numeric_id_from_url(url):
 def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug: bool = False):
     """
     Given a single RePORTER project dict `proj`, compute a stable source_id and a canonical grant_link.
-    Returns tuple: (source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id)
+    Returns tuple: (source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj)
     Paste this helper at module scope (only once) and call it inside your per-project loop.
     """
     # normalized getters
@@ -519,7 +519,7 @@ def build_source_and_link(proj: dict, title: str = "", keyword: str = "", debug:
         print("[NIH DEBUG] internal_id:", internal_id)
         print("[NIH DEBUG] grant_link:", grant_link)
 
-    return source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id
+    return source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id, proj_num, sub_proj
 
 # Usage example (inside your per-project loop):
 # source_id, grant_link, numeric_id, detail_url, proj_num_candidate, internal_id = build_source_and_link(proj, title, keyword, debug)

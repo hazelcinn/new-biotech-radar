@@ -470,7 +470,7 @@ def fetch_nih_reporter(
                 s = str(v).strip()
                 if s.isdigit():
                     numeric_id = s
-                   break
+                    break
 
         # Build a composite source_id for dedupe that distinguishes subprojects
         if proj_num and sub_proj:

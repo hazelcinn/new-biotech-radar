@@ -619,7 +619,19 @@ def fetch_nih_reporter(
             if isinstance(v, list):
                 candidates = v
                 break
-
+    # DEBUG: write out candidate count and first few items so we can inspect actual keys/values
+    if debug:
+        try:
+            print(f"[nih debug] raw candidates count: {len(candidates)}")
+            # print the first candidate keys and a short pretty JSON for inspection
+            if len(candidates) > 0:
+                import pprint
+                print("[nih debug] sample candidate keys:", list(candidates[0].keys())[:50])
+                print("[nih debug] sample candidate (pretty JSON):")
+                print(json.dumps(candidates[0], indent=2, ensure_ascii=False)[:2000])
+        except Exception as _e:
+            print("[nih debug] error printing candidates debug info:", _e)
+            
     for proj in candidates[:limit]:
         title = (
             proj.get("projectTitle")
@@ -677,6 +689,21 @@ def fetch_nih_reporter(
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
 
+        # DEBUG: quick per-item snapshot before filtering
+        if debug:
+            sample_title = (proj.get("projectTitle") or proj.get("project_title") or proj.get("title") or "")[:200]
+            # try to extract an abstract snippet using existing logic
+            _abstract_try = proj.get("abstractText") or proj.get("abstract") or proj.get("projectAbstract") or proj.get("project_description") or proj.get("description") or ""
+            _abstract_try = _clean_simple_text(_abstract_try)[:300] if _abstract_try else ""
+            print("---- NIH CANDIDATE START ----")
+            print("[nih debug] title:", sample_title)
+            print("[nih debug] abstract_snippet:", _abstract_try)
+            # print any canonical project_detail_url fields you care about
+            print("[nih debug] project_detail_url keys:", proj.get("project_detail_url") or proj.get("projectDetailUrl") or "")
+            print("[nih debug] project numeric fields:", {k: proj.get(k) for k in ('projectDetailId','projectDetailID','projectId','project_id','id','appl_id')})
+            print("[nih debug] available top-level keys:", list(proj.keys())[:80])
+            print("---- NIH CANDIDATE END ----")
+        
         # INSERT INTO fetch_nih_reporter inside `for proj in candidates[:limit]:` after title and/or after build_source_and_link
         # Require keyword to appear in title OR abstract OR project-term fields
         nih_term_keys = [
@@ -687,12 +714,26 @@ def fetch_nih_reporter(
             "terms", "pref_terms", "phr_text", "project_terms", "keywords", "project_keywords"
         ]
 
-        # If you called build_source_and_link earlier, you may have 'detail_url' etc. available.
-        if keyword and not _keyword_in_fields(proj, keyword, nih_term_keys):
+        # Check filter and show debugging info about which fields matched (quick checks)
+        if keyword:
+            found_in_fields = _keyword_in_fields(proj, keyword, nih_term_keys)
             if debug:
-                print(f"[nih debug] skipping project (keyword not in title/abstract/terms): title='{title}'")
-            continue
-        
+                print(f"[nih debug] keyword filter result: {found_in_fields} for keyword={keyword!r}, title={title!r}")
+            if not found_in_fields:
+                if debug:
+                    # show where the keyword appears if anywhere in the full object (for debugging only)
+                    s = keyword.strip().lower()
+                    # search all strings in project for any occurrence
+                    occurrences = []
+                    for sstr in _find_strings(proj):
+                        if s and s.lower().find(s) != -1:
+                            occurrences.append(sstr if len(sstr) < 200 else sstr[:200] + "...")
+                            if len(occurrences) >= 5:
+                                break
+                    print("[nih debug] sample occurrences (if any) in full proj object:", occurrences[:5])
+                    print("[nih debug] skipping project (keyword not in title/abstract/terms)")
+                continue
+
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
         # guard: avoid returning pure numeric IDs as funder

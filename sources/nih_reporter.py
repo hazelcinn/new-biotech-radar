@@ -703,8 +703,52 @@ def fetch_nih_reporter(
             print("[nih debug] project numeric fields:", {k: proj.get(k) for k in ('projectDetailId','projectDetailID','projectId','project_id','id','appl_id')})
             print("[nih debug] available top-level keys:", list(proj.keys())[:80])
             print("---- NIH CANDIDATE END ----")
-        
-        # INSERT INTO fetch_nih_reporter inside `for proj in candidates[:limit]:` after title and/or after build_source_and_link
+
+        _kw = (keyword or "").strip().lower()
+        if _kw:
+            # 1) check normalized title and cleaned abstract first
+            title_text = (title or "").lower()
+            abstract_text = (abstract or "").lower()
+            if _kw in title_text or _kw in abstract_text:
+                matched = True
+            else:
+                # 2) check common project-term-like fields robustly (handles lists/dicts via _find_strings)
+                matched = False
+                term_keys = (
+                    "projectTerms", "project_terms", "terms", "phr_text", "pref_terms",
+                    "keywords", "project_keywords", "project_term", "projectTerm", "prefTerms"
+                )
+                for tk in term_keys:
+                    val = proj.get(tk)
+                    if val is None:
+                        continue
+                    for s in _find_strings(val):
+                        try:
+                            if _kw in s.lower():
+                                matched = True
+                                break
+                        except Exception:
+                            # ignore non-string values returned by _find_strings
+                            continue
+                    if matched:
+                        break
+
+            if not matched:
+                if debug:
+                    print(f"[nih debug] skipping: keyword {_kw!r} not found in title/abstract/terms for projectTitle={title!r}")
+                    # Debug: show up to 5 sample occurrences of the keyword anywhere in the project object
+                    occs = []
+                    for s in _find_strings(proj):
+                        try:
+                            if _kw in s.lower():
+                                occs.append(s if len(s) < 200 else s[:200] + "...")
+                                if len(occs) >= 5:
+                                    break
+                        except Exception:
+                            continue
+                    print("[nih debug] sample occurrences (if any):", occs)
+                continue
+
         # Require keyword to appear in title OR abstract OR project-term fields
         nih_term_keys = [
             "projectTitle", "project_title", "title", "projectTitleDisplay",

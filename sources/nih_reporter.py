@@ -302,6 +302,59 @@ def _find_strings(obj):
         for v in obj:
             yield from _find_strings(v)
 
+# ADD TO sources/nih_reporter.py near other helpers (module scope)
+def _keyword_in_fields(obj, keyword: str, keys: list) -> bool:
+    """
+    Return True if keyword appears (case-insensitive substring) in any of the specified keys
+    from obj. Keys can contain nested structures; this searches strings, lists, and nested dicts.
+    """
+    if not keyword:
+        return True
+    k = keyword.strip().lower()
+    if not k:
+        return True
+
+    def _check_value(v):
+        if not v:
+            return False
+        if isinstance(v, str):
+            return k in v.lower()
+        if isinstance(v, (list, tuple, set)):
+            for e in v:
+                if isinstance(e, str) and k in e.lower():
+                    return True
+                if isinstance(e, (dict, list, tuple, set)):
+                    # nested: use _find_strings to extract strings
+                    for s in _find_strings(e):
+                        if k in s.lower():
+                            return True
+            return False
+        if isinstance(v, dict):
+            for s in _find_strings(v):
+                if k in s.lower():
+                    return True
+            return False
+        # fallback to stringification
+        return k in str(v).lower()
+
+    for key in keys:
+        if not isinstance(key, str):
+            continue
+        # support dotted keys like "funding.org" if you ever want to expand
+        if "." in key:
+            parts = key.split(".")
+            cur = obj
+            for p in parts:
+                if not isinstance(cur, dict) or p not in cur:
+                    cur = None
+                    break
+                cur = cur.get(p)
+            if _check_value(cur):
+                return True
+        else:
+            if key in obj and _check_value(obj.get(key)):
+                return True
+    return False
 
 def _make_clickable_pi(pi_name: str, orcid_url: str) -> str:
     if not orcid_url:

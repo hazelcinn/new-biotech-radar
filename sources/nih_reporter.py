@@ -530,9 +530,10 @@ def fetch_nih_reporter(
                 search_term = proj_num_candidate or title or keyword
                 grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
         
-        if debug:
-            print("[nih debug] title:", title)
-            print("[nih debug] source_id:", source_id, "proj_num:", proj_num, "sub_proj:", sub_proj, "numeric_id:", numeric_id)
+        internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip() 
+        if debug: 
+            print("[nih debug] title:", title) 
+            print("[nih debug] source_id:", source_id, "proj_num:", proj_num, "sub_proj:", sub_proj, "numeric_id:", numeric_id, "internal_id:", internal_id) 
             print("[nih debug] link chosen:", grant_link)
     
         # --- abstract (single extraction)

@@ -687,11 +687,11 @@ def fetch_nih_reporter(
             "terms", "pref_terms", "phr_text", "project_terms", "keywords", "project_keywords"
         ]
 
-# If you called build_source_and_link earlier, you may have 'detail_url' etc. available.
-if keyword and not _keyword_in_fields(proj, keyword, nih_term_keys):
-    if debug:
-        print(f"[nih debug] skipping project (keyword not in title/abstract/terms): title='{title}'")
-    continue
+        # If you called build_source_and_link earlier, you may have 'detail_url' etc. available.
+        if keyword and not _keyword_in_fields(proj, keyword, nih_term_keys):
+            if debug:
+                print(f"[nih debug] skipping project (keyword not in title/abstract/terms): title='{title}'")
+            continue
         
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)

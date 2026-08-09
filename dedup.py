@@ -78,141 +78,151 @@ def compute_lookback_days(state_file: str, configured_default: int) -> int:
 
 
 def _title_similar(a: str, b: str) -> bool:
-    from difflib import SequenceMatcher
     return SequenceMatcher(None, a.lower(), b.lower()).ratio() >= TITLE_SIMILARITY_THRESHOLD
 
-def _normalized_title_key(title: str) -> str:
-    if not title:
-        return ""
-    s = title.lower().strip()
-    s = re.sub(r'\s+', ' ', s)
-    s = re.sub(r'[^a-z0-9 ]', '', s)
-    return s
 
-def _parse_suffix_number_from_source_id(source_id: str) -> int:
-    if not source_id:
-        return 0
-    m = re.search(r'-(\d+)(?:[A-Za-z0-9]*)?$', source_id)
-    if m:
-        try:
-            return int(m.group(1))
-        except Exception:
+def deduplicate(new_items: list, state_file: str):
+    """
+    Returns (fresh_items, updated_state).
+    fresh_items = items not seen before, safe to include in this run's digest.
+    updated_state = full state dict (seen list + today's date), ready to save_state().
+    """
+    # helper utilities local to this function
+    def _normalized_title_key(title: str) -> str:
+        if not title:
+            return ""
+        s = title.lower().strip()
+        s = re.sub(r'\s+', ' ', s)
+        s = re.sub(r'[^a-z0-9 ]', '', s)
+        return s
+
+    def _parse_suffix_number_from_source_id(source_id: str) -> int:
+        if not source_id:
             return 0
-    return 0
-
-def _parse_year_from_duration(duration_field) -> int:
-    if not duration_field:
+        m = re.search(r'-(\d+)(?:[A-Za-z0-9]*)?$', source_id)
+        if m:
+            try:
+                return int(m.group(1))
+            except Exception:
+                return 0
         return 0
-    s = str(duration_field)
-    m = re.search(r'(\d{4})(?:\D|$)', s)
-    if m:
-        try:
-            return int(m.group(1))
-        except Exception:
+
+    def _parse_year_from_duration(duration_field) -> int:
+        if not duration_field:
             return 0
-    return 0
+        s = str(duration_field)
+        m = re.search(r'(\d{4})(?:\D|$)', s)
+        if m:
+            try:
+                return int(m.group(1))
+            except Exception:
+                return 0
+        return 0
 
-def _is_reporter_projnum(sid: str) -> bool:
-    # conservative heuristic: must contain letters and digits, not be purely numeric,
-    # and have reasonable length to avoid tiny internal ids like "2"
-    if not sid:
-        return False
-    s = str(sid).strip()
-    if s.isdigit():
-        return False
-    if len(s) < 8:
-        return False
-    if not (re.search(r'[A-Za-z]', s) and re.search(r'\d', s)):
-        return False
-    if not re.match(r'^[A-Za-z0-9\-\_:\.]+$', s):
-        return False
-    return True
+    def _is_reporter_projnum(sid: str) -> bool:
+        if not sid:
+            return False
+        s = str(sid).strip()
+        if s.isdigit():
+            return False
+        if len(s) < 8:
+            return False
+        if not (re.search(r'[A-Za-z]', s) and re.search(r'\d', s)):
+            return False
+        if not re.match(r'^[A-Za-z0-9\-\_:\.]+$', s):
+            return False
+        return True
 
-def _score_item(it: dict) -> int:
-    sc = 0
-    sid = (it.get("source_id") or it.get("sourceId") or "") or ""
-    if _is_reporter_projnum(sid):
-        sc += 100000
-    sc += _parse_suffix_number_from_source_id(sid) * 1000
-    sc += _parse_year_from_duration(it.get("grant duration") or it.get("duration") or "")
-    amt = it.get("grant amount") or it.get("amount") or ""
-    try:
-        num = (
-            float(str(amt).replace("$", "").replace(",", ""))
-            if isinstance(amt, (int, float)) or any(ch.isdigit() for ch in str(amt))
-            else 0.0
-        )
-    except Exception:
-        num = 0.0
-    sc += int(num)
-    return sc
+    def _score_item(it: dict) -> int:
+        sc = 0
+        sid = (it.get("source_id") or it.get("sourceId") or "") or ""
+        if _is_reporter_projnum(sid):
+            sc += 100000
+        sc += _parse_suffix_number_from_source_id(sid) * 1000
+        sc += _parse_year_from_duration(it.get("grant duration") or it.get("duration") or "")
+        amt = it.get("grant amount") or it.get("amount") or ""
+        try:
+            num = (
+                float(str(amt).replace("$", "").replace(",", ""))
+                if isinstance(amt, (int, float)) or any(ch.isdigit() for ch in str(amt))
+                else 0.0
+            )
+        except Exception:
+            num = 0.0
+        sc += int(num)
+        return sc
 
-state = load_state(state_file)
-seen = state.get("seen", [])
-seen_urls = {s["url"] for s in seen if s.get("url")}
-seen_titles = [s["title"] for s in seen if s.get("title")]
+    # load previous state
+    state = load_state(state_file)
+    seen = state.get("seen", [])
+    seen_urls = {s["url"] for s in seen if s.get("url")}
+    seen_titles = [s["title"] for s in seen if s.get("title")]
 
-# Build a set of seen keys that includes source+source_id when available,
-# otherwise falls back to URL/title. This avoids collapsing distinct
-# subprojects that share a parent project number.
-seen_keys = set()
-for s in seen:
-    sid = s.get("source_id") or s.get("sourceId") or None
-    if sid:
-        seen_keys.add(f"{s.get('source') or ''}|{sid}")
-    else:
-        seen_keys.add(s.get("url") or s.get("title") or "")
+    # Build a set of seen keys that includes source+source_id when available,
+    # otherwise falls back to URL/title. This avoids collapsing distinct
+    # subprojects that share a parent project number.
+    seen_keys = set()
+    for s in seen:
+        sid = s.get("source_id") or s.get("sourceId") or None
+        if sid:
+            seen_keys.add(f"{s.get('source') or ''}|{sid}")
+        else:
+            seen_keys.add(s.get("url") or s.get("title") or "")
 
-fresh = []
-for item in new_items:
-    url = item.get("url", "")
-    title = item.get("title", "")
+    fresh = []
+    for item in new_items:
+        url = item.get("url", "")
+        title = item.get("title", "")
 
-    if url and url in seen_urls:
-        continue
-    if title and any(_title_similar(title, t) for t in seen_titles):
-        continue
+        # Fast checks: exact URL, fuzzy title similarity
+        if url and url in seen_urls:
+            continue
+        if title and any(_title_similar(title, t) for t in seen_titles):
+            continue
 
-    source_id = item.get("source_id") or item.get("sourceId") or None
-    if source_id:
-        key = f"{item.get('source') or ''}|{source_id}"
-    else:
-        key = item.get("link") or (item.get("title", "") + "|" + item.get("project_contact_name", ""))
+        # Build a stable key for the item: prefer source+source_id, else link/title+contact
+        source_id = item.get("source_id") or item.get("sourceId") or None
+        if source_id:
+            key = f"{item.get('source') or ''}|{source_id}"
+        else:
+            key = item.get("link") or (item.get("title", "") + "|" + item.get("project_contact_name", ""))
 
-    if key in seen_keys:
-        continue
+        # Skip if we already saw this logical item
+        if key in seen_keys:
+            continue
 
-    fresh.append(item)
-    if url:
-        seen_urls.add(url)
-    if title:
-        seen_titles.append(title)
-    seen_keys.add(key)
+        # Item is fresh: record and update seen sets
+        fresh.append(item)
+        if url:
+            seen_urls.add(url)
+        if title:
+            seen_titles.append(title)
+        seen_keys.add(key)
 
-# --- collapse multiple matching titles into a single best item for the manifest
-grouped = {}
-for it in fresh:
-    key = _normalized_title_key(it.get("title", ""))
-    grouped.setdefault(key, []).append(it)
+    # --- collapse multiple matching titles into a single best item for the manifest
+    grouped = {}
+    for it in fresh:
+        key = _normalized_title_key(it.get("title", ""))
+        grouped.setdefault(key, []).append(it)
 
-selected = []
-for group in grouped.values():
-    if len(group) == 1:
-        selected.append(group[0])
-    else:
-        best = max(group, key=_score_item)
-        selected.append(best)
+    selected = []
+    for group in grouped.values():
+        if len(group) == 1:
+            selected.append(group[0])
+        else:
+            best = max(group, key=_score_item)
+            selected.append(best)
 
-fresh = selected
+    fresh = selected
 
-updated_seen = seen + [
-    {
-        "url": i.get("url", ""),
-        "title": i.get("title", ""),
-        "source": i.get("source", ""),
-        "source_id": i.get("source_id", "") or i.get("sourceId", ""),
-    }
-    for i in fresh
-]
-updated_state = {"last_run_date": date.today().isoformat(), "seen": updated_seen}
-return fresh, updated_state
+    updated_seen = seen + [
+        {
+            "url": i.get("url", ""),
+            "title": i.get("title", ""),
+            "source": i.get("source", ""),
+            "source_id": i.get("source_id", "") or i.get("sourceId", ""),
+        }
+        for i in fresh
+    ]
+    updated_state = {"last_run_date": date.today().isoformat(), "seen": updated_seen}
+    return fresh, updated_state

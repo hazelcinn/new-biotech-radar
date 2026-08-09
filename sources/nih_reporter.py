@@ -622,7 +622,6 @@ def fetch_nih_reporter(
         "limit": limit
     }
     
-    }
     try:
         resp = requests.post(endpoint, json=body, headers=headers, timeout=15)
     except Exception as e:

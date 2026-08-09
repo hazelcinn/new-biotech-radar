@@ -6,6 +6,66 @@ from dedup import deduplicate, save_state, compute_lookback_days
 from extract import extract_all
 from digest import write_markdown, write_csv, write_html, write_pages_index
 
+# ADD TO main.py at module scope (near other helpers, before harvest_all)
+def _reporter_link_score(item: dict) -> int:
+    """
+    Scoring: higher means more authoritative reporter link.
+      3: contains '/project-details/' (authoritative detail page)
+      2: reporter_numeric_id present (numeric id available)
+      1: reporter.nih.gov link present but not /project-details/
+      0: nothing reporter-specific
+    """
+    url = (item.get("reporter_project_detail_url") or "") or (item.get("link") or "")
+    if url and "/project-details/" in url:
+        return 3
+    if item.get("reporter_numeric_id"):
+        return 2
+    if url and "reporter.nih.gov" in url:
+        return 1
+    return 0
+
+def merge_into_all_items(all_items: list, new_item: dict, debug: bool = False):
+    """
+    Merge new_item into all_items keyed by source_id.
+    Prefer items with better reporter link authority. Merge missing fields from the lower-scored item.
+    """
+    sid = new_item.get("source_id")
+    if not sid:
+        # No source_id: append defensively
+        if debug:
+            print("[merge] new item has no source_id; appending")
+        all_items.append(new_item)
+        return
+
+    for i, existing in enumerate(all_items):
+        if existing.get("source_id") == sid:
+            new_score = _reporter_link_score(new_item)
+            exist_score = _reporter_link_score(existing)
+            if debug:
+                print(f"[merge] source_id={sid} exist_score={exist_score} new_score={new_score}")
+            if new_score > exist_score:
+                # new_item is more authoritative: replace, but keep non-empty fields from existing
+                merged = new_item.copy()
+                for k, v in existing.items():
+                    if (k not in merged or not merged.get(k)) and v:
+                        merged[k] = v
+                all_items[i] = merged
+                if debug:
+                    print(f"[merge] replaced existing item for source_id={sid} with higher-scored new_item")
+            else:
+                # existing is better or equal: keep existing but merge missing fields from new_item
+                for k, v in new_item.items():
+                    if (k not in existing or not existing.get(k)) and v:
+                        existing[k] = v
+                all_items[i] = existing
+                if debug:
+                    print(f"[merge] kept existing item for source_id={sid}; merged missing fields from new_item")
+            return
+
+    # no existing match -> append
+    if debug:
+        print(f"[merge] no existing item for source_id={sid}; appending new_item")
+    all_items.append(new_item)
 
 def harvest_all(lookback_days: int):
     all_items = []

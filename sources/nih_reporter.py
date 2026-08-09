@@ -768,59 +768,7 @@ def fetch_nih_reporter(
                             break
                     print("[nih debug] skipping project: keyword tokens not all present; sample occurrences:", occs)
                 continue
-        
-        # INSERT HERE (inside `for proj in candidates[:limit]:`), immediately AFTER title and abstract are computed
-        # and BEFORE the funder / PI extraction logic.
-        _kw = (keyword or "").strip().lower()
-        if _kw:
-            # 1) Check normalized title and cleaned abstract first
-            title_text = (title or "").lower()
-            abstract_text = (abstract or "").lower()
-            if _kw in title_text or _kw in abstract_text:
-                matched = True
-            else:
-                # 2) Check the JSON term fields you specified (robust to nested lists/dicts)
-                matched = False
-                term_keys = (
-                    "terms",
-                    "pref_terms",
-                    "abstract_text",
-                    "spending_categories_desc",
-                    "project_title",
-                    # keep a few common variants too (safe)
-                    "projectTerms", "project_terms", "phr_text", "keywords", "project_keywords"
-                )
-                for tk in term_keys:
-                    val = proj.get(tk)
-                    if val is None:
-                        continue
-                    for s in _find_strings(val):
-                        try:
-                            if _kw in s.lower():
-                                matched = True
-                                break
-                        except Exception:
-                            continue
-                    if matched:
-                        break
-
-            if not matched:
-                if debug:
-                    print(f"[nih debug] skipping: keyword {_kw!r} not found in title/abstract/terms for projectTitle={title!r}")
-                    # Debug: show up to 5 sample occurrences of the keyword anywhere in the project object
-                    occs = []
-                    for s in _find_strings(proj):
-                        try:
-                            if _kw in s.lower():
-                                occs.append(s if len(s) < 200 else s[:200] + "...")
-                                if len(occs) >= 5:
-                                    break
-                        except Exception:
-                            continue
-                    print("[nih debug] sample occurrences (if any):", occs)
-                continue
-        # END INSERT
-                
+                        
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
         # guard: avoid returning pure numeric IDs as funder

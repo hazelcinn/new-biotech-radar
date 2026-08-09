@@ -432,11 +432,16 @@ def fetch_nih_reporter(
             or ""
         ).strip()
 
+        # --- canonical project identifiers (one place only)
         proj_num = (
             proj.get("projectNumber")
             or proj.get("project_number")
             or proj.get("projectNum")
             or proj.get("project_num")
+            or proj.get("awardNumber")
+            or proj.get("award_number")
+            or proj.get("awardId")
+            or proj.get("applicationNumber")
             or proj.get("projectId")
             or proj.get("project_id")
             or proj.get("id")
@@ -445,7 +450,7 @@ def fetch_nih_reporter(
         proj_num = str(proj_num).strip() if proj_num else ""
         internal_id = str(proj.get("projectId") or proj.get("project_id") or proj.get("id") or "").strip()
 
-        # canonical source id
+        # --- canonical source_id (prefer validated project number otherwise fallback to internal_id or stable title/org)
         if proj_num and _looks_like_reporter_projnum(proj_num):
             source_id = proj_num
         elif internal_id:
@@ -458,14 +463,14 @@ def fetch_nih_reporter(
                 org_name_for_id = ""
             source_id = (title or "").strip()[:120] + "|" + str(org_name_for_id)[:60]
 
-        # local dedupe
+        # --- local dedupe: skip if we've already yielded this source_id in this fetch
         if source_id in seen_ids:
             if debug:
-                print("[nih] skipping duplicate source_id:", source_id)
+                print("[nih] skipping duplicate source_id:", source_id, "title:", title)
             continue
         seen_ids.add(source_id)
 
-        # abstract
+        # --- abstract (single extraction)
         abstract_raw = (
             proj.get("abstractText")
             or proj.get("abstract")
@@ -484,7 +489,7 @@ def fetch_nih_reporter(
                     break
         abstract = _clean_simple_text(abstract_raw) if abstract_raw is not None else ""
 
-        # abstract display
+        # --- abstract_display according to summary_mode
         if not abstract:
             abstract_display = "No abstract available."
         else:
@@ -509,10 +514,13 @@ def fetch_nih_reporter(
             else:
                 abstract_display = _truncate_text(abstract, truncate_chars)
 
-        # funder
+        # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
+        # guard: avoid returning pure numeric IDs as funder
+        if isinstance(funder_name, str) and funder_name.strip().isdigit():
+            funder_name = "NIH RePORTER"
 
-        # PI
+        # --- PI extraction (single path)
         pi_name = ""
         person_obj = {}
         if proj.get("contact_pi_name"):
@@ -554,7 +562,7 @@ def fetch_nih_reporter(
         else:
             pi_raw = _normalize_person_name(pi_raw)
 
-        # ORCID detection
+        # --- ORCID detection
         orcid_url = ""
         if isinstance(person_obj, dict):
             for key in ("orcid", "orcidId", "Orcid", "ORCID", "pi_orcid"):
@@ -606,14 +614,14 @@ def fetch_nih_reporter(
 
         pi_display = _make_clickable_pi(pi_raw, orcid_url)
 
-        # affiliation
+        # --- affiliation (single extraction)
         aff_node = (
             proj.get("org") or proj.get("affiliation") or proj.get("organization") or proj.get("org_info") or proj.get("org_name") or {}
         )
         aff_info = _format_nih_affiliation(aff_node if isinstance(aff_node, dict) else {}, title_case=True)
         affiliation = aff_info["affiliation"] or "N/A"
 
-        # amount
+        # --- amount (single)
         amount_val = proj.get("awardAmount") or proj.get("award_amount") or proj.get("award") or proj.get("total_cost") or None
         amount = "N/A"
         if amount_val is not None:
@@ -623,7 +631,7 @@ def fetch_nih_reporter(
             except Exception:
                 amount = str(amount_val)
 
-        # duration (date-only)
+        # --- duration (single)
         raw_start = proj.get("projectStartDate") or proj.get("project_start_date") or proj.get("startDate") or proj.get("start") or ""
         raw_end = proj.get("projectEndDate") or proj.get("project_end_date") or proj.get("endDate") or proj.get("end") or ""
         start_date = _date_only(raw_start)
@@ -631,32 +639,39 @@ def fetch_nih_reporter(
         if start_date and end_date:
             duration = f"{start_date} to {end_date}"
         else:
-            duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or "N/A"
+            # if RePORTER sometimes returns a single-year int, turn it into a string
+            duration = proj.get("projectPeriodText") or proj.get("fiscal_year") or proj.get("fy") or proj.get("year") or proj.get("projectYear") or "N/A"
+            duration = str(duration)
 
-        # build robust grant link
+        # --- build robust grant_link (single, canonical)
         detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
         detail_url = str(detail_url).strip() if detail_url else ""
         proj_num_candidate = proj_num or None
 
-        use_detail = False
+        # prefer a non-root reporter detail URL (but strip fragment/query)
+        grant_link = None
         if detail_url:
             try:
                 parsed = urllib.parse.urlparse(detail_url)
-                use_detail = ("reporter.nih.gov" in (parsed.netloc or "")) and parsed.path and parsed.path.strip() != "/"
+                if ("reporter.nih.gov" in (parsed.netloc or "")) and parsed.path and parsed.path.strip() not in ("/", ""):
+                    # canonicalize to remove fragment/query
+                    grant_link = urllib.parse.urlunparse((parsed.scheme or "https", parsed.netloc, parsed.path, "", "", ""))
             except Exception:
-                use_detail = False
+                grant_link = None
 
-        if use_detail:
-            grant_link = detail_url
-        elif proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
-            grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
-        else:
-            search_term = proj_num_candidate or title or keyword
-            grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
+        if not grant_link:
+            if proj_num_candidate and _looks_like_reporter_projnum(proj_num_candidate):
+                grant_link = f"https://reporter.nih.gov/project-details/{urllib.parse.quote(proj_num_candidate)}"
+            else:
+                search_term = proj_num_candidate or title or keyword
+                grant_link = f"https://reporter.nih.gov/search/results?query={urllib.parse.quote(search_term)}"
 
         if debug:
-            print("[nih] link chosen:", grant_link, "proj_num_candidate:", proj_num_candidate, "detail_url:", detail_url or None)
+            print("[nih debug] title:", title)
+            print("[nih debug] source_id:", source_id, "proj_num:", proj_num, "internal_id:", internal_id)
+            print("[nih debug] link chosen:", grant_link)
 
+        # --- final append (single, consistent dict)
         results_out.append({
             "title": title or "Untitled Project",
             "project contact": pi_display,
@@ -675,7 +690,6 @@ def fetch_nih_reporter(
             "domain": domain,
             "link": grant_link
         })
-
     return results_out
 
 

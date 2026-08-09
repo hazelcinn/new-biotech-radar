@@ -708,17 +708,22 @@ def fetch_nih_reporter(
         # and BEFORE the funder / PI extraction logic.
         _kw = (keyword or "").strip().lower()
         if _kw:
-            # 1) Check normalized title and cleaned abstract first (these are already computed above)
+            # 1) Check normalized title and cleaned abstract first
             title_text = (title or "").lower()
             abstract_text = (abstract or "").lower()
             if _kw in title_text or _kw in abstract_text:
                 matched = True
             else:
-                # 2) Check common project-term/keyword fields robustly (handles lists/dicts via _find_strings)
+                # 2) Check the JSON term fields you specified (robust to nested lists/dicts)
                 matched = False
                 term_keys = (
-                    "projectTerms", "project_terms", "terms", "phr_text", "pref_terms",
-                    "keywords", "project_keywords", "project_term", "projectTerm", "prefTerms"
+                    "terms",
+                    "pref_terms",
+                    "abstract_text",
+                    "spending_categories_desc",
+                    "project_title",
+                    # keep a few common variants too (safe)
+                    "projectTerms", "project_terms", "phr_text", "keywords", "project_keywords"
                 )
                 for tk in term_keys:
                     val = proj.get(tk)
@@ -730,7 +735,6 @@ def fetch_nih_reporter(
                                 matched = True
                                 break
                         except Exception:
-                            # ignore non-string values returned by _find_strings
                             continue
                     if matched:
                         break
@@ -750,7 +754,8 @@ def fetch_nih_reporter(
                             continue
                     print("[nih debug] sample occurrences (if any):", occs)
                 continue
-        
+        # END INSERT
+                
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
         # guard: avoid returning pure numeric IDs as funder

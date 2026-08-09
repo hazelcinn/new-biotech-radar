@@ -663,8 +663,26 @@ def fetch_nih_reporter(
         # --- build robust grant_link (single, canonical)
         detail_url = proj.get("projectUrl") or proj.get("project_url") or proj.get("url") or proj.get("link") or ""
         detail_url = str(detail_url).strip() if detail_url else ""
-        proj_num_candidate = proj_num or None
+        # Prefer an explicit detail URL when available (canonical), otherwise
+        # build a precise project-number candidate. If proj_num looks like a
+        # parent (no '-NN' suffix) but a sub-project id is present, append it
+        # so we construct the specific subproject identifier RePORTER recognizes.
+        proj_num_candidate = None
 
+        if not proj_num_candidate and proj_num:
+            proj_num = str(proj_num).strip()
+            # If proj_num already looks like a full reporter number (contains '-'),
+            # use it as-is.
+            if "-" in proj_num:
+                proj_num_candidate = proj_num
+            else:
+                # If a sub-project identifier exists, append it as a suffix.
+                # Common reporter format: <projectBase>-<suffix> e.g. 2S06GM008159-13
+                if sub_proj:
+                    proj_num_candidate = f"{proj_num}-{sub_proj}"
+                else:
+                    proj_num_candidate = proj_num
+        
         # prefer a non-root reporter detail URL (but strip fragment/query)
         grant_link = None
         if detail_url:

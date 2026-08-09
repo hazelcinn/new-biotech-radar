@@ -704,6 +704,71 @@ def fetch_nih_reporter(
             print("[nih debug] available top-level keys:", list(proj.keys())[:80])
             print("---- NIH CANDIDATE END ----")
 
+        # Robust keyword-in-title/abstract/terms check:
+        def _normalize_for_match(s: str) -> str:
+            """Lowercase, replace non-alphanumerics with spaces, collapse whitespace."""
+            if not s:
+                return ""
+            t = str(s).lower()
+            # replace non-alphanumeric with space
+            t = re.sub(r'[^0-9a-z]+', ' ', t)
+            # collapse whitespace
+            t = re.sub(r'\s+', ' ', t).strip()
+            return t
+
+        _kw_raw = (keyword or "").strip()
+        if _kw_raw:
+            # tokens from the keyword (e.g., "covid-19" -> ["covid", "19"])
+            kw_norm = _normalize_for_match(_kw_raw)
+            kw_tokens = [tok for tok in kw_norm.split(" ") if tok]
+
+            # Build a combined searchable text for the project:
+            parts = []
+            if title:
+                parts.append(title)
+            if abstract:
+                parts.append(abstract)
+            # include strings from term fields if present
+            term_fields = ("terms", "pref_terms", "abstract_text", "spending_categories_desc", "project_title",
+                           "projectTerms", "project_terms", "phr_text", "keywords", "project_keywords")
+            for tk in term_fields:
+                if tk in proj and proj.get(tk):
+                    for s in _find_strings(proj.get(tk)):
+                        if s:
+                            parts.append(s)
+            combined = " ".join(parts)
+            combined_norm = _normalize_for_match(combined)
+
+            # Matching policy: require ALL keyword tokens present (change to any() if you prefer looser match)
+            matched = all(tok in combined_norm.split(" ") or tok in combined_norm for tok in kw_tokens)
+
+            if debug:
+                print("[nih debug] KEYWORD MATCH CHECK")
+                print("  raw keyword:", _kw_raw)
+                print("  normalized keyword tokens:", kw_tokens)
+                print("  sample title:", (title or "")[:200])
+                print("  sample abstract (start):", (abstract or "")[:200])
+                print("  combined_norm (start 400 chars):", combined_norm[:400])
+                print("  matched:", matched)
+
+            if not matched:
+                if debug:
+                    # show up to 5 occurrences of any token in the object for troubleshooting
+                    occs = []
+                    for s in _find_strings(proj):
+                        try:
+                            sn = _normalize_for_match(s)
+                        except Exception:
+                            continue
+                        for tok in kw_tokens:
+                            if tok and tok in sn:
+                                occs.append(s if len(s) < 200 else s[:200] + "...")
+                                break
+                        if len(occs) >= 5:
+                            break
+                    print("[nih debug] skipping project: keyword tokens not all present; sample occurrences:", occs)
+                continue
+        
         # INSERT HERE (inside `for proj in candidates[:limit]:`), immediately AFTER title and abstract are computed
         # and BEFORE the funder / PI extraction logic.
         _kw = (keyword or "").strip().lower()

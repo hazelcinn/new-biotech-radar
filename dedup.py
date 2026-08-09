@@ -91,6 +91,17 @@ def deduplicate(new_items: list, state_file: str):
     seen_urls = {s["url"] for s in seen if s.get("url")}
     seen_titles = [s["title"] for s in seen if s.get("title")]
 
+    # Build a set of seen keys that includes source+source_id when available,
+    # otherwise falls back to URL/title. This avoids collapsing distinct
+    # subprojects that share a parent project number.
+    seen_keys = set()
+    for s in seen:
+        sid = s.get("source_id") or s.get("sourceId") or None
+        if sid:
+            seen_keys.add(f"{s.get('source') or ''}|{sid}")
+        else:
+            seen_keys.add(s.get("url") or s.get("title") or "")
+  
     fresh = []
     for item in new_items:
         url = item.get("url", "")
@@ -101,18 +112,32 @@ def deduplicate(new_items: list, state_file: str):
         if title and any(_title_similar(title, t) for t in seen_titles):
             continue
 
-        fresh.append(item)
-        seen_urls.add(url)
-        seen_titles.append(title)
+        # Build a stable key for the item: prefer source+source_id, else link/title+contact
+        source_id = item.get("source_id") or item.get("sourceId") or None
+        if source_id:
+            key = f"{item.get('source') or ''}|{source_id}"
+        else:
+            key = item.get("link") or (item.get("title", "") + "|" + item.get("project_contact_name", ""))
 
-        if item.get("source_id"):
-                  key = f"{item.get('source') or ''}|{item.get('source_id')}"
-              else:
-                  key = item.get("link") or (item.get("title","") + "|" + item.get("project_contact_name",""))
-  
+        # Skip if we already saw this logical item
+        if key in seen_keys:
+            continue
+
+        # Item is fresh: record and update seen sets
+        fresh.append(item)
+        if url:
+            seen_urls.add(url)
+        if title:
+            seen_titles.append(title)
+        seen_keys.add(key)
+
     updated_seen = seen + [
-        {"url": i.get("url", ""), "title": i.get("title", ""), "source": i.get("source", "")}
-        for i in fresh
+        {
+            "url": i.get("url", ""),
+            "title": i.get("title", ""),
+            "source": i.get("source", ""),
+            "source_id": i.get("source_id", "") or i.get("sourceId", ""),
+        }
     ]
     updated_state = {"last_run_date": date.today().isoformat(), "seen": updated_seen}
     return fresh, updated_state

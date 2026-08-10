@@ -143,9 +143,10 @@ def write_html(extracted_items, docs_dir="docs"):
                 <p><strong>Project Contact (PI):</strong> {pi}</p>
                 <p><strong>Affiliation:</strong> {aff}</p>
          """
-      
+
          if project_terms:
-             html_content += f"<p><strong>Project Terms:</strong> {project_terms}</p>\n"
+             html_content += f"                <p><strong>Project Terms:</strong> {project_terms}</p>\n"
+
          html_content += f"""
                      <p><strong>Abstract:</strong> {abstract}</p>
                      <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>

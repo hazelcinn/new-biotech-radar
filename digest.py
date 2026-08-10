@@ -130,28 +130,28 @@ def write_html(extracted_items, docs_dir="docs"):
         project_terms = item.get("project_terms_str", "")
 
         html_content += f"""
-            <div class="item">
-                <!-- 1. Unlinked Title -->
-                <h3>{title}</h3>
-                <div class="meta">
-                    <strong>Keyword:</strong> {keyword} | 
-                    <strong>Source:</strong> {source} | 
-                    <strong>Grant Amount:</strong> {amount} | 
-                    <strong>Grant Duration:</strong> {duration} | 
-                
-                </div>
-                <p><strong>Project Contact (PI):</strong> {pi}</p>
-                <p><strong>Affiliation:</strong> {aff}</p>
-         """
+        <div class="item">
+            <!-- 1. Unlinked Title -->
+            <h3>{title}</h3>
+            <div class="meta">
+                <strong>Keyword:</strong> {keyword} | 
+                <strong>Source:</strong> {source} | 
+                <strong>Grant Amount:</strong> {amount} | 
+                <strong>Grant Duration:</strong> {duration}
+            </div>
+            <p><strong>Project Contact (PI):</strong> {pi}</p>
+            <p><strong>Affiliation:</strong> {aff}</p>
+"""
 
-         if project_terms:
-             html_content += f"                <p><strong>Project Terms:</strong> {project_terms}</p>\n"
+        # conditional content must be added outside the triple-quoted string
+        if project_terms:
+            html_content += f"            <p><strong>Project Terms:</strong> {project_terms}</p>\n"
 
-         html_content += f"""
-                     <p><strong>Abstract:</strong> {abstract}</p>
-                     <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>
-                 </div>
-         """
+        html_content += f"""
+            <p><strong>Abstract:</strong> {abstract}</p>
+            <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>
+        </div>
+"""
 
     html_content += """
 </body>
@@ -163,7 +163,6 @@ def write_html(extracted_items, docs_dir="docs"):
         
     print(f"[digest] HTML successfully written to: {filepath}")
     return filepath
-
 
 def write_pages_index(docs_dir="docs"):
     """Scans docs/digests/ and updates docs/index.html with an archive list."""

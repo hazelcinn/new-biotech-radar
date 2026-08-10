@@ -932,6 +932,43 @@ def fetch_nih_reporter(
             print("[nih debug] (from helper) reporter_detail_url (as returned by API or fallback):", detail_url)
             print("[nih debug] (from helper) proj_num_candidate:", proj_num_candidate)
             print("[nih debug] (from helper) link chosen:", grant_link)
+
+        # INSERT BEFORE the `results_out.append({...})` in fetch_nih_reporter per-project loop
+
+        # --- Extract project terms (use only RePORTER term fields)
+        _term_keys = ("terms", "projectTerms", "project_terms", "keywords", "phr_text", "pref_terms", "project_keywords")
+        _project_terms_acc = []
+        for tk in _term_keys:
+            if tk not in proj or not proj.get(tk):
+                continue
+            val = proj.get(tk)
+            # collect string leaves from nested structures
+            if isinstance(val, (str, dict, list, tuple, set)):
+                for s in _find_strings(val):
+                    if not s:
+                        continue
+                    # split common separators then strip
+                    for part in re.split(r'[;,]\s*', s):
+                        p = part.strip()
+                        if p:
+                            _project_terms_acc.append(p)
+
+        # deduplicate while preserving order (case-insensitive)
+        _seen_terms = set()
+        project_terms = []
+        for t in _project_terms_acc:
+            tl = t.lower()
+            if tl not in _seen_terms:
+                _seen_terms.add(tl)
+                project_terms.append(t)
+
+        # short display string (comma-separated), truncated to e.g. 300 chars to avoid huge cells
+        project_terms_str = ", ".join(project_terms)
+        if len(project_terms_str) > 300:
+            project_terms_str = project_terms_str[:297].rsplit(" ", 1)[0] + "…"
+
+        # Now add these into the result dict below as "project_terms" and "project_terms_str"
+        # END INSERT
         
         # REPLACE the existing results_out.append({...}) inside fetch_nih_reporter's per-project loop
         # (i.e. the block near the end of the for proj in candidates[:limit]: loop)
@@ -955,7 +992,9 @@ def fetch_nih_reporter(
             "link": grant_link,
             # NEW: preserve RePORTER-provided canonical fields so merges can prefer them
             "reporter_project_detail_url": detail_url or "",  # populated from project_detail_url / projectUrl etc.
-            "reporter_numeric_id": numeric_id or "",          # populated from projectDetailId / appl_id / url-extraction
+            "reporter_numeric_id": numeric_id or "",
+            "project_terms": project_terms,            # list of term strings (may be empty)
+            "project_terms_str": project_terms_str,    # comma-separated display string
         })
     return results_out
 

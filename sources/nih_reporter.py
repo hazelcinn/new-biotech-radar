@@ -766,7 +766,7 @@ def fetch_nih_reporter(
             combined_norm = _normalize_for_match(combined)
 
             # Matching policy: require ALL tokens present in title OR abstract OR terms (change to any(...) for looser match)
-            matched = all(tok in combined_norm for tok in kw_tokens) if kw_tokens else True
+            matched = any(tok in combined_norm for tok in kw_tokens) if kw_tokens else True
 
             if debug:
                 print("[nih debug] FIELD-RESTRICT (RePORTER fields only)")

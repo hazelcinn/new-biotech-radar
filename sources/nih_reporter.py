@@ -730,56 +730,53 @@ def fetch_nih_reporter(
             print("[nih debug] available top-level keys:", list(proj.keys())[:80])
             print("---- NIH CANDIDATE END ----")
 
-        # Robust keyword-in-title/abstract/terms check:
+        # INSERT HERE (inside `for proj in candidates[:limit]:`), AFTER abstract_display is computed,
+        # and BEFORE the funder / PI extraction logic.
         def _normalize_for_match(s: str) -> str:
             """Lowercase, replace non-alphanumerics with spaces, collapse whitespace."""
             if not s:
                 return ""
             t = str(s).lower()
-            # replace non-alphanumeric with space
             t = re.sub(r'[^0-9a-z]+', ' ', t)
-            # collapse whitespace
             t = re.sub(r'\s+', ' ', t).strip()
             return t
 
         _kw_raw = (keyword or "").strip()
         if _kw_raw:
-            # tokens from the keyword (e.g., "covid-19" -> ["covid", "19"])
             kw_norm = _normalize_for_match(_kw_raw)
             kw_tokens = [tok for tok in kw_norm.split(" ") if tok]
 
-            # Build a combined searchable text for the project:
+            # Build text using ONLY the RePORTER fields we intend to restrict to:
             parts = []
+            # title from RePORTER
             if title:
                 parts.append(title)
+            # abstract from RePORTER (abstract_text / abstractText etc. already normalized into `abstract`)
             if abstract:
                 parts.append(abstract)
-            # include strings from term fields if present
-            term_fields = ("terms", "pref_terms", "abstract_text", "spending_categories_desc", "project_title",
-                           "projectTerms", "project_terms", "phr_text", "keywords", "project_keywords")
-            for tk in term_fields:
+            # RePORTER 'terms' field(s) ONLY
+            # Accept common variants that RePORTER actually uses: "terms" and "projectTerms" (handle lists/dicts)
+            for tk in ("terms", "projectTerms", "project_terms"):
                 if tk in proj and proj.get(tk):
                     for s in _find_strings(proj.get(tk)):
                         if s:
                             parts.append(s)
+
             combined = " ".join(parts)
             combined_norm = _normalize_for_match(combined)
 
-            # Matching policy: require ALL keyword tokens present (change to any() if you prefer looser match)
-            matched = all(tok in combined_norm for tok in kw_tokens) #.split(" ") or tok in combined_norm for tok in kw_tokens)
+            # Matching policy: require ALL tokens present in title OR abstract OR terms (change to any(...) for looser match)
+            matched = all(tok in combined_norm for tok in kw_tokens) if kw_tokens else True
 
             if debug:
-                print("[nih debug] KEYWORD MATCH CHECK")
+                print("[nih debug] FIELD-RESTRICT (RePORTER fields only)")
                 print("  raw keyword:", _kw_raw)
-                print("  normalized keyword tokens:", kw_tokens)
-                print("  sample title:", (title or "")[:200])
-                print("  sample abstract (start):", (abstract or "")[:200])
-                print("  combined_norm (start 400 chars):", combined_norm[:400])
+                print("  kw_tokens:", kw_tokens)
+                print("  combined_norm (start):", combined_norm[:400])
                 print("  matched:", matched)
 
             if not matched:
                 if debug:
-                    # show up to 5 occurrences of any token in the object for troubleshooting
                     occs = []
                     for s in _find_strings(proj):
                         try:
@@ -792,9 +789,9 @@ def fetch_nih_reporter(
                                 break
                         if len(occs) >= 5:
                             break
-                    print("[nih debug] skipping project: keyword tokens not all present; sample occurrences:", occs)
+                    print("[nih debug] skipping project - keyword not present in projectTitle/abstract/terms; sample occurrences:", occs)
                 continue
-                        
+        
         # --- funder/source
         funder_name = _extract_funder_from_proj(proj, debug=debug)
         # guard: avoid returning pure numeric IDs as funder

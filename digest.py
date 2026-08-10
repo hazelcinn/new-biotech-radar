@@ -49,11 +49,14 @@ def write_markdown(items: list, output_dir: str) -> str:
                 source = item.get("source", "N/A")
                 keyword = item.get("keyword", "N/A")
                 link = item.get("link", "#")
+                project_terms = item.get("project_terms_str", "")
 
                 # 1. Unlinked Title
                 f.write(f"### {title}\n")
                 f.write(f"- **Project Contact:** {pi}\n")
                 f.write(f"- **Affiliation:** {aff}\n")
+                if project_terms:
+                    f.write(f"- **Project Terms:** {project_terms}\n")
                 f.write(f"- **Source:** {source} | **Keyword:** {keyword}\n")
                 f.write(f"- **Abstract:** {abstract}\n")
                 f.write(f"- [🔗 View Original Source]({link})\n\n")
@@ -64,8 +67,8 @@ def write_csv(items: list, output_dir: str) -> str:
     path = os.path.join(output_dir, f"digest_{date.today().isoformat()}.csv")
 
     fieldnames = [
-        "title", "project contact", "affiliation", "subject", "source",
-        "keyword", "domain", "abstract", "link",
+        "title", "project contact", "affiliation", "project_terms", "source",
+    "keyword", "domain", "abstract", "link",
     ]
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -80,9 +83,9 @@ def write_csv(items: list, output_dir: str) -> str:
                 "domain": item.get("domain", ""),
                 "abstract": item.get("abstract", ""),
                 "link": item.get("link", ""),
+                "project_terms": item.get("project_terms_str", ""),
             })
     return path
-
 
 def write_html(extracted_items, docs_dir="docs"):
     """Writes the extracted items into a timestamped HTML digest inside docs/digests/."""
@@ -124,25 +127,29 @@ def write_html(extracted_items, docs_dir="docs"):
         abstract = item.get("abstract", "No abstract available.")
         source = item.get("source", "Source")
         link = item.get("link", "#")
+        project_terms = item.get("project_terms_str", "")
 
         html_content += f"""
-        <div class="item">
-            <!-- 1. Unlinked Title -->
-            <h3>{title}</h3>
-            <div class="meta">
-                <strong>Keyword:</strong> {keyword} | 
-                <strong>Source:</strong> {source} | 
-                <strong>Grant Amount:</strong> {amount} | 
-                <strong>Grant Duration:</strong> {duration} | 
+            <div class="item">
+                <!-- 1. Unlinked Title -->
+                <h3>{title}</h3>
+                <div class="meta">
+                    <strong>Keyword:</strong> {keyword} | 
+                    <strong>Source:</strong> {source} | 
+                    <strong>Grant Amount:</strong> {amount} | 
+                    <strong>Grant Duration:</strong> {duration} | 
                 
-            </div>
-            <p><strong>Project Contact (PI):</strong> {pi}</p>
-            <p><strong>Affiliation:</strong> {aff}</p>
-            <p><strong>Abstract:</strong> {abstract}</p>
-            <!-- Separate View Original Source Link -->
-            <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>
-        </div>
-        """
+                </div>
+                <p><strong>Project Contact (PI):</strong> {pi}</p>
+                <p><strong>Affiliation:</strong> {aff}</p>
+          """
+          if project_terms:
+              html_content += f"<p><strong>Project Terms:</strong> {project_terms}</p>\n"
+          html_content += f"""
+                  <p><strong>Abstract:</strong> {abstract}</p>
+                  <p><a href="{link}" target="_blank">🔗 View Original Source</a></p>
+              </div>
+          """
 
     html_content += """
 </body>
